@@ -36,14 +36,20 @@ To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-*
+* .NET SDK v8.0.3
 
 ### Installation
 
-_Below is an example of how you can install and use Advanced Programming in C#._
+_Below is an example of how you can install and use this project._
 
-1.
-2.
+#### 1. Clone the repository
+
+```sh
+git clone https://github.com/caffeine-addictt/nyp_advanced_programming_cs
+cd nyp_advanced_programming_cs
+```
+
+#### 2. ...
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
