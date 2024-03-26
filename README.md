@@ -96,14 +96,3 @@ Jun Xiang - [contact@ngjx.org](mailto:contact@ngjx.org)
 * [Img Shields](https://shields.io)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[forks-shield]: https://img.shields.io/github/forks/caffeine-addictt/nyp_advanced_programming_cs.svg?style=for-the-badge
-[forks-url]: https://github.com/caffeine-addictt/nyp_advanced_programming_cs/network/members
-[stars-shield]: https://img.shields.io/github/stars/caffeine-addictt/nyp_advanced_programming_cs.svg?style=for-the-badge&color=yellow
-[stars-url]: https://github.com/caffeine-addictt/nyp_advanced_programming_cs/stargazers
-[license-shield]: https://img.shields.io/github/license/caffeine-addictt/nyp_advanced_programming_cs.svg?style=for-the-badge
-[license-url]: https://github.com/caffeine-addictt/nyp_advanced_programming_cs/blob/master/LICENSE.txt
