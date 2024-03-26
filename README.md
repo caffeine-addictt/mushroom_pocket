@@ -5,10 +5,6 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/caffeine-addictt/nyp_advanced_programming_cs">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
-  </a>
-
   <h3 align="center">Advanced Programming in C#</h3>
 
   <p align="center">
@@ -27,8 +23,6 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-
-![Social Card](images/socialcard.png)
 
 long
 
