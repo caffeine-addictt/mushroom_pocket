@@ -23,7 +23,7 @@ images/socialcard.png # social card
 
   <a href="[forks-url]">[![Forks][forks-shield]][forks-url]</a>
   <a href="[stars-url]">[![Stargazers][stars-shield]][stars-url]</a>
-  <a href="[license-url]">[![MIT License][license-shield]][license-url]</a>
+  <a href="[license-url]">[![GPL License][license-shield]][license-url]</a>
 
 </div>
 
@@ -69,14 +69,14 @@ To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-* 
+*
 
 ### Installation
 
 _Below is an example of how you can install and use Advanced Programming in C#._
 
-1. 
-2. 
+1.
+2.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -114,7 +114,7 @@ Don't forget to give the project a star! Thanks again!
 <!-- LICENSE -->
 ## License
 
-Distributed under the MIT License. See [LICENSE.txt](./LICENSE.txt) for more information.
+Distributed under the GNU General Public License version 3.0. See [LICENSE.txt](./LICENSE.txt) for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
