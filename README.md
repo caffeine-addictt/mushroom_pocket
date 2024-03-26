@@ -10,8 +10,6 @@
   <p align="center">
     NYP Advanced programming module final project
     <br />
-    <a href="nah"><strong>Explore the docs »</strong></a>
-    <br />
     <br />
     <a href="https://github.com/caffeine-addictt/nyp_advanced_programming_cs/issues">Report Bug</a>
     ·
@@ -46,17 +44,6 @@ _Below is an example of how you can install and use Advanced Programming in C#._
 
 1.
 2.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- DOCS -->
-## Documentation
-
-Our docs are [here]({{PROJECT_DOCUMENTATION_URL}})!
-
-See the [open issues](https://github.com/caffeine-addictt/nyp_advanced_programming_cs/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
