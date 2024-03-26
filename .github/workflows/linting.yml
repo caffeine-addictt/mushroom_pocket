@@ -1,0 +1,67 @@
+name: Linting
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  # Lint C# files
+  dotnet:
+    name: Dotnet
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.1
+
+      - name: Installing dependencies
+        run: |
+          set -xe
+          dotnet restore
+
+      - name: Lint
+        run: |
+          set -xe
+          dotnet format --verify-no-changes --verbosity diagnostic
+
+  # Lint non-C# files
+  prettier:
+    name: Prettier
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4.0.2
+        with:
+          cache: npm
+
+      - name: Install dependencies
+        run: |
+          set -xe
+          npm i
+
+      - name: Lint
+        run: |
+          set -xe
+          npm run lint
+
+  # Check that all linting passed
+  check:
+    if: always()
+    name: Linting Successful
+    runs-on: ubuntu-latest
+    needs: [dotnet, prettier]
+
+    steps:
+      - name: Whether the whole test suite passed
+        uses: re-actors/alls-green@v1.2.2
+        with:
+          jobs: ${{ toJSON(needs) }}
