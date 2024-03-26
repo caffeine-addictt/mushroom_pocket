@@ -36,7 +36,7 @@ To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-* .NET SDK v8.0.3
+* .NET SDK v8.0.1
 
 ### Installation
 
