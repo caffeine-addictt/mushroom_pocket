@@ -24,10 +24,15 @@ jobs:
           set -xe
           dotnet restore
 
-      - name: Lint
+      - name: Lint src/
         run: |
           set -xe
-          dotnet format --verify-no-changes --verbosity diagnostic
+          dotnet format --verify-no-changes --verbosity diagnostic src/MushroomPocket
+
+      - name: Lint tests/
+        run: |
+          set -xe
+          dotnet format --verify-no-changes --verbosity diagnostic tests
 
   # Lint non-C# files
   prettier:
