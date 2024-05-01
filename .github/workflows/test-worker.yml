@@ -1,0 +1,33 @@
+name: Testing
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.101
+
+      - name: Installing dependencies
+        run: |
+          set -xe
+          dotnet restore
+
+      - name: Run tests
+        run: |
+          set -xe
+          dotnet test --verbosity diagnostic --nologo tests
