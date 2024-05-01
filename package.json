@@ -4,7 +4,7 @@
     "lint": "prettier --check . && npm run lint:src && npm run lint:tests",
     "lint:src": "dotnet format --verify-no-changes --verbosity diagnostic src/MushroomPocket",
     "lint:tests": "dotnet format --verify-no-changes --verbosity normal tests",
-    "lint:fix": "prettier --write . && dotnet format src/MushroomPocket && dotnet format tests",
+    "lint:fix": "prettier --write . && dotnet format --verbosity normal src/MushroomPocket && dotnet format --verbosity normal tests",
     "test": "dotnet test --verbosity normal --nologo tests",
     "start": "dotnet run --project src/MushroomPocket",
     "build": "dotnet build src/MushroomPocket"
