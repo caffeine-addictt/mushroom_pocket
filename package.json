@@ -1,8 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "lint": "prettier --check .",
-    "lint:fix": "prettier --write ."
+    "lint": "prettier --check . && dotnet format --verify-no-changes --verbosity diagnostic",
+    "lint:fix": "prettier --write . && dotnet format"
   },
   "devDependencies": {
     "prettier": "^3.2.5"
