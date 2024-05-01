@@ -22,7 +22,8 @@ jobs:
       - name: Installing dependencies
         run: |
           set -xe
-          dotnet restore
+          dotnet restore src/MushroomPocket
+          dotnet restore tests
 
       - name: Lint src/
         run: |
