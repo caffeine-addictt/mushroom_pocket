@@ -33,14 +33,7 @@ namespace MushroomPocket
         ]));
         string? action = Console.ReadLine();
 
-        // Panic if null
-        if (action == null)
-        {
-          Console.WriteLine(@"PANIC: Action was null!");
-          Environment.Exit(1);
-        }
-
-        switch (action.ToLower())
+        switch (action == null ? action : action.ToLower())
         {
           case "1":
             // TODO: Add character
@@ -58,7 +51,7 @@ namespace MushroomPocket
             // TODO: Transform character
             break;
 
-          case "q":
+          case "q" or null:
             Console.WriteLine("Thanks for playing. Good bye!");
             Environment.Exit(0);
             break;
