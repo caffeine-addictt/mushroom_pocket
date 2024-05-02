@@ -19,7 +19,7 @@
 
 ## About The Project
 
-long
+Mushroom Pocket.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -45,7 +45,11 @@ git clone https://github.com/caffeine-addictt/mushroom_pocket
 cd mushroom_pocket
 ```
 
-#### 2. ...
+#### 2. Run the project
+
+```sh
+dotnet run
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
