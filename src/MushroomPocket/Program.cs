@@ -17,6 +17,8 @@ namespace MushroomPocket
         new MushroomMaster("Waluigi", 1, "Luigi")
       };
 
+      List<Character> pocket = new List<Character>();
+
       // Main event loop.
       while (true)
       {
@@ -36,7 +38,57 @@ namespace MushroomPocket
         switch (action == null ? action : action.ToLower())
         {
           case "1":
-            // TODO: Add character
+            // Boundary check
+            if (pocket.Count >= 3)
+            {
+              Console.WriteLine("I can only hold 3 characters. Please remove some characters first.\n");
+              break;
+            }
+
+            // Name
+            Console.Write("Enter Character's Name: ");
+            string? charName = Console.ReadLine();
+
+            if (!((string[])["Daisy", "Wario", "Waluigi"]).Contains(charName))
+            {
+              Console.WriteLine("Invalid character name. Please only enter ['Daisy', 'Wario', 'Waluigi'].\n");
+              break;
+            }
+
+            // HP
+            Console.Write("Enter Character's HP: ");
+            float charHP;
+            if (!float.TryParse(Console.ReadLine(), out charHP))
+            {
+              Console.WriteLine("Invalid HP. Please only enter a number.\n");
+              break;
+            }
+
+            // Exp
+            Console.Write("Enter Character's EXP: ");
+            int charEXP;
+            if (!int.TryParse(Console.ReadLine(), out charEXP))
+            {
+              Console.WriteLine("Invalid EXP. Please only enter an integer.\n");
+              break;
+            }
+
+            // Add char
+            // I'm too used to Golang lol
+            // if newChar, err := Character.from(charName, charHP, charEXP); err != nil {
+            //   // Error
+            // }
+            // :>
+            string? errOut;
+            Character? newChar = Character.from(charName!, charHP, charEXP, out errOut);
+            if (errOut != null)
+            {
+              Console.WriteLine(errOut + "\n");
+              break;
+            }
+
+            pocket.Add(newChar!);
+            Console.WriteLine($"{charName} has been added.\n");
             break;
 
           case "2":
@@ -57,7 +109,7 @@ namespace MushroomPocket
             break;
 
           default:
-            Console.WriteLine(@"Invalid action. Please only enter [1, 2, 3, 4] or Q to quit.");
+            Console.WriteLine("Invalid action. Please only enter [1, 2, 3, 4] or Q to quit.\n");
             break;
         }
       }
