@@ -25,10 +25,9 @@ jobs:
       - name: Installing dependencies
         run: |
           set -xe
-          dotnet restore src/MushroomPocket
-          dotnet restore tests
+          dotnet restore
 
       - name: Run tests
         run: |
           set -xe
-          dotnet test --verbosity diagnostic --nologo tests
+          dotnet test --verbosity diagnostic --nologo

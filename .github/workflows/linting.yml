@@ -22,18 +22,12 @@ jobs:
       - name: Installing dependencies
         run: |
           set -xe
-          dotnet restore src/MushroomPocket
-          dotnet restore tests
+          dotnet restore
 
-      - name: Lint src/
+      - name: Lint
         run: |
           set -xe
-          dotnet format --verify-no-changes --verbosity diagnostic src/MushroomPocket
-
-      - name: Lint tests/
-        run: |
-          set -xe
-          dotnet format --verify-no-changes --verbosity diagnostic tests
+          dotnet format --verify-no-changes --verbosity diagnostic
 
   # Lint non-C# files
   prettier:
