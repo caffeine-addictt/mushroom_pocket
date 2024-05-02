@@ -16,6 +16,18 @@ public class MushroomMaster
 }
 
 
+[Flags]
+public enum CharacterNames
+{
+  Daisy,
+  Luigi,
+  Mario,
+
+  Peach,
+  Waluigi,
+  Wario,
+}
+
     {
       this.Name = name;
       this.NoToTransform = noToTransform;
