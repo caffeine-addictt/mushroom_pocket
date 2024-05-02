@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tests", "tests\tests.csproj", "{40A82A8A-422F-4418-8329-F38B2817CFF8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{498DED4A-B711-460A-85FE-D5E0BA4EAD16}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MushroomPocket", "src\MushroomPocket\MushroomPocket.csproj", "{9E1A4999-FC9D-438D-B9DB-E1EBCEB09204}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{40A82A8A-422F-4418-8329-F38B2817CFF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40A82A8A-422F-4418-8329-F38B2817CFF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40A82A8A-422F-4418-8329-F38B2817CFF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40A82A8A-422F-4418-8329-F38B2817CFF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E1A4999-FC9D-438D-B9DB-E1EBCEB09204}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E1A4999-FC9D-438D-B9DB-E1EBCEB09204}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E1A4999-FC9D-438D-B9DB-E1EBCEB09204}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E1A4999-FC9D-438D-B9DB-E1EBCEB09204}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9E1A4999-FC9D-438D-B9DB-E1EBCEB09204} = {498DED4A-B711-460A-85FE-D5E0BA4EAD16}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {54A877CE-2432-4502-BBC3-874FC73929D4}
+	EndGlobalSection
+EndGlobal
