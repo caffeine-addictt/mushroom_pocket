@@ -108,6 +108,31 @@ public abstract class Character
         errOut = null;
         return c;
     }
+
+    /// <summary>
+    /// Check if character can evolve
+    /// </summary>
+    public static List<MushroomMaster> canEvolve(List<Character> characters, List<MushroomMaster> evoList)
+    {
+        Dictionary<string, int> dict = new Dictionary<string, int>();
+        foreach (Character c in characters)
+        {
+            dict.Add(c.Name, dict.GetValueOrDefault(c.Name, 0) + 1);
+        }
+
+        // Check if any character can evolve
+        List<MushroomMaster> canEvolve = new List<MushroomMaster>();
+        foreach (MushroomMaster couple in evoList)
+        {
+            int count = dict.GetValueOrDefault(couple.Name, 0);
+            if (count >= couple.NoToTransform)
+            {
+                canEvolve.Add(couple);
+            }
+        }
+
+        return canEvolve;
+    }
 }
 
 public class Daisy(float hp, int exp) : Character(hp, exp)

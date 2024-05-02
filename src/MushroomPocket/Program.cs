@@ -39,13 +39,6 @@ class Program
             switch (action == null ? action : action.ToLower())
             {
                 case "1":
-                    // Boundary check
-                    if (pocket.Count >= 3)
-                    {
-                        Console.WriteLine("\nI can only hold 3 characters. Please remove some characters first.");
-                        break;
-                    }
-
                     // Name
                     Console.Write("Enter Character's Name: ");
                     string? charName = Console.ReadLine();
@@ -109,7 +102,12 @@ class Program
                     break;
 
                 case "3":
-                    // TODO: Check transformation
+                    // Check transformation
+                    List<MushroomMaster> canEvoList = Character.canEvolve(pocket, mushroomMasters);
+                    foreach (MushroomMaster m in canEvoList)
+                    {
+                        Console.WriteLine($"{m.Name} -> {m.TransformTo}");
+                    }
                     break;
 
                 case "4":
