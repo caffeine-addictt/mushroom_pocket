@@ -26,13 +26,13 @@ class Program
       // Ask for action.
       Console.Write(String.Join("\n", [
         @"******************************",
-          @"Welcome to Mushroom Pocket App",
-          @"********************************",
-          @"(1). Add Mushroom's character to my pocket",
-          @"(2). List character(s) in my pocket",
-          @"(3). Check if I can transform my characters",
-          @"(4). Transform my character(s)",
-          @"Please only enter [1, 2, 3, 4] or Q to quit: "
+        @"Welcome to Mushroom Pocket App",
+        @"********************************",
+        @"(1). Add Mushroom's character to my pocket",
+        @"(2). List character(s) in my pocket",
+        @"(3). Check if I can transform my characters",
+        @"(4). Transform my character(s)",
+        @"Please only enter [1, 2, 3, 4] or Q to quit: "
       ]));
       string? action = Console.ReadLine();
 
