@@ -4,7 +4,7 @@
     "lint": "prettier --check . && dotnet format --verify-no-changes --verbosity diagnostic",
     "lint:fix": "prettier --write . && dotnet format --verbosity diagnostic",
     "test": "dotnet test --verbosity normal --nologo",
-    "start": "dotnet run",
+    "start": "dotnet run --project src/MushroomPocket",
     "build": "dotnet build"
   },
   "devDependencies": {
