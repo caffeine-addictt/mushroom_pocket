@@ -92,7 +92,12 @@ namespace MushroomPocket
             break;
 
           case "2":
-            // TODO: List character
+            // Sort descending
+            pocket.Sort((Character c1, Character c2) => c2.Hp.CompareTo(c1.Hp));
+            foreach (Character character in pocket)
+            {
+              Console.WriteLine(character.ToString());
+            }
             break;
 
           case "3":
