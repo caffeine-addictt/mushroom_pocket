@@ -22,7 +22,6 @@ public enum CharacterNames
   Daisy,
   Luigi,
   Mario,
-
   Peach,
   Waluigi,
   Wario,
