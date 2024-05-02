@@ -3,15 +3,15 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <h3 align="center">Advanced Programming in C#</h3>
+  <h3 align="center">Mushroom Pocket</h3>
 
   <p align="center">
     NYP Advanced programming module final project
     <br />
     <br />
-    <a href="https://github.com/caffeine-addictt/nyp_advanced_programming_cs/issues">Report Bug</a>
+    <a href="https://github.com/caffeine-addictt/mushroom_pocket/issues">Report Bug</a>
     ·
-    <a href="https://github.com/caffeine-addictt/nyp_advanced_programming_cs/issues">Request Feature</a>
+    <a href="https://github.com/caffeine-addictt/mushroom_pocket/issues">Request Feature</a>
   </p>
 </div>
 
@@ -41,8 +41,8 @@ _Below is an example of how you can install and use this project._
 #### 1. Clone the repository
 
 ```sh
-git clone https://github.com/caffeine-addictt/nyp_advanced_programming_cs
-cd nyp_advanced_programming_cs
+git clone https://github.com/caffeine-addictt/mushroom_pocket
+cd mushroom_pocket
 ```
 
 #### 2. ...

@@ -9,7 +9,7 @@ assignees: caffeine-addictt
 # Failing Test
 
 Your issue may already be reported!
-Please check out our [active issues](https://github.com/caffeine-addictt/nyp_advanced_programming_cs/issues) before creating one.
+Please check out our [active issues](https://github.com/caffeine-addictt/mushroom_pocket/issues) before creating one.
 
 ## Which Jobs/Tests are Failing?
 
