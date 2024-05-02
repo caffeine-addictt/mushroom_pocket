@@ -111,7 +111,26 @@ class Program
                     break;
 
                 case "4":
-                    // TODO: Transform character
+                    // Transform character
+                    List<MushroomMaster> evoList = Character.canEvolve(pocket, mushroomMasters);
+                    foreach (MushroomMaster m in evoList)
+                    {
+                        for (int i = 0; i < m.NoToTransform; i++)
+                        {
+                            pocket.RemoveAt(pocket.FindIndex(0, c => c.Name == m.Name));
+                        }
+
+                        string? errOut2;
+                        Character? newChar2 = Character.from(m.TransformTo, 100, 0, out errOut2);
+                        if (errOut2 != null)
+                        {
+                            Console.WriteLine("\n" + errOut2);
+                            break;
+                        }
+
+                        pocket.Add(newChar2!);
+                        Console.WriteLine($"{m.Name} has been transformed to {m.TransformTo}.");
+                    }
                     break;
 
                 case "q" or null:
