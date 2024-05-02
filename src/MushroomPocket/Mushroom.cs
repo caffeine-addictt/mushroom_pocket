@@ -111,3 +111,44 @@ public abstract class Character
   }
 }
 
+public class Daisy(float hp, int exp) : Character(hp, exp)
+{
+  public override string Name { get; } = "Daisy";
+  public override bool EvolvedOnly { get; } = false;
+  public override string Skill { get; } = "Leadership";
+}
+
+public class Waluigi(float hp, int exp) : Character(hp, exp)
+{
+  public override string Name { get; } = "Waluigi";
+  public override bool EvolvedOnly { get; } = false;
+  public override string Skill { get; } = "Agility";
+}
+
+public class Wario(float hp, int exp) : Character(hp, exp)
+{
+  public override string Name { get; } = "Wario";
+  public override bool EvolvedOnly { get; } = false;
+  public override string Skill { get; } = "Strength";
+}
+
+public class Luigi(float hp, int exp) : Character(hp, exp)
+{
+  public override string Name { get; } = "Luigi";
+  public override bool EvolvedOnly { get; } = true;
+  public override string Skill { get; } = "Precision and Accuracy";
+}
+
+public class Peach(float hp, int exp) : Character(hp, exp)
+{
+  public override string Name { get; } = "Peach";
+  public override bool EvolvedOnly { get; } = true;
+  public override string Skill { get; } = "Magic Abilities";
+}
+
+public class Mario(float hp, int exp) : Character(hp, exp)
+{
+  public override string Name { get; } = "Mario";
+  public override bool EvolvedOnly { get; } = true;
+  public override string Skill { get; } = "Combat Skills";
+}
