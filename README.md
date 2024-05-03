@@ -32,6 +32,7 @@ To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
+- Sqlite
 - .NET SDK v8.0.101
 
 ### Installation
