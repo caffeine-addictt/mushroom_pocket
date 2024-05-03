@@ -121,7 +121,7 @@ class Program
                         }
 
                         string? errOut2;
-                        Character? newChar2 = Character.from(m.TransformTo, 100, 0, out errOut2);
+                        Character? newChar2 = Character.from(m.TransformTo, 100, 0, out errOut2, false);
                         if (errOut2 != null)
                         {
                             Console.WriteLine("\n" + errOut2);
