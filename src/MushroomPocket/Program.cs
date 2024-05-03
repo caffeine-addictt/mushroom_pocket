@@ -1,3 +1,5 @@
+using MushroomPocket.Models;
+
 namespace MushroomPocket;
 
 
@@ -11,14 +13,18 @@ class Program
             Environment.Exit(1);
         }
 
+        // Ensure DB exists
+        using (MushroomContext db = new MushroomContext())
+        {
+            db.Database.EnsureCreated();
+        }
+
         // MushroomMaster criteria list for checking character transformation availability.
         List<MushroomMaster> mushroomMasters = new List<MushroomMaster>(){
             new MushroomMaster("Daisy", 2, "Peach"),
             new MushroomMaster("Wario", 3, "Mario"),
             new MushroomMaster("Waluigi", 1, "Luigi")
         };
-
-        List<Character> pocket = new List<Character>();
 
         // Main event loop.
         while (true)
@@ -68,27 +74,31 @@ class Program
                     }
 
                     // Add char
-                    // I'm too used to Golang lol
-                    // if newChar, err := Character.from(charName, charHP, charEXP); err != nil {
-                    //   // Error
-                    // }
-                    // :>
                     string? errOut;
-                    Character? newChar = Character.from(charName!, charHP, charEXP, out errOut);
+                    Character? newChar = Character.From(charName!, charHP, charEXP, out errOut);
                     if (errOut != null)
                     {
                         Console.WriteLine("\n" + errOut);
                         break;
                     }
 
-                    pocket.Add(newChar!);
+                    using (MushroomContext db = new MushroomContext())
+                    {
+                        db.Characters.Add(newChar!);
+                        db.SaveChanges();
+                    }
                     Console.WriteLine($"{charName} has been added.");
                     break;
 
                 case "2":
                     // Sort descending
-                    pocket.Sort((Character c1, Character c2) => c2.Hp.CompareTo(c1.Hp));
-                    foreach (Character c in pocket)
+                    List<Character> sorted;
+                    using (MushroomContext db = new MushroomContext())
+                    {
+                        sorted = db.Characters.OrderByDescending((Character c) => c.Hp).ToList();
+                    }
+
+                    foreach (Character c in sorted)
                     {
                         Console.WriteLine(String.Join("\n",
                             @"-----------------------",
@@ -103,7 +113,7 @@ class Program
 
                 case "3":
                     // Check transformation
-                    List<MushroomMaster> canEvoList = Character.canEvolve(pocket, mushroomMasters);
+                    List<MushroomMaster> canEvoList = Character.CanEvolve(mushroomMasters);
                     foreach (MushroomMaster m in canEvoList)
                     {
                         Console.WriteLine($"{m.Name} -> {m.TransformTo}");
@@ -112,24 +122,25 @@ class Program
 
                 case "4":
                     // Transform character
-                    List<MushroomMaster> evoList = Character.canEvolve(pocket, mushroomMasters);
-                    foreach (MushroomMaster m in evoList)
+                    List<MushroomMaster> evoList = Character.CanEvolve(mushroomMasters);
+
+                    using (MushroomContext db = new MushroomContext())
                     {
-                        for (int i = 0; i < m.NoToTransform; i++)
+                        foreach (MushroomMaster m in evoList)
                         {
-                            pocket.RemoveAt(pocket.FindIndex(0, c => c.Name == m.Name));
-                        }
+                            string? errOut2;
+                            Character? evoChar = Character.From(m.TransformTo, 100, 0, out errOut2, false);
+                            if (errOut2 != null)
+                            {
+                                Console.WriteLine("\n" + errOut2);
+                                break;
+                            }
 
-                        string? errOut2;
-                        Character? newChar2 = Character.from(m.TransformTo, 100, 0, out errOut2, false);
-                        if (errOut2 != null)
-                        {
-                            Console.WriteLine("\n" + errOut2);
-                            break;
+                            // Update DB
+                            db.Characters.RemoveRange(db.Characters.Where((Character c) => c.Name == m.Name).Take(m.NoToTransform).ToList());
+                            db.Characters.Add(evoChar!);
+                            Console.WriteLine($"{m.Name} has been transformed to {m.TransformTo}.");
                         }
-
-                        pocket.Add(newChar2!);
-                        Console.WriteLine($"{m.Name} has been transformed to {m.TransformTo}.");
                     }
                     break;
 
