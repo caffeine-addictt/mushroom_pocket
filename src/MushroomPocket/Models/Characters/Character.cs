@@ -119,6 +119,23 @@ public class Character
     }
 
     /// <summary>
+    /// See number of times character can be evolved
+    ///
+    /// </summary>
+    public static int TimesEvolvable(int charCount, int noToTransform)
+        => noToTransform == 0 ? 0 : (int)Math.Floor((decimal)(charCount / noToTransform));
+
+    /// <summary>
+    /// See if character can be evolved
+    /// noToTransform is 0 if the character can never be obtained
+    /// </summary>
+    public static bool CanBeEvolved(int charCount, int noToTransform, out int evoCount)
+    {
+        evoCount = TimesEvolvable(charCount, noToTransform);
+        return evoCount != 0;
+    }
+
+    /// <summary>
     /// Check if character can evolve
     /// </summary>
     public static List<MushroomMaster> CanEvolve(List<MushroomMaster> evoList)
@@ -128,15 +145,10 @@ public class Character
         {
             foreach (MushroomMaster evo in evoList)
             {
-                // NoToTransform is 0 if the character can never be obtained
-                if (evo.NoToTransform == 0) continue;
-
                 int charCount = db.Characters.Where((Character c) => c.Name == evo.Name).Count();
 
-                // Count No. of times the character can be evolved
-                int evoCount = (int)Math.Floor((decimal)(charCount / evo.NoToTransform));
-                if (evoCount == 0) continue;
-
+                int evoCount;
+                if (!CanBeEvolved(charCount, evo.NoToTransform, out evoCount)) continue;
                 canEvolve.AddRange(Enumerable.Repeat(evo, evoCount));
             }
         }
