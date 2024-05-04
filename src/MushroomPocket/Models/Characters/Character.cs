@@ -18,6 +18,19 @@ public class MushroomMaster
 }
 
 
+public struct NameSimilarity
+{
+    public string Name;
+    public float Confidence;
+
+    public NameSimilarity(string name, float confidence)
+    {
+        Name = name;
+        Confidence = confidence;
+    }
+}
+
+
 [PrimaryKey("Id")]
 public class Character
 {
@@ -63,6 +76,26 @@ public class Character
         }
 
         validName = null;
+        return false;
+    }
+
+    /// <summary>
+    /// Try find similar names
+    /// </summary>
+    public static bool TryParseName(string name, out List<NameSimilarity> similarNames)
+    {
+        string? validName;
+        if (IsValidName(name, out validName))
+        {
+            similarNames = new List<NameSimilarity>() {
+                new NameSimilarity(validName!, 1.0f)
+            };
+            return true;
+        }
+
+        // TODO: Implement DB query with algorithm
+
+        similarNames = new List<NameSimilarity>();
         return false;
     }
 
