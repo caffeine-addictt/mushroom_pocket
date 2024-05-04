@@ -45,103 +45,19 @@ class Program
             switch (action == null ? action : action.ToLower())
             {
                 case "1":
-                    // Name
-                    Console.Write("Enter Character's Name: ");
-                    string? charName = Console.ReadLine();
-
-                    if (!((string[])["Daisy", "Wario", "Waluigi"]).Contains(charName))
-                    {
-                        Console.WriteLine("\nInvalid character name. Please only enter ['Daisy', 'Wario', 'Waluigi'].");
-                        break;
-                    }
-
-                    // HP
-                    Console.Write("Enter Character's HP: ");
-                    float charHP;
-                    if (!float.TryParse(Console.ReadLine(), out charHP))
-                    {
-                        Console.WriteLine("\nInvalid HP. Please only enter a number.");
-                        break;
-                    }
-
-                    // Exp
-                    Console.Write("Enter Character's EXP: ");
-                    int charEXP;
-                    if (!int.TryParse(Console.ReadLine(), out charEXP))
-                    {
-                        Console.WriteLine("\nInvalid EXP. Please only enter an integer.");
-                        break;
-                    }
-
-                    // Add char
-                    string? errOut;
-                    Character? newChar = Character.From(charName!, charHP, charEXP, out errOut);
-                    if (errOut != null)
-                    {
-                        Console.WriteLine("\n" + errOut);
-                        break;
-                    }
-
-                    using (MushroomContext db = new MushroomContext())
-                    {
-                        db.Characters.Add(newChar!);
-                        db.SaveChanges();
-                    }
-                    Console.WriteLine($"{charName} has been added.");
+                    AddCharacter();
                     break;
 
                 case "2":
-                    // Sort descending
-                    List<Character> sorted;
-                    using (MushroomContext db = new MushroomContext())
-                    {
-                        sorted = db.Characters.OrderByDescending((Character c) => c.Hp).ToList();
-                    }
-
-                    foreach (Character c in sorted)
-                    {
-                        Console.WriteLine(String.Join("\n",
-                            @"-----------------------",
-                            $"Name: {c.Name}",
-                            $"HP: {c.Hp}",
-                            $"EXP: {c.Exp}",
-                            $"Skill: {c.Skill}",
-                            @"-----------------------"
-                        ));
-                    }
+                    ListCharacters();
                     break;
 
                 case "3":
-                    // Check transformation
-                    List<MushroomMaster> canEvoList = Character.CanEvolve(mushroomMasters);
-                    foreach (MushroomMaster m in canEvoList)
-                    {
-                        Console.WriteLine($"{m.Name} -> {m.TransformTo}");
-                    }
+                    CheckTransformation(mushroomMasters);
                     break;
 
                 case "4":
-                    // Transform character
-                    List<MushroomMaster> evoList = Character.CanEvolve(mushroomMasters);
-
-                    using (MushroomContext db = new MushroomContext())
-                    {
-                        foreach (MushroomMaster m in evoList)
-                        {
-                            string? errOut2;
-                            Character? evoChar = Character.From(m.TransformTo, 100, 0, out errOut2, false);
-                            if (errOut2 != null)
-                            {
-                                Console.WriteLine("\n" + errOut2);
-                                break;
-                            }
-
-                            // Update DB
-                            db.Characters.RemoveRange(db.Characters.Where((Character c) => c.Name == m.Name).Take(m.NoToTransform).ToList());
-                            db.Characters.Add(evoChar!);
-                            Console.WriteLine($"{m.Name} has been transformed to {m.TransformTo}.");
-                        }
-                    }
+                    TransformCharacters(mushroomMasters);
                     break;
 
                 case "q" or null:
@@ -156,6 +72,116 @@ class Program
 
             // Insert newline
             Console.WriteLine();
+        }
+    }
+
+
+    // Option 1: Add character
+    private static void AddCharacter()
+    {
+        // Name
+        Console.Write("Enter Character's Name: ");
+        string? charName = Console.ReadLine();
+
+        if (!((string[])["Daisy", "Wario", "Waluigi"]).Contains(charName))
+        {
+            Console.WriteLine("\nInvalid character name. Please only enter ['Daisy', 'Wario', 'Waluigi'].");
+            return;
+        }
+
+        // HP
+        Console.Write("Enter Character's HP: ");
+        float charHP;
+        if (!float.TryParse(Console.ReadLine(), out charHP))
+        {
+            Console.WriteLine("\nInvalid HP. Please only enter a number.");
+            return;
+        }
+
+        // Exp
+        Console.Write("Enter Character's EXP: ");
+        int charEXP;
+        if (!int.TryParse(Console.ReadLine(), out charEXP))
+        {
+            Console.WriteLine("\nInvalid EXP. Please only enter an integer.");
+            return;
+        }
+
+        // Add char
+        string? errOut;
+        Character? newChar = Character.From(charName!, charHP, charEXP, out errOut);
+        if (errOut != null)
+        {
+            Console.WriteLine("\n" + errOut);
+            return;
+        }
+
+        using (MushroomContext db = new MushroomContext())
+        {
+            db.Characters.Add(newChar!);
+            db.SaveChanges();
+        }
+        Console.WriteLine($"{charName} has been added.");
+        return;
+    }
+
+    // Option 2: List Characters
+    private static void ListCharacters()
+    {
+        // Sort descending
+        List<Character> sorted;
+        using (MushroomContext db = new MushroomContext())
+        {
+            sorted = db.Characters.OrderByDescending((Character c) => c.Hp).ToList();
+        }
+
+        foreach (Character c in sorted)
+        {
+            Console.WriteLine(String.Join("\n",
+                @"-----------------------",
+                $"Name: {c.Name}",
+                $"HP: {c.Hp}",
+                $"EXP: {c.Exp}",
+                $"Skill: {c.Skill}",
+                @"-----------------------"
+            ));
+        }
+    }
+
+    // Option 3: Check transformation
+    private static void CheckTransformation(List<MushroomMaster> mushroomMasters)
+    {
+        // Check transformation
+        List<MushroomMaster> canEvoList = Character.CanEvolve(mushroomMasters);
+        foreach (MushroomMaster m in canEvoList)
+        {
+            Console.WriteLine($"{m.Name} -> {m.TransformTo}");
+        }
+    }
+
+    // Option 4: Transform characters
+    private static void TransformCharacters(List<MushroomMaster> mushroomMasters)
+    {
+        // Transform character
+        List<MushroomMaster> evoList = Character.CanEvolve(mushroomMasters);
+
+        using (MushroomContext db = new MushroomContext())
+        {
+            foreach (MushroomMaster m in evoList)
+            {
+                string? errOut2;
+                Character? evoChar = Character.From(m.TransformTo, 100, 0, out errOut2, false);
+                if (errOut2 != null)
+                {
+                    Console.WriteLine("\n" + errOut2);
+                    break;
+                }
+
+                // Update DB
+                db.Characters.RemoveRange(db.Characters.Where((Character c) => c.Name == m.Name).Take(m.NoToTransform).ToList());
+                db.Characters.Add(evoChar!);
+                Console.WriteLine($"{m.Name} has been transformed to {m.TransformTo}.");
+            }
         }
     }
 }
