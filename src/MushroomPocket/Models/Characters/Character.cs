@@ -82,8 +82,16 @@ public class Character
     /// <summary>
     /// Try find similar names
     /// </summary>
-    public static bool TryParseName(string name, out List<NameSimilarity> similarNames)
+    public static bool TryParseName(string? name, List<string> allowList, out List<NameSimilarity> similarNames)
     {
+        if (name == null)
+        {
+            similarNames = new List<NameSimilarity>();
+            return false;
+        }
+
+        name = name.ToLower();
+
         string? validName;
         if (IsValidName(name, out validName))
         {
@@ -93,9 +101,57 @@ public class Character
             return true;
         }
 
-        // TODO: Implement DB query with algorithm
-
+        // Fetch similar names
         similarNames = new List<NameSimilarity>();
+
+        // This is extrememly expensive to run :"D
+        foreach (string n in allowList)
+        {
+            // Weights should add up to 1.0f
+            float startsWithWeight = 0.3f;
+            float subStrWeight = 0.3f;
+            float hasCharWeight = 0.4f;
+
+            bool startsWith = false;
+            bool subStr = false;
+
+            float similarity = 0f;
+            for (int i = 0; i < name.Length; i++)
+            {
+                string sub = name.Substring(name.Length - 1 - i);
+
+                // StartsWith
+                if (!startsWith && n.ToLower().StartsWith(sub))
+                {
+                    similarity += startsWithWeight * ((name.Length - i) / name.Length);
+                    startsWith = true;
+                }
+
+                // SubStr
+                if (!subStr && n.ToLower().Contains(sub))
+                {
+                    similarity += subStrWeight * ((name.Length - i) / name.Length);
+                    subStr = true;
+                }
+
+                // hasChar
+                if (n.ToLower().Contains(name[i]))
+                {
+                    similarity += hasCharWeight / name.Length;
+                }
+            }
+
+            // Ignore if less than 30% confidence
+            if (similarity >= 0.3f)
+                similarNames.Add(new NameSimilarity(n, similarity));
+        }
+
+        if (similarNames.Count > 0)
+        {
+            similarNames.Sort((a, b) => b.Confidence.CompareTo(a.Confidence));
+            return true;
+        }
+
         return false;
     }
 

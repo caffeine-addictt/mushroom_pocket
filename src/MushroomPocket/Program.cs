@@ -104,12 +104,20 @@ class Program
     {
         // Name
         Console.Write("Enter Character's Name: ");
-        string? charName = Console.ReadLine();
+        List<NameSimilarity> suggestions;
+        string charName = Console.ReadLine() ?? "";
 
-        if (!((string[])["Daisy", "Wario", "Waluigi"]).Contains(charName))
+        if (!Character.TryParseName(charName, new List<string>() { "Daisy", "Wario", "Waluigi" }, out suggestions))
         {
             Console.WriteLine("\nInvalid character name. Please only enter ['Daisy', 'Wario', 'Waluigi'].");
             return;
+        }
+
+        if (suggestions[0].Name.ToLower() != charName.ToLower())
+        {
+            Console.Write($"\nDid you mean '{suggestions[0].Name}'? ({(decimal)(suggestions[0].Confidence * 100)}%) [Y/N]: ");
+            if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+            charName = suggestions[0].Name;
         }
 
         // HP
