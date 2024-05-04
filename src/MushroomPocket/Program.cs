@@ -23,8 +23,26 @@ class Program
         List<MushroomMaster> mushroomMasters = new List<MushroomMaster>(){
             new MushroomMaster("Daisy", 2, "Peach"),
             new MushroomMaster("Wario", 3, "Mario"),
-            new MushroomMaster("Waluigi", 1, "Luigi")
+            new MushroomMaster("Waluigi", 1, "Luigi"),
         };
+
+        // Validate MushroomMaster list
+        List<string> violations = new List<string>();
+        foreach (MushroomMaster m in mushroomMasters)
+        {
+            if (!Character.IsValidName(m.Name))
+                violations.Add($"Attribute name {m.Name} in new MushroomMaster(\"{m.Name}\", \"{m.NoToTransform}\", \"{m.TransformTo}\") is invalid.");
+            if (!Character.IsValidName(m.TransformTo))
+                violations.Add($"Attribute transformTo {m.TransformTo} in new MushroomMaster(\"{m.Name}\", \"{m.NoToTransform}\", \"{m.TransformTo}\") is invalid.");
+        }
+
+        if (violations.Count > 0)
+        {
+            Console.WriteLine(String.Join("\n", new List<string>() {
+                "Validating mushroomMasters failed. Please fix the following errors:",
+            }.Concat(violations)));
+            Environment.Exit(1);
+        }
 
         // Main event loop.
         while (true)
