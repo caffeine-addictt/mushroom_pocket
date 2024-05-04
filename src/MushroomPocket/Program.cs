@@ -56,7 +56,8 @@ class Program
                 @"(2). List character(s) in my pocket",
                 @"(3). Check if I can transform my characters",
                 @"(4). Transform my character(s)",
-                @"Please only enter [1, 2, 3, 4] or Q to quit: "
+                @"(5). Delete character(s) from my pocket",
+                @"Please only enter [1, 2, 3, 4, 5] or Q to quit: "
             ]));
             string? action = Console.ReadLine();
 
@@ -76,6 +77,10 @@ class Program
 
                 case "4":
                     TransformCharacters(mushroomMasters);
+                    break;
+
+                case "5":
+                    DeleteCharacters();
                     break;
 
                 case "q" or null:
@@ -157,6 +162,7 @@ class Program
         {
             Console.WriteLine(String.Join("\n",
                 @"-----------------------",
+                $"ID: {c.Id}",
                 $"Name: {c.Name}",
                 $"HP: {c.Hp}",
                 $"EXP: {c.Exp}",
@@ -185,6 +191,43 @@ class Program
         foreach (MushroomMaster m in evolved)
         {
             Console.WriteLine($"{m.Name} has been transformed to {m.TransformTo}.");
+        }
+    }
+
+    // Option 5: Delete characters
+    private static void DeleteCharacters()
+    {
+        // Ask for pattern
+        Console.Write("Enter Character Name or ID [* for all]: ");
+        string? delPattern = Console.ReadLine();
+
+        if (String.IsNullOrWhiteSpace(delPattern))
+        {
+            Console.WriteLine("Character name or ID cannot be empty.");
+            return;
+        }
+
+        using (MushroomContext db = new MushroomContext())
+        {
+            List<Character> delList =
+                (delPattern! == "*")
+                    ? db.Characters.ToList()
+                    : db.Characters.Where((Character c) => c.Name.StartsWith(delPattern!) || c.Id.StartsWith(delPattern!)).ToList();
+
+            // Check if empty
+            if (delList.Count == 0)
+            {
+                Console.WriteLine("No character(s) found. Nothing to delete.");
+                return;
+            }
+
+            // Ask for confirmation
+            Console.Write($"Are you sure you want to delete {delList.Count} character(s)? [Y/N]: ");
+            if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+
+            db.RemoveRange(delList);
+            db.SaveChanges();
+            Console.WriteLine($"{delList.Count} character(s) have been deleted.");
         }
     }
 }
