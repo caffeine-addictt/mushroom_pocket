@@ -31,7 +31,7 @@ class Program
         {
             // Ask for action.
             Console.Write(String.Join("\n", [
-                @"******************************",
+                @"********************************",
                 @"Welcome to Mushroom Pocket App",
                 @"********************************",
                 @"(1). Add Mushroom's character to my pocket",
