@@ -155,4 +155,31 @@ public class Character
 
         return canEvolve;
     }
+
+    /// <summary>
+    /// Evolve Characters
+    /// </summary>
+    public static List<MushroomMaster> Evolve(List<MushroomMaster> evoList)
+    {
+        List<MushroomMaster> evolved = new List<MushroomMaster>();
+        using (MushroomContext db = new MushroomContext())
+        {
+            foreach (MushroomMaster m in evoList)
+            {
+                List<Character> charList = db.Characters.Where((Character c) => c.Name == m.Name).ToList();
+
+                int evoCount;
+                if (!CanBeEvolved(charList.Count, m.NoToTransform, out evoCount)) continue;
+
+                // Update DB
+                db.Characters.RemoveRange(charList.Take(m.NoToTransform * evoCount));
+                db.AddRange(Enumerable.Repeat(Character.From(m.TransformTo, 100, 0, false), evoCount));
+                db.SaveChanges();
+
+                evolved.AddRange(Enumerable.Repeat(m, evoCount));
+            }
+        }
+
+        return evolved;
+    }
 }

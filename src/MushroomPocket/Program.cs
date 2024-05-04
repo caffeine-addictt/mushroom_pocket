@@ -163,26 +163,10 @@ class Program
     private static void TransformCharacters(List<MushroomMaster> mushroomMasters)
     {
         // Transform character
-        List<MushroomMaster> evoList = Character.CanEvolve(mushroomMasters);
-
-        using (MushroomContext db = new MushroomContext())
+        List<MushroomMaster> evolved = Character.Evolve(mushroomMasters);
+        foreach (MushroomMaster m in evolved)
         {
-            foreach (MushroomMaster m in evoList)
-            {
-                string? errOut2;
-                Character? evoChar = Character.From(m.TransformTo, 100, 0, out errOut2, false);
-                if (errOut2 != null)
-                {
-                    Console.WriteLine("\n" + errOut2);
-                    break;
-                }
-
-                // Update DB
-                db.Characters.RemoveRange(db.Characters.Where((Character c) => c.Name == m.Name).Take(m.NoToTransform).ToList());
-                db.Characters.Add(evoChar!);
-                db.SaveChanges();
-                Console.WriteLine($"{m.Name} has been transformed to {m.TransformTo}.");
-            }
+            Console.WriteLine($"{m.Name} has been transformed to {m.TransformTo}.");
         }
     }
 }
