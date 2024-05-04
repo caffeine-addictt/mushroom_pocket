@@ -128,10 +128,16 @@ public class Character
         {
             foreach (MushroomMaster evo in evoList)
             {
-                if (db.Characters.Count((Character c) => c.Name == evo.Name) >= evo.NoToTransform)
-                {
-                    canEvolve.Add(evo);
-                }
+                // NoToTransform is 0 if the character can never be obtained
+                if (evo.NoToTransform == 0) continue;
+
+                int charCount = db.Characters.Where((Character c) => c.Name == evo.Name).Count();
+
+                // Count No. of times the character can be evolved
+                int evoCount = (int)Math.Floor((decimal)(charCount / evo.NoToTransform));
+                if (evoCount == 0) continue;
+
+                canEvolve.AddRange(Enumerable.Repeat(evo, evoCount));
             }
         }
 

@@ -180,10 +180,9 @@ class Program
                 // Update DB
                 db.Characters.RemoveRange(db.Characters.Where((Character c) => c.Name == m.Name).Take(m.NoToTransform).ToList());
                 db.Characters.Add(evoChar!);
+                db.SaveChanges();
                 Console.WriteLine($"{m.Name} has been transformed to {m.TransformTo}.");
             }
-
-            db.SaveChanges();
         }
     }
 }
