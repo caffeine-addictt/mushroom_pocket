@@ -182,6 +182,8 @@ class Program
                 db.Characters.Add(evoChar!);
                 Console.WriteLine($"{m.Name} has been transformed to {m.TransformTo}.");
             }
+
+            db.SaveChanges();
         }
     }
 }
