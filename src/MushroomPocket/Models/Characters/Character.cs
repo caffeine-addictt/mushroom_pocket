@@ -62,6 +62,21 @@ public class Character
         Exp = exp;
         Id = Guid.NewGuid().ToString();
     }
+    public Character(float hp, int exp, string name, string skill, bool evolvedOnly) : this(hp, exp)
+    {
+        Name = name;
+        Skill = skill;
+        EvolvedOnly = evolvedOnly;
+    }
+    public Character(float hp, int exp, List<Team> teams) : this(hp, exp)
+    {
+        Teams = teams;
+    }
+    public Character(float hp, int exp, string name, string skill, bool evolvedOnly, List<Team> teams) : this(hp, exp, name, skill, evolvedOnly)
+    {
+        Teams = teams;
+    }
+
 
     /// <summary>
     /// See if a string is a valid character name.
