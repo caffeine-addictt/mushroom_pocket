@@ -267,6 +267,10 @@ class Program
                 AddTeam();
                 break;
 
+            case "2":
+                AddCharacterToTeam();
+                break;
+
             default:
                 Console.WriteLine("\nInvalid action. Please only enter [1, 2, 3, 4] or Q to quit.");
                 break;
@@ -296,5 +300,67 @@ class Program
         }
 
         Console.WriteLine($"{teamName} has been added.");
+    }
+
+    // Option 6-2: Add character to team
+    private static void AddCharacterToTeam()
+    {
+        // Ask for pattern
+        Console.Write("Enter Character Name or ID [* for all]: ");
+        string namePattern = Console.ReadLine() ?? "";
+
+        if (String.IsNullOrWhiteSpace(namePattern))
+        {
+            Console.WriteLine("\nCharacter name or ID cannot be empty.");
+            return;
+        }
+
+        // Ask for team pattern
+        Console.Write("Enter Team Name or ID [* for all]: ");
+        string teamPattern = Console.ReadLine() ?? "";
+        if (String.IsNullOrWhiteSpace(teamPattern))
+        {
+            Console.WriteLine("\nTeam name or ID cannot be empty.");
+            return;
+        }
+
+        using (MushroomContext db = new MushroomContext())
+        {
+            List<Character> charList =
+                namePattern == "*"
+                ? db.Characters.ToList()
+                : db.Characters.Where((Character c) => c.Name.StartsWith(namePattern) || c.Id.StartsWith(namePattern)).ToList();
+
+            List<Team> teamList =
+                teamPattern == "*"
+                ? db.Teams.ToList()
+                : db.Teams.Where((Team t) => t.Name.StartsWith(teamPattern) || t.Id.StartsWith(teamPattern)).ToList();
+
+            // Check if empty
+            if (charList.Count == 0)
+            {
+                Console.WriteLine("\nNo character(s) found. Nothing to add to team.");
+                return;
+            }
+            if (teamList.Count == 0)
+            {
+                Console.WriteLine("\nNo team(s) found. Nothing to add to team.");
+                return;
+            }
+
+            // Confirmation
+            Console.Write($"Are you sure you want to add {charList.Count} character(s) to {teamList.Count} team(s)? [Y/N]: ");
+            if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+
+            // Add
+            foreach (Team t in teamList)
+            {
+                t.AddCharacterRange(charList);
+                db.Add(t);
+            }
+
+            db.SaveChanges();
+            Console.WriteLine($"{charList.Count} character(s) have been added to {teamList.Count} team(s).");
+        }
     }
 }
