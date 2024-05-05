@@ -47,8 +47,8 @@ public class Character
 
     public int Exp { get; set; }
     public float Hp { get; set; }
-    public string Name { get; set; } = "";
-    public string Skill { get; set; } = "";
+    public string Name { get; set; } = null!;
+    public string Skill { get; set; } = null!;
     public bool EvolvedOnly { get; set; } = true;
 
     /// <summary>
