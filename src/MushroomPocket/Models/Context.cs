@@ -17,7 +17,7 @@ public class MushroomContext : DbContext
         modelBuilder.Entity<Team>()
             .HasMany(t => t.Characters)
             .WithMany(c => c.Teams)
-            .UsingEntity(j => j.ToTable("CharacterTeams"));
+            .UsingEntity(j => j.ToTable("TeamCharacters"));
     }
 }
 

@@ -10,7 +10,8 @@ public class Team
 
     public string Name { get; set; }
     public string Description { get; set; }
-    public List<Character> Characters { get; set; }
+
+    public virtual List<Character> Characters { get; set; }
 
     public Team(string name, string description)
     {

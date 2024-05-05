@@ -1,5 +1,6 @@
 using MushroomPocket.Utils;
 using MushroomPocket.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace MushroomPocket;
 
@@ -344,8 +345,8 @@ class Program
 
             List<Team> teamList =
                 teamPattern == "*"
-                ? db.Teams.ToList()
-                : db.Teams.Where((Team t) => t.Name.StartsWith(teamPattern) || t.Id.StartsWith(teamPattern)).ToList();
+                ? db.Teams.Include(t => t.Characters).ToList()
+                : db.Teams.Include(t => t.Characters).Where((Team t) => t.Name.StartsWith(teamPattern) || t.Id.StartsWith(teamPattern)).ToList();
 
             // Check if empty
             if (charList.Count == 0)
@@ -367,7 +368,7 @@ class Program
             foreach (Team t in teamList)
             {
                 t.AddCharacterRange(charList);
-                db.Add(t);
+                Console.WriteLine(t.Characters.Count);
             }
 
             db.SaveChanges();
@@ -382,8 +383,10 @@ class Program
         List<Team> sorted;
         using (MushroomContext db = new MushroomContext())
         {
-            sorted = db.Teams.OrderByDescending((Team t) => t.Characters).ToList();
+            sorted = db.Teams.Include(t => t.Characters).ToList();
+            Console.WriteLine(sorted[0].Characters);
         }
+        sorted.Sort((Team t1, Team t2) => t2.Characters.Count.CompareTo(t1.Characters.Count));
 
         foreach (Team t in sorted)
         {
@@ -422,7 +425,7 @@ class Program
             }
 
             // Stdout characters
-            List<Character> charList = db.Teams.Where((Team t) => t.Name == topSuggestion.QualifiedText).First()!.Characters.ToList();
+            List<Character> charList = db.Teams.Include(t => t.Characters).Where((Team t) => t.Name == topSuggestion.QualifiedText).First()!.Characters.ToList();
             charList.Sort((Character c1, Character c2) => c2.Hp.CompareTo(c1.Hp));
 
             foreach (Character c in charList)

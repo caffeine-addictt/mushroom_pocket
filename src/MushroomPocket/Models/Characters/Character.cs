@@ -38,7 +38,7 @@ public class Character
     public string Skill { get; set; } = null!;
     public bool EvolvedOnly { get; set; } = true;
 
-    public List<Team> Teams { get; set; } = new List<Team>();
+    public virtual List<Team> Teams { get; set; } = null!;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Character"/> class.
