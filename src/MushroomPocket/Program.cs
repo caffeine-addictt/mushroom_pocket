@@ -263,9 +263,38 @@ class Program
 
         switch (action.ToLower())
         {
+            case "1":
+                AddTeam();
+                break;
+
             default:
                 Console.WriteLine("\nInvalid action. Please only enter [1, 2, 3, 4] or Q to quit.");
                 break;
         }
+    }
+
+    // Option 6-1: Add new team
+    private static void AddTeam()
+    {
+        // Name
+        Console.Write("Enter new team name: ");
+        string teamName = (Console.ReadLine() ?? "").Trim();
+        if (String.IsNullOrWhiteSpace(teamName))
+        {
+            Console.WriteLine("\nTeam name cannot be empty.");
+            return;
+        }
+
+        // Desc
+        Console.Write("Enter a team description: ");
+        string teamDesc = (Console.ReadLine() ?? "").Trim();
+
+        using (MushroomContext db = new MushroomContext())
+        {
+            db.Teams.Add(new Team(teamName, teamDesc));
+            db.SaveChanges();
+        }
+
+        Console.WriteLine($"{teamName} has been added.");
     }
 }
