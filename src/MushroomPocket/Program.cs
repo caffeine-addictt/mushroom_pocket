@@ -271,6 +271,10 @@ class Program
                 AddCharacterToTeam();
                 break;
 
+            case "3":
+                ListTeams();
+                break;
+
             default:
                 Console.WriteLine("\nInvalid action. Please only enter [1, 2, 3, 4] or Q to quit.");
                 break;
@@ -361,6 +365,29 @@ class Program
 
             db.SaveChanges();
             Console.WriteLine($"{charList.Count} character(s) have been added to {teamList.Count} team(s).");
+        }
+    }
+
+    // Option 6-3: List team(s)
+    private static void ListTeams()
+    {
+        // Sort descending
+        List<Team> sorted;
+        using (MushroomContext db = new MushroomContext())
+        {
+            sorted = db.Teams.OrderByDescending((Team t) => t.Characters).ToList();
+        }
+
+        foreach (Team t in sorted)
+        {
+            Console.WriteLine(String.Join("\n",
+                @"-----------------------",
+                $"ID: {t.Id}",
+                $"Name: {t.Name}",
+                $"Description: {t.Description}",
+                $"Character(s): {t.Characters.Count}",
+                @"-----------------------"
+            ));
         }
     }
 }
