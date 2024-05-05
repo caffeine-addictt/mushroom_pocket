@@ -278,6 +278,10 @@ class Program
                 ListCharactersInTeam();
                 break;
 
+            case "5":
+                DeleteTeams();
+                break;
+
             default:
                 Console.WriteLine("\nInvalid action. Please only enter [1, 2, 3, 4] or Q to quit.");
                 break;
@@ -433,6 +437,43 @@ class Program
                     @"-----------------------"
                 ]));
             }
+        }
+    }
+
+    // Option 6-5: Delete team(s)
+    private static void DeleteTeams()
+    {
+        // Ask for pattern
+        Console.Write("Enter Team Name or ID [* for all]: ");
+        string? delPattern = Console.ReadLine();
+
+        if (String.IsNullOrWhiteSpace(delPattern))
+        {
+            Console.WriteLine("\nTeam name or ID cannot be empty.");
+            return;
+        }
+
+        using (MushroomContext db = new MushroomContext())
+        {
+            List<Team> delList =
+                (delPattern! == "*")
+                    ? db.Teams.ToList()
+                    : db.Teams.Where((Team t) => t.Name.StartsWith(delPattern!) || t.Id.StartsWith(delPattern!)).ToList();
+
+            // Check if empty
+            if (delList.Count == 0)
+            {
+                Console.WriteLine("\nNo team(s) found. Nothing to delete.");
+                return;
+            }
+
+            // Ask for confirmation
+            Console.Write($"Are you sure you want to delete {delList.Count} team(s)? [Y/N]: ");
+            if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+
+            db.RemoveRange(delList);
+            db.SaveChanges();
+            Console.WriteLine($"{delList.Count} team(s) have been deleted.");
         }
     }
 }
