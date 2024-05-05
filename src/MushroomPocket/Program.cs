@@ -274,6 +274,10 @@ class Program
                 ListTeams();
                 break;
 
+            case "4":
+                ListCharactersInTeam();
+                break;
+
             default:
                 Console.WriteLine("\nInvalid action. Please only enter [1, 2, 3, 4] or Q to quit.");
                 break;
@@ -387,6 +391,48 @@ class Program
                 $"Character(s): {t.Characters.Count}",
                 @"-----------------------"
             ));
+        }
+    }
+
+    // Option 6-4: List character(s) in team
+    private static void ListCharactersInTeam()
+    {
+        // Ask for pattern
+        Console.Write("Enter Team Name or ID: ");
+        string teamPattern = Console.ReadLine() ?? "";
+
+        using (MushroomContext db = new MushroomContext())
+        {
+            Similarity topSuggestion;
+            if (!StringUtils.SmartLookUp(teamPattern, db.Teams.Select((Team t) => t.Name).ToList(), out topSuggestion!))
+            {
+                Console.WriteLine("\nTeam name or ID not found.");
+                return;
+            }
+
+            // Confirmation if not the same
+            if (StringUtils.Clean(teamPattern, true) != StringUtils.Clean(topSuggestion.QualifiedText, true))
+            {
+                Console.Write($"Are you sure you want to list character(s) in team {topSuggestion.QualifiedText}? [Y/N]: ");
+                if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+            }
+
+            // Stdout characters
+            List<Character> charList = db.Teams.Where((Team t) => t.Name == topSuggestion.QualifiedText).First()!.Characters.ToList();
+            charList.Sort((Character c1, Character c2) => c2.Hp.CompareTo(c1.Hp));
+
+            foreach (Character c in charList)
+            {
+                Console.WriteLine(String.Join("\n", [
+                    @"-----------------------",
+                    $"ID: {c.Id}",
+                    $"Name: {c.Name}",
+                    $"HP: {c.Hp}",
+                    $"EXP: {c.Exp}",
+                    $"Skill: {c.Skill}",
+                    @"-----------------------"
+                ]));
+            }
         }
     }
 }
