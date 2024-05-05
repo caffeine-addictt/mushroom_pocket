@@ -59,9 +59,8 @@ class Program
                 @"(5). Delete character(s) from my pocket",
                 @"Please only enter [1, 2, 3, 4, 5] or Q to quit: "
             ]));
-            string? action = Console.ReadLine();
 
-            switch (action == null ? action : action.ToLower())
+            switch ((Console.ReadLine() ?? "").ToLower())
             {
                 case "1":
                     AddCharacter();
@@ -83,7 +82,7 @@ class Program
                     DeleteCharacters();
                     break;
 
-                case "q" or null:
+                case "q":
                     Console.WriteLine("Thanks for playing. Good bye!");
                     Environment.Exit(0);
                     break;
