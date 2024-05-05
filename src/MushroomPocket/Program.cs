@@ -118,7 +118,6 @@ class Program
             return;
         }
 
-        string charName = topSuggestion.QualifiedText;
         if (topSuggestion.QualifiedText.ToLower() != topSuggestion.OriginalText.ToLower())
         {
             Console.Write($"\nDid you mean '{topSuggestion.QualifiedText}'? ({topSuggestion.ScoreToString()}%) [Y/N]: ");
@@ -145,7 +144,7 @@ class Program
 
         // Add char
         string? errOut;
-        Character? newChar = Character.From(charName, charHP, charEXP, out errOut);
+        Character? newChar = Character.From(topSuggestion.QualifiedText, charHP, charEXP, out errOut);
         if (errOut != null)
         {
             Console.WriteLine("\n" + errOut);
@@ -157,7 +156,7 @@ class Program
             db.Characters.Add(newChar!);
             db.SaveChanges();
         }
-        Console.WriteLine($"{charName} has been added.");
+        Console.WriteLine($"{topSuggestion.QualifiedText} has been added.");
         return;
     }
 
