@@ -1,3 +1,4 @@
+using MushroomPocket.Utils;
 using MushroomPocket.Models;
 
 namespace MushroomPocket;
@@ -108,20 +109,20 @@ class Program
     {
         // Name
         Console.Write("Enter Character's Name: ");
-        List<NameSimilarity> suggestions;
-        string charName = Console.ReadLine() ?? "";
+        Similarity? topSuggestion;
+        List<string> possibleNames = new List<string>() { "Daisy", "Wario", "Waluigi" };
 
-        if (!Character.TryParseName(charName, new List<string>() { "Daisy", "Wario", "Waluigi" }, out suggestions))
+        if (!StringUtils.SmartLookUp(Console.ReadLine() ?? "", possibleNames, out topSuggestion) || topSuggestion == null)
         {
             Console.WriteLine("\nInvalid character name. Please only enter ['Daisy', 'Wario', 'Waluigi'].");
             return;
         }
 
-        if (suggestions[0].Name.ToLower() != charName.ToLower())
+        string charName = topSuggestion.QualifiedText;
+        if (topSuggestion.QualifiedText.ToLower() != topSuggestion.OriginalText.ToLower())
         {
-            Console.Write($"\nDid you mean '{suggestions[0].Name}'? ({(decimal)(suggestions[0].Confidence * 100)}%) [Y/N]: ");
+            Console.Write($"\nDid you mean '{topSuggestion.QualifiedText}'? ({topSuggestion.ScoreToString()}%) [Y/N]: ");
             if ((Console.ReadLine() ?? "").ToLower() != "y") return;
-            charName = suggestions[0].Name;
         }
 
         // HP
@@ -144,7 +145,7 @@ class Program
 
         // Add char
         string? errOut;
-        Character? newChar = Character.From(charName!, charHP, charEXP, out errOut);
+        Character? newChar = Character.From(charName, charHP, charEXP, out errOut);
         if (errOut != null)
         {
             Console.WriteLine("\n" + errOut);
