@@ -57,7 +57,8 @@ class Program
                 @"(3). Check if I can transform my characters",
                 @"(4). Transform my character(s)",
                 @"(5). Delete character(s) from my pocket",
-                @"Please only enter [1, 2, 3, 4, 5] or Q to quit: "
+                @"(6). Manage my teams",
+                @"Please only enter [1, 2, 3, 4, 5, 6] or Q to quit: "
             ]));
 
             switch ((Console.ReadLine() ?? "").ToLower())
@@ -80,6 +81,10 @@ class Program
 
                 case "5":
                     DeleteCharacters();
+                    break;
+
+                case "6":
+                    ManageTeams();
                     break;
 
                 case "q":
@@ -235,6 +240,31 @@ class Program
             db.RemoveRange(delList);
             db.SaveChanges();
             Console.WriteLine($"{delList.Count} character(s) have been deleted.");
+        }
+    }
+
+    // Option 6: Manage teams
+    private static void ManageTeams()
+    {
+        // Ask for action.
+        Console.Write(String.Join("\n", [
+            @"********************************",
+            @"Managing Mushroom Teams",
+            @"********************************",
+            @"(1). Add a new team to my pocket",
+            @"(2). Add Mushroom's character to a team",
+            @"(3). List team(s) in my pocket",
+            @"(4). List character(s) in a team",
+            @"(5). Delete team(s) from my pocket",
+            @"Please only enter [1, 2, 3, 4, 5]: "
+        ]));
+        string action = Console.ReadLine() ?? "";
+
+        switch (action.ToLower())
+        {
+            default:
+                Console.WriteLine("\nInvalid action. Please only enter [1, 2, 3, 4] or Q to quit.");
+                break;
         }
     }
 }
