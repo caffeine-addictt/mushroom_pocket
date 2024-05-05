@@ -215,7 +215,7 @@ class Program
 
         if (String.IsNullOrWhiteSpace(delPattern))
         {
-            Console.WriteLine("Character name or ID cannot be empty.");
+            Console.WriteLine("\nCharacter name or ID cannot be empty.");
             return;
         }
 
@@ -229,7 +229,7 @@ class Program
             // Check if empty
             if (delList.Count == 0)
             {
-                Console.WriteLine("No character(s) found. Nothing to delete.");
+                Console.WriteLine("\nNo character(s) found. Nothing to delete.");
                 return;
             }
 
