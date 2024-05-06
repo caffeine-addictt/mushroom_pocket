@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using MushroomPocket.Utils;
 
 namespace MushroomPocket.Models;
 
@@ -9,7 +10,7 @@ public class MushroomContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
-        options.UseSqlite(@"Data Source=mushroom.db");
+        options.UseSqlite($"Data Source={SaveUtils.CurrentDbName}");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
