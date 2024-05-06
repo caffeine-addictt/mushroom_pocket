@@ -5,7 +5,7 @@ public class Waluigi : Character
     public Waluigi(float hp, int exp) : base(hp, exp)
     {
         Name = "Waluigi";
-        Skill = "Waluigi";
+        Skill = "Agility";
         EvolvedOnly = false;
     }
 }

@@ -34,9 +34,11 @@ public class Character
 
     public int Exp { get; set; }
     public float Hp { get; set; }
-    public string Name { get; set; } = "";
-    public string Skill { get; set; } = "";
+    public string Name { get; set; } = null!;
+    public string Skill { get; set; } = null!;
     public bool EvolvedOnly { get; set; } = true;
+
+    public virtual HashSet<Team> Teams { get; set; } = null!;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Character"/> class.
@@ -47,6 +49,21 @@ public class Character
         Exp = exp;
         Id = Guid.NewGuid().ToString();
     }
+    public Character(float hp, int exp, string name, string skill, bool evolvedOnly) : this(hp, exp)
+    {
+        Name = name;
+        Skill = skill;
+        EvolvedOnly = evolvedOnly;
+    }
+    public Character(float hp, int exp, HashSet<Team> teams) : this(hp, exp)
+    {
+        Teams = teams;
+    }
+    public Character(float hp, int exp, string name, string skill, bool evolvedOnly, HashSet<Team> teams) : this(hp, exp, name, skill, evolvedOnly)
+    {
+        Teams = teams;
+    }
+
 
     /// <summary>
     /// See if a string is a valid character name.
@@ -119,6 +136,23 @@ public class Character
     }
 
     /// <summary>
+    /// See number of times character can be evolved
+    ///
+    /// </summary>
+    public static int TimesEvolvable(int charCount, int noToTransform)
+        => noToTransform == 0 ? 0 : (int)Math.Floor((decimal)(charCount / noToTransform));
+
+    /// <summary>
+    /// See if character can be evolved
+    /// noToTransform is 0 if the character can never be obtained
+    /// </summary>
+    public static bool CanBeEvolved(int charCount, int noToTransform, out int evoCount)
+    {
+        evoCount = TimesEvolvable(charCount, noToTransform);
+        return evoCount != 0;
+    }
+
+    /// <summary>
     /// Check if character can evolve
     /// </summary>
     public static List<MushroomMaster> CanEvolve(List<MushroomMaster> evoList)
@@ -128,13 +162,41 @@ public class Character
         {
             foreach (MushroomMaster evo in evoList)
             {
-                if (db.Characters.Count((Character c) => c.Name == evo.Name) >= evo.NoToTransform)
-                {
-                    canEvolve.Add(evo);
-                }
+                int charCount = db.Characters.Where((Character c) => c.Name == evo.Name).Count();
+
+                int evoCount;
+                if (!CanBeEvolved(charCount, evo.NoToTransform, out evoCount)) continue;
+                canEvolve.AddRange(Enumerable.Repeat(evo, evoCount));
             }
         }
 
         return canEvolve;
+    }
+
+    /// <summary>
+    /// Evolve Characters
+    /// </summary>
+    public static List<MushroomMaster> Evolve(List<MushroomMaster> evoList)
+    {
+        List<MushroomMaster> evolved = new List<MushroomMaster>();
+        using (MushroomContext db = new MushroomContext())
+        {
+            foreach (MushroomMaster m in evoList)
+            {
+                List<Character> charList = db.Characters.Where((Character c) => c.Name == m.Name).ToList();
+
+                int evoCount;
+                if (!CanBeEvolved(charList.Count, m.NoToTransform, out evoCount)) continue;
+
+                // Update DB
+                db.Characters.RemoveRange(charList.Take(m.NoToTransform * evoCount));
+                db.AddRange(Enumerable.Repeat(Character.From(m.TransformTo, 100, 0, false), evoCount));
+                db.SaveChanges();
+
+                evolved.AddRange(Enumerable.Repeat(m, evoCount));
+            }
+        }
+
+        return evolved;
     }
 }
