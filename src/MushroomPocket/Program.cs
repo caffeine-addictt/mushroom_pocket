@@ -15,6 +15,9 @@ class Program
             Environment.Exit(1);
         }
 
+        // Ensure Save Dir
+        SaveUtils.EnsureSaveDir();
+
         // Ensure DB exists
         using (MushroomContext db = new MushroomContext())
         {
@@ -60,7 +63,8 @@ class Program
                 @"(4). Transform my character(s)",
                 @"(5). Delete character(s) from my pocket",
                 @"(6). Manage my teams",
-                @"Please only enter [1, 2, 3, 4, 5, 6] or Q to quit: "
+                @"(7). Manage my saves",
+                @"Please only enter [1, 2, 3, 4, 5, 6, 7] or Q to quit: "
             ]));
 
             switch ((Console.ReadLine() ?? "").ToLower())
@@ -87,6 +91,10 @@ class Program
 
                 case "6":
                     ManageTeams();
+                    break;
+
+                case "7":
+                    ManageSaves();
                     break;
 
                 case "q":
@@ -497,6 +505,29 @@ class Program
             db.RemoveRange(delList);
             db.SaveChanges();
             Console.WriteLine($"{delList.Count} team(s) have been deleted.");
+        }
+    }
+
+    // Option 7: Manage saves
+    private static void ManageSaves()
+    {
+        Console.Write(String.Join("\n", [
+            @"",
+            @"(1). Save progress",
+            @"(2). Load progress",
+            @"(3). List saves",
+            @"(4). Delete save(s)",
+            @"Please only enter [1, 2, 3, 4] or b to go back: ",
+        ]));
+
+        switch ((Console.ReadLine() ?? "").ToLower())
+        {
+            case "b":
+                return;
+
+            default:
+                Console.WriteLine("\nInvalid input. Please only enter [1, 2, 3, 4] or b to go back.");
+                break;
         }
     }
 }
