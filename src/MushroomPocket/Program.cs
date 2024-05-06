@@ -526,6 +526,10 @@ class Program
                 SaveProgress();
                 break;
 
+            case "2":
+                LoadProgress();
+                break;
+
             case "b":
                 return;
 
@@ -550,5 +554,30 @@ class Program
 
         SaveUtils.CreateSaveFile(saveName);
         Console.WriteLine($"Save {saveName} has been created.");
+    }
+
+    // Option 7-2: Load progress
+    private static void LoadProgress()
+    {
+        // Get name
+        Console.Write("Enter save name: ");
+        string saveName = (Console.ReadLine() ?? "").Trim();
+
+        Similarity topSuggestion;
+        if (!StringUtils.SmartLookUp(saveName, SaveUtils.GetSaveNames(), out topSuggestion!))
+        {
+            Console.WriteLine("\nSave name not found.");
+            return;
+        }
+
+        if (StringUtils.Clean(saveName, true) != StringUtils.Clean(topSuggestion.QualifiedText, true))
+        {
+            Console.Write($"\nDid you mean {topSuggestion.QualifiedText}? [Y/N]: ");
+            if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+        }
+
+        SaveUtils.UseSafeFile(SaveUtils.GetFilePathFromName(topSuggestion.QualifiedText));
+        Console.WriteLine($"Save file {saveName} has been loaded, please restart the program to see the changes.");
+        Environment.Exit(0); // Exit because replacing db is not supported by EF8 :"D
     }
 }
