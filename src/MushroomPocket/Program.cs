@@ -255,7 +255,7 @@ class Program
             @"(3). List team(s) in my pocket",
             @"(4). List character(s) in a team",
             @"(5). Delete team(s) from my pocket",
-            @"Please only enter [1, 2, 3, 4, 5]: "
+            @"Please only enter [1, 2, 3, 4, 5] or b to go back: "
         ]));
         string action = Console.ReadLine() ?? "";
 
@@ -279,6 +279,9 @@ class Program
 
             case "5":
                 DeleteTeams();
+                break;
+
+            case "b":
                 break;
 
             default:
