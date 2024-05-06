@@ -38,7 +38,7 @@ public class Character
     public string Skill { get; set; } = null!;
     public bool EvolvedOnly { get; set; } = true;
 
-    public virtual List<Team> Teams { get; set; } = null!;
+    public virtual HashSet<Team> Teams { get; set; } = null!;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Character"/> class.
@@ -55,11 +55,11 @@ public class Character
         Skill = skill;
         EvolvedOnly = evolvedOnly;
     }
-    public Character(float hp, int exp, List<Team> teams) : this(hp, exp)
+    public Character(float hp, int exp, HashSet<Team> teams) : this(hp, exp)
     {
         Teams = teams;
     }
-    public Character(float hp, int exp, string name, string skill, bool evolvedOnly, List<Team> teams) : this(hp, exp, name, skill, evolvedOnly)
+    public Character(float hp, int exp, string name, string skill, bool evolvedOnly, HashSet<Team> teams) : this(hp, exp, name, skill, evolvedOnly)
     {
         Teams = teams;
     }

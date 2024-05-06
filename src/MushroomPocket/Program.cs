@@ -343,10 +343,10 @@ class Program
                 ? db.Characters.ToList()
                 : db.Characters.Where((Character c) => c.Name.StartsWith(namePattern) || c.Id.StartsWith(namePattern)).ToList();
 
-            List<Team> teamList =
+            HashSet<Team> teamList =
                 teamPattern == "*"
-                ? db.Teams.Include(t => t.Characters).ToList()
-                : db.Teams.Include(t => t.Characters).Where((Team t) => t.Name.StartsWith(teamPattern) || t.Id.StartsWith(teamPattern)).ToList();
+                ? db.Teams.Include(t => t.Characters).ToHashSet()
+                : db.Teams.Include(t => t.Characters).Where((Team t) => t.Name.StartsWith(teamPattern) || t.Id.StartsWith(teamPattern)).ToHashSet();
 
             // Check if empty
             if (charList.Count == 0)
