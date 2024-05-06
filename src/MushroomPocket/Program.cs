@@ -534,6 +534,10 @@ class Program
                 ListSaves();
                 break;
 
+            case "4":
+                DeleteSaves();
+                break;
+
             case "b":
                 return;
 
@@ -589,5 +593,40 @@ class Program
     private static void ListSaves()
     {
         Console.WriteLine(String.Join("\n", SaveUtils.GetSaveNames()));
+    }
+
+    // Option 7-4: Delete save(s)
+    private static void DeleteSaves()
+    {
+        // Get name
+        Console.Write("Enter save name [* for all]: ");
+        string delPattern = (Console.ReadLine() ?? "").Trim();
+
+        if (String.IsNullOrWhiteSpace(delPattern))
+        {
+            Console.WriteLine("\nSave name cannot be empty.");
+            return;
+        }
+
+        if (delPattern == "*")
+        {
+            SaveUtils.DeleteSaveFiles(SaveUtils.ListSaveFiles());
+            Console.WriteLine("All save files have been deleted.");
+            return;
+        }
+
+        string[] saveFiles = SaveUtils.ListSaveFiles().Where(s => s.ToLower().StartsWith(delPattern.ToLower())).ToArray();
+        if (saveFiles.Length == 0)
+        {
+            Console.WriteLine("\nNo save file(s) found. Nothing to delete.");
+            return;
+        }
+
+        // Check for confirmation
+        Console.Write($"Are you sure you want to delete {saveFiles.Length} save file(s)? [Y/N]: ");
+        if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+
+        SaveUtils.DeleteSaveFiles(saveFiles);
+        Console.WriteLine($"{saveFiles.Length} save file(s) have been deleted.");
     }
 }
