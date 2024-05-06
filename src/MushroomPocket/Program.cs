@@ -375,7 +375,6 @@ class Program
                 }
 
                 t.AddCharacterRange(charList);
-                Console.WriteLine(t.Characters.Count);
             }
 
             db.SaveChanges();
