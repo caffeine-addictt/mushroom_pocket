@@ -249,9 +249,7 @@ class Program
     {
         // Ask for action.
         Console.Write(String.Join("\n", [
-            @"********************************",
-            @"Managing Mushroom Teams",
-            @"********************************",
+            @"",
             @"(1). Add a new team to my pocket",
             @"(2). Add Mushroom's character to a team",
             @"(3). List team(s) in my pocket",
