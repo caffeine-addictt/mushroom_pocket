@@ -365,6 +365,7 @@ class Program
             if ((Console.ReadLine() ?? "").ToLower() != "y") return;
 
             // Add
+            bool hasChange = false;
             foreach (Team t in teamList)
             {
                 if (t.Characters.Intersect(t.Characters).Count() > 0)
@@ -374,7 +375,14 @@ class Program
                     return;
                 }
 
+                hasChange = true;
                 t.AddCharacterRange(charList);
+            }
+
+            if (!hasChange)
+            {
+                Console.WriteLine($"\nCharacter(s) {String.Join(", ", charList)} already exist in team(s).");
+                return;
             }
 
             db.SaveChanges();
