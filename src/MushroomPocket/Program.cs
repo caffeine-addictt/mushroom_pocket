@@ -522,6 +522,10 @@ class Program
 
         switch ((Console.ReadLine() ?? "").ToLower())
         {
+            case "1":
+                SaveProgress();
+                break;
+
             case "b":
                 return;
 
@@ -529,5 +533,22 @@ class Program
                 Console.WriteLine("\nInvalid input. Please only enter [1, 2, 3, 4] or b to go back.");
                 break;
         }
+    }
+
+    // Option 7-1: Save progress
+    private static void SaveProgress()
+    {
+        // Get name
+        Console.Write("Enter save name: ");
+        string saveName = Console.ReadLine() ?? "";
+
+        if (String.IsNullOrWhiteSpace(saveName))
+        {
+            Console.WriteLine("\nSave name cannot be empty.");
+            return;
+        }
+
+        SaveUtils.CreateSaveFile(saveName);
+        Console.WriteLine($"Save {saveName} has been created.");
     }
 }
