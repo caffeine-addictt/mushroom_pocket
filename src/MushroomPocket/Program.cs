@@ -307,6 +307,11 @@ class Program
 
         using (MushroomContext db = new MushroomContext())
         {
+            if (db.Teams.Where((Team t) => t.Name == teamName).Count() > 0)
+            {
+                Console.WriteLine("\nTeam name already exists.");
+                return;
+            }
             db.Teams.Add(new Team(teamName, teamDesc));
             db.SaveChanges();
         }
