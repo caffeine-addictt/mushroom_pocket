@@ -367,6 +367,13 @@ class Program
             // Add
             foreach (Team t in teamList)
             {
+                if (t.Characters.Intersect(t.Characters).Count() > 0)
+                {
+                    if (teamPattern == "*") continue;
+                    Console.WriteLine($"\nTeam {t.Name} already has the character(s) {String.Join(", ", t.Characters)}.");
+                    return;
+                }
+
                 t.AddCharacterRange(charList);
                 Console.WriteLine(t.Characters.Count);
             }
