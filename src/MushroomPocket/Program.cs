@@ -284,7 +284,7 @@ class Program
                 break;
 
             default:
-                Console.WriteLine("\nInvalid action. Please only enter [1, 2, 3, 4] or Q to quit.");
+                Console.WriteLine("\nInvalid action. Please only enter [1, 2, 3, 4, 5] or Q to quit.");
                 break;
         }
     }
