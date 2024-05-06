@@ -51,7 +51,7 @@ public static class StringUtils
     ///
     /// <paramref name="results"/> length is 0 if no match was found, meaning it returns false.
     /// </summary>
-    public static bool SmartLookUp(string input, List<string> possibleMatches, out List<Similarity> results)
+    public static bool SmartLookUp(string input, IEnumerable<string> possibleMatches, out List<Similarity> results)
     {
         // Only include matches that are at least 30% of the length of the input
         float acceptThreshold = 0.3f;
@@ -163,14 +163,14 @@ public static class StringUtils
     /// Does the same but only cares if there is a possible match.
     /// <see cref="SmartLookUp"/>
     /// </summary>
-    public static bool SmartLookUp(string input, List<string> possibleMatches)
+    public static bool SmartLookUp(string input, IEnumerable<string> possibleMatches)
         => SmartLookUp(input, possibleMatches, out List<Similarity> _);
 
     /// <summary>
     /// Does the same with the closest match.
     /// <see cref="SmartLookUp"/>
     /// </summary>
-    public static bool SmartLookUp(string input, List<string> possibleMatches, out Similarity? closestMatch)
+    public static bool SmartLookUp(string input, IEnumerable<string> possibleMatches, out Similarity? closestMatch)
     {
         List<Similarity> results;
         bool hasMatch = SmartLookUp(input, possibleMatches, out results);
