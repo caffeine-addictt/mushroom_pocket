@@ -437,7 +437,7 @@ class Program
             // Confirmation if not the same
             if (StringUtils.Clean(teamPattern, true) != StringUtils.Clean(topSuggestion.QualifiedText, true))
             {
-                Console.Write($"Are you sure you want to list character(s) in team {topSuggestion.QualifiedText}? [Y/N]: ");
+                Console.Write($"\nDid you mean {topSuggestion.QualifiedText}? [Y/N]: ");
                 if ((Console.ReadLine() ?? "").ToLower() != "y") return;
             }
 
