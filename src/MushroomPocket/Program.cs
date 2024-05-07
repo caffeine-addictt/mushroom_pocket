@@ -484,7 +484,6 @@ class Program
         using (MushroomContext db = new MushroomContext())
         {
             sorted = db.Teams.Include(t => t.Characters).ToList();
-            Console.WriteLine(sorted[0].Characters);
         }
         sorted.Sort((Team t1, Team t2) => t2.Characters.Count.CompareTo(t1.Characters.Count));
 
