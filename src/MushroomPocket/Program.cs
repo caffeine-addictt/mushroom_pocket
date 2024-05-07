@@ -1,9 +1,8 @@
-using MushroomPocket.Utils;
-using MushroomPocket.Models;
 using Microsoft.EntityFrameworkCore;
+using MushroomPocket.Models;
+using MushroomPocket.Utils;
 
 namespace MushroomPocket;
-
 
 class Program
 {
@@ -25,7 +24,8 @@ class Program
         }
 
         // MushroomMaster criteria list for checking character transformation availability.
-        List<MushroomMaster> mushroomMasters = new List<MushroomMaster>(){
+        List<MushroomMaster> mushroomMasters = new List<MushroomMaster>()
+        {
             new MushroomMaster("Daisy", 2, "Peach"),
             new MushroomMaster("Wario", 3, "Mario"),
             new MushroomMaster("Waluigi", 1, "Luigi"),
@@ -36,16 +36,26 @@ class Program
         foreach (MushroomMaster m in mushroomMasters)
         {
             if (!Character.IsValidName(m.Name))
-                violations.Add($"Attribute name {m.Name} in new MushroomMaster(\"{m.Name}\", \"{m.NoToTransform}\", \"{m.TransformTo}\") is invalid.");
+                violations.Add(
+                    $"Attribute name {m.Name} in new MushroomMaster(\"{m.Name}\", \"{m.NoToTransform}\", \"{m.TransformTo}\") is invalid."
+                );
             if (!Character.IsValidName(m.TransformTo))
-                violations.Add($"Attribute transformTo {m.TransformTo} in new MushroomMaster(\"{m.Name}\", \"{m.NoToTransform}\", \"{m.TransformTo}\") is invalid.");
+                violations.Add(
+                    $"Attribute transformTo {m.TransformTo} in new MushroomMaster(\"{m.Name}\", \"{m.NoToTransform}\", \"{m.TransformTo}\") is invalid."
+                );
         }
 
         if (violations.Count > 0)
         {
-            Console.WriteLine(String.Join("\n", new List<string>() {
-                "Validating mushroomMasters failed. Please fix the following errors:",
-            }.Concat(violations)));
+            Console.WriteLine(
+                String.Join(
+                    "\n",
+                    new List<string>()
+                    {
+                        "Validating mushroomMasters failed. Please fix the following errors:",
+                    }.Concat(violations)
+                )
+            );
             Environment.Exit(1);
         }
 
@@ -53,19 +63,24 @@ class Program
         while (true)
         {
             // Ask for action.
-            Console.Write(String.Join("\n", [
-                @"********************************",
-                @"Welcome to Mushroom Pocket App",
-                @"********************************",
-                @"(1). Add Mushroom's character to my pocket",
-                @"(2). List character(s) in my pocket",
-                @"(3). Check if I can transform my characters",
-                @"(4). Transform my character(s)",
-                @"(5). Delete character(s) from my pocket",
-                @"(6). Manage my teams",
-                @"(7). Manage my saves",
-                @"Please only enter [1, 2, 3, 4, 5, 6, 7] or Q to quit: "
-            ]));
+            Console.Write(
+                String.Join(
+                    "\n",
+                    [
+                        @"********************************",
+                        @"Welcome to Mushroom Pocket App",
+                        @"********************************",
+                        @"(1). Add Mushroom's character to my pocket",
+                        @"(2). List character(s) in my pocket",
+                        @"(3). Check if I can transform my characters",
+                        @"(4). Transform my character(s)",
+                        @"(5). Delete character(s) from my pocket",
+                        @"(6). Manage my teams",
+                        @"(7). Manage my saves",
+                        @"Please only enter [1, 2, 3, 4, 5, 6, 7] or Q to quit: "
+                    ]
+                )
+            );
 
             switch ((Console.ReadLine() ?? "").ToLower())
             {
@@ -103,7 +118,9 @@ class Program
                     break;
 
                 default:
-                    Console.WriteLine("\nInvalid action. Please only enter [1, 2, 3, 4] or Q to quit.");
+                    Console.WriteLine(
+                        "\nInvalid action. Please only enter [1, 2, 3, 4] or Q to quit."
+                    );
                     break;
             }
 
@@ -111,7 +128,6 @@ class Program
             Console.WriteLine();
         }
     }
-
 
     // Option 1: Add character
     private static void AddCharacter()
@@ -121,16 +137,24 @@ class Program
         Similarity? topSuggestion;
         List<string> possibleNames = new List<string>() { "Daisy", "Wario", "Waluigi" };
 
-        if (!StringUtils.SmartLookUp(Console.ReadLine() ?? "", possibleNames, out topSuggestion) || topSuggestion == null)
+        if (
+            !StringUtils.SmartLookUp(Console.ReadLine() ?? "", possibleNames, out topSuggestion)
+            || topSuggestion == null
+        )
         {
-            Console.WriteLine("\nInvalid character name. Please only enter ['Daisy', 'Wario', 'Waluigi'].");
+            Console.WriteLine(
+                "\nInvalid character name. Please only enter ['Daisy', 'Wario', 'Waluigi']."
+            );
             return;
         }
 
         if (topSuggestion.QualifiedText.ToLower() != topSuggestion.OriginalText.ToLower())
         {
-            Console.Write($"\nDid you mean '{topSuggestion.QualifiedText}'? ({topSuggestion.ScoreToString()}%) [Y/N]: ");
-            if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+            Console.Write(
+                $"\nDid you mean '{topSuggestion.QualifiedText}'? ({topSuggestion.ScoreToString()}%) [Y/N]: "
+            );
+            if ((Console.ReadLine() ?? "").ToLower() != "y")
+                return;
         }
 
         // HP
@@ -153,7 +177,12 @@ class Program
 
         // Add char
         string? errOut;
-        Character? newChar = Character.From(topSuggestion.QualifiedText, charHP, charEXP, out errOut);
+        Character? newChar = Character.From(
+            topSuggestion.QualifiedText,
+            charHP,
+            charEXP,
+            out errOut
+        );
         if (errOut != null)
         {
             Console.WriteLine("\n" + errOut);
@@ -187,15 +216,18 @@ class Program
 
         foreach (Character c in sorted)
         {
-            Console.WriteLine(String.Join("\n",
-                @"-----------------------",
-                $"ID: {c.Id}",
-                $"Name: {c.Name}",
-                $"HP: {c.Hp}",
-                $"EXP: {c.Exp}",
-                $"Skill: {c.Skill}",
-                @"-----------------------"
-            ));
+            Console.WriteLine(
+                String.Join(
+                    "\n",
+                    @"-----------------------",
+                    $"ID: {c.Id}",
+                    $"Name: {c.Name}",
+                    $"HP: {c.Hp}",
+                    $"EXP: {c.Exp}",
+                    $"Skill: {c.Skill}",
+                    @"-----------------------"
+                )
+            );
         }
     }
 
@@ -239,7 +271,12 @@ class Program
             List<Character> delList =
                 (delPattern! == "*")
                     ? db.Characters.ToList()
-                    : db.Characters.Where((Character c) => c.Name.StartsWith(delPattern!) || c.Id.StartsWith(delPattern!)).ToList();
+                    : db
+                        .Characters.Where(
+                            (Character c) =>
+                                c.Name.StartsWith(delPattern!) || c.Id.StartsWith(delPattern!)
+                        )
+                        .ToList();
 
             // Check if empty
             if (delList.Count == 0)
@@ -250,7 +287,8 @@ class Program
 
             // Ask for confirmation
             Console.Write($"Are you sure you want to delete {delList.Count} character(s)? [Y/N]: ");
-            if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+            if ((Console.ReadLine() ?? "").ToLower() != "y")
+                return;
 
             db.RemoveRange(delList);
             db.SaveChanges();
@@ -262,15 +300,20 @@ class Program
     private static void ManageTeams()
     {
         // Ask for action.
-        Console.Write(String.Join("\n", [
-            @"",
-            @"(1). Add a new team to my pocket",
-            @"(2). Add Mushroom's character to a team",
-            @"(3). List team(s) in my pocket",
-            @"(4). List character(s) in a team",
-            @"(5). Delete team(s) from my pocket",
-            @"Please only enter [1, 2, 3, 4, 5] or b to go back: "
-        ]));
+        Console.Write(
+            String.Join(
+                "\n",
+                [
+                    @"",
+                    @"(1). Add a new team to my pocket",
+                    @"(2). Add Mushroom's character to a team",
+                    @"(3). List team(s) in my pocket",
+                    @"(4). List character(s) in a team",
+                    @"(5). Delete team(s) from my pocket",
+                    @"Please only enter [1, 2, 3, 4, 5] or b to go back: "
+                ]
+            )
+        );
         string action = Console.ReadLine() ?? "";
 
         switch (action.ToLower())
@@ -299,7 +342,9 @@ class Program
                 break;
 
             default:
-                Console.WriteLine("\nInvalid action. Please only enter [1, 2, 3, 4, 5] or Q to quit.");
+                Console.WriteLine(
+                    "\nInvalid action. Please only enter [1, 2, 3, 4, 5] or Q to quit."
+                );
                 break;
         }
     }
@@ -360,13 +405,24 @@ class Program
         {
             List<Character> charList =
                 namePattern == "*"
-                ? db.Characters.ToList()
-                : db.Characters.Where((Character c) => c.Name.StartsWith(namePattern) || c.Id.StartsWith(namePattern)).ToList();
+                    ? db.Characters.ToList()
+                    : db
+                        .Characters.Where(
+                            (Character c) =>
+                                c.Name.StartsWith(namePattern) || c.Id.StartsWith(namePattern)
+                        )
+                        .ToList();
 
             HashSet<Team> teamList =
                 teamPattern == "*"
-                ? db.Teams.Include(t => t.Characters).ToHashSet()
-                : db.Teams.Include(t => t.Characters).Where((Team t) => t.Name.StartsWith(teamPattern) || t.Id.StartsWith(teamPattern)).ToHashSet();
+                    ? db.Teams.Include(t => t.Characters).ToHashSet()
+                    : db
+                        .Teams.Include(t => t.Characters)
+                        .Where(
+                            (Team t) =>
+                                t.Name.StartsWith(teamPattern) || t.Id.StartsWith(teamPattern)
+                        )
+                        .ToHashSet();
 
             // Check if empty
             if (charList.Count == 0)
@@ -381,8 +437,11 @@ class Program
             }
 
             // Confirmation
-            Console.Write($"Are you sure you want to add {charList.Count} character(s) to {teamList.Count} team(s)? [Y/N]: ");
-            if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+            Console.Write(
+                $"Are you sure you want to add {charList.Count} character(s) to {teamList.Count} team(s)? [Y/N]: "
+            );
+            if ((Console.ReadLine() ?? "").ToLower() != "y")
+                return;
 
             // Add
             bool hasChange = false;
@@ -390,8 +449,11 @@ class Program
             {
                 if (t.Characters.Intersect(t.Characters).Count() > 0)
                 {
-                    if (teamPattern == "*") continue;
-                    Console.WriteLine($"\nTeam {t.Name} already has the character(s) {String.Join(", ", t.Characters)}.");
+                    if (teamPattern == "*")
+                        continue;
+                    Console.WriteLine(
+                        $"\nTeam {t.Name} already has the character(s) {String.Join(", ", t.Characters)}."
+                    );
                     return;
                 }
 
@@ -401,12 +463,16 @@ class Program
 
             if (!hasChange)
             {
-                Console.WriteLine($"\nCharacter(s) {String.Join(", ", charList)} already exist in team(s).");
+                Console.WriteLine(
+                    $"\nCharacter(s) {String.Join(", ", charList)} already exist in team(s)."
+                );
                 return;
             }
 
             db.SaveChanges();
-            Console.WriteLine($"{charList.Count} character(s) have been added to {teamList.Count} team(s).");
+            Console.WriteLine(
+                $"{charList.Count} character(s) have been added to {teamList.Count} team(s)."
+            );
         }
     }
 
@@ -430,14 +496,17 @@ class Program
 
         foreach (Team t in sorted)
         {
-            Console.WriteLine(String.Join("\n",
-                @"-----------------------",
-                $"ID: {t.Id}",
-                $"Name: {t.Name}",
-                $"Description: {t.Description}",
-                $"Character(s): {t.Characters.Count}",
-                @"-----------------------"
-            ));
+            Console.WriteLine(
+                String.Join(
+                    "\n",
+                    @"-----------------------",
+                    $"ID: {t.Id}",
+                    $"Name: {t.Name}",
+                    $"Description: {t.Description}",
+                    $"Character(s): {t.Characters.Count}",
+                    @"-----------------------"
+                )
+            );
         }
     }
 
@@ -451,21 +520,35 @@ class Program
         using (MushroomContext db = new MushroomContext())
         {
             Similarity topSuggestion;
-            if (!StringUtils.SmartLookUp(teamPattern, db.Teams.Select((Team t) => t.Name).ToList(), out topSuggestion!))
+            if (
+                !StringUtils.SmartLookUp(
+                    teamPattern,
+                    db.Teams.Select((Team t) => t.Name).ToList(),
+                    out topSuggestion!
+                )
+            )
             {
                 Console.WriteLine("\nTeam name or ID not found.");
                 return;
             }
 
             // Confirmation if not the same
-            if (StringUtils.Clean(teamPattern, true) != StringUtils.Clean(topSuggestion.QualifiedText, true))
+            if (
+                StringUtils.Clean(teamPattern, true)
+                != StringUtils.Clean(topSuggestion.QualifiedText, true)
+            )
             {
                 Console.Write($"\nDid you mean {topSuggestion.QualifiedText}? [Y/N]: ");
-                if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+                if ((Console.ReadLine() ?? "").ToLower() != "y")
+                    return;
             }
 
             // Stdout characters
-            List<Character> charList = db.Teams.Include(t => t.Characters).Where((Team t) => t.Name == topSuggestion.QualifiedText).First()!.Characters.ToList();
+            List<Character> charList = db
+                .Teams.Include(t => t.Characters)
+                .Where((Team t) => t.Name == topSuggestion.QualifiedText)
+                .First()!
+                .Characters.ToList();
             charList.Sort((Character c1, Character c2) => c2.Hp.CompareTo(c1.Hp));
 
             if (charList.Count == 0)
@@ -476,15 +559,20 @@ class Program
 
             foreach (Character c in charList)
             {
-                Console.WriteLine(String.Join("\n", [
-                    @"-----------------------",
-                    $"ID: {c.Id}",
-                    $"Name: {c.Name}",
-                    $"HP: {c.Hp}",
-                    $"EXP: {c.Exp}",
-                    $"Skill: {c.Skill}",
-                    @"-----------------------"
-                ]));
+                Console.WriteLine(
+                    String.Join(
+                        "\n",
+                        [
+                            @"-----------------------",
+                            $"ID: {c.Id}",
+                            $"Name: {c.Name}",
+                            $"HP: {c.Hp}",
+                            $"EXP: {c.Exp}",
+                            $"Skill: {c.Skill}",
+                            @"-----------------------"
+                        ]
+                    )
+                );
             }
         }
     }
@@ -507,7 +595,12 @@ class Program
             List<Team> delList =
                 (delPattern! == "*")
                     ? db.Teams.ToList()
-                    : db.Teams.Where((Team t) => t.Name.StartsWith(delPattern!) || t.Id.StartsWith(delPattern!)).ToList();
+                    : db
+                        .Teams.Where(
+                            (Team t) =>
+                                t.Name.StartsWith(delPattern!) || t.Id.StartsWith(delPattern!)
+                        )
+                        .ToList();
 
             // Check if empty
             if (delList.Count == 0)
@@ -518,7 +611,8 @@ class Program
 
             // Ask for confirmation
             Console.Write($"Are you sure you want to delete {delList.Count} team(s)? [Y/N]: ");
-            if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+            if ((Console.ReadLine() ?? "").ToLower() != "y")
+                return;
 
             db.RemoveRange(delList);
             db.SaveChanges();
@@ -529,14 +623,19 @@ class Program
     // Option 7: Manage saves
     private static void ManageSaves()
     {
-        Console.Write(String.Join("\n", [
-            @"",
-            @"(1). Save progress",
-            @"(2). Load progress",
-            @"(3). List saves",
-            @"(4). Delete save(s)",
-            @"Please only enter [1, 2, 3, 4] or b to go back: ",
-        ]));
+        Console.Write(
+            String.Join(
+                "\n",
+                [
+                    @"",
+                    @"(1). Save progress",
+                    @"(2). Load progress",
+                    @"(3). List saves",
+                    @"(4). Delete save(s)",
+                    @"Please only enter [1, 2, 3, 4] or b to go back: ",
+                ]
+            )
+        );
 
         switch ((Console.ReadLine() ?? "").ToLower())
         {
@@ -560,7 +659,9 @@ class Program
                 return;
 
             default:
-                Console.WriteLine("\nInvalid input. Please only enter [1, 2, 3, 4] or b to go back.");
+                Console.WriteLine(
+                    "\nInvalid input. Please only enter [1, 2, 3, 4] or b to go back."
+                );
                 break;
         }
     }
@@ -596,14 +697,20 @@ class Program
             return;
         }
 
-        if (StringUtils.Clean(saveName, true) != StringUtils.Clean(topSuggestion.QualifiedText, true))
+        if (
+            StringUtils.Clean(saveName, true)
+            != StringUtils.Clean(topSuggestion.QualifiedText, true)
+        )
         {
             Console.Write($"\nDid you mean {topSuggestion.QualifiedText}? [Y/N]: ");
-            if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+            if ((Console.ReadLine() ?? "").ToLower() != "y")
+                return;
         }
 
         SaveUtils.UseSafeFile(SaveUtils.GetFilePathFromName(topSuggestion.QualifiedText));
-        Console.WriteLine($"Save file {saveName} has been loaded, please restart the program to see the changes.");
+        Console.WriteLine(
+            $"Save file {saveName} has been loaded, please restart the program to see the changes."
+        );
         Environment.Exit(0); // Exit because replacing db is not supported by EF8 :"D
     }
 
@@ -640,7 +747,10 @@ class Program
             return;
         }
 
-        string[] saveFiles = SaveUtils.ListSaveFiles().Where(s => s.ToLower().StartsWith(delPattern.ToLower())).ToArray();
+        string[] saveFiles = SaveUtils
+            .ListSaveFiles()
+            .Where(s => s.ToLower().StartsWith(delPattern.ToLower()))
+            .ToArray();
         if (saveFiles.Length == 0)
         {
             Console.WriteLine("\nNo save file(s) found. Nothing to delete.");
@@ -649,7 +759,8 @@ class Program
 
         // Check for confirmation
         Console.Write($"Are you sure you want to delete {saveFiles.Length} save file(s)? [Y/N]: ");
-        if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+        if ((Console.ReadLine() ?? "").ToLower() != "y")
+            return;
 
         SaveUtils.DeleteSaveFiles(saveFiles);
         Console.WriteLine($"{saveFiles.Length} save file(s) have been deleted.");
