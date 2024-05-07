@@ -179,6 +179,12 @@ class Program
             sorted = db.Characters.OrderByDescending((Character c) => c.Hp).ToList();
         }
 
+        if (sorted.Count == 0)
+        {
+            Console.WriteLine("\nNo character(s) to list!");
+            return;
+        }
+
         foreach (Character c in sorted)
         {
             Console.WriteLine(String.Join("\n",
@@ -416,6 +422,12 @@ class Program
         }
         sorted.Sort((Team t1, Team t2) => t2.Characters.Count.CompareTo(t1.Characters.Count));
 
+        if (sorted.Count == 0)
+        {
+            Console.WriteLine("\nNo team(s) to list!");
+            return;
+        }
+
         foreach (Team t in sorted)
         {
             Console.WriteLine(String.Join("\n",
@@ -455,6 +467,12 @@ class Program
             // Stdout characters
             List<Character> charList = db.Teams.Include(t => t.Characters).Where((Team t) => t.Name == topSuggestion.QualifiedText).First()!.Characters.ToList();
             charList.Sort((Character c1, Character c2) => c2.Hp.CompareTo(c1.Hp));
+
+            if (charList.Count == 0)
+            {
+                Console.WriteLine("\nNo character(s) to list!");
+                return;
+            }
 
             foreach (Character c in charList)
             {
@@ -592,7 +610,14 @@ class Program
     // Option 7-3: List saves
     private static void ListSaves()
     {
-        Console.WriteLine(String.Join("\n", SaveUtils.GetSaveNames()));
+        string[] saves = SaveUtils.GetSaveNames();
+        if (saves.Length == 0)
+        {
+            Console.WriteLine("\nNo save(s) to list!");
+            return;
+        }
+
+        Console.WriteLine(String.Join("\n", saves));
     }
 
     // Option 7-4: Delete save(s)
