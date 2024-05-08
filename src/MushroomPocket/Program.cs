@@ -7,7 +7,6 @@
  */
 
 using MushroomPocket.Models;
-using MushroomPocket.Utils;
 using MushroomPocket.Core;
 
 namespace MushroomPocket;
