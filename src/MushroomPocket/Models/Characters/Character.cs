@@ -1,7 +1,14 @@
+/**
+ * SPDX-FileCopyrightText: 2024 Ng Jun Xiang <contact@ngjx.org>
+ * SPDX-License-Identifier: GPL-3.0-only
+ *
+ * Name: Ng Jun Xiang
+ * Admin: 230725N
+ */
+
 using Microsoft.EntityFrameworkCore;
 
 namespace MushroomPocket.Models;
-
 
 public class MushroomMaster
 {
@@ -17,11 +24,11 @@ public class MushroomMaster
     }
 }
 
-
 [PrimaryKey("Id")]
 public class Character
 {
-    public static readonly string[] ValidNames = [
+    public static readonly string[] ValidNames =
+    [
         "Daisy",
         "Luigi",
         "Mario",
@@ -49,27 +56,40 @@ public class Character
         Exp = exp;
         Id = Guid.NewGuid().ToString();
     }
-    public Character(float hp, int exp, string name, string skill, bool evolvedOnly) : this(hp, exp)
+
+    public Character(float hp, int exp, string name, string skill, bool evolvedOnly)
+        : this(hp, exp)
     {
         Name = name;
         Skill = skill;
         EvolvedOnly = evolvedOnly;
     }
-    public Character(float hp, int exp, HashSet<Team> teams) : this(hp, exp)
-    {
-        Teams = teams;
-    }
-    public Character(float hp, int exp, string name, string skill, bool evolvedOnly, HashSet<Team> teams) : this(hp, exp, name, skill, evolvedOnly)
+
+    public Character(float hp, int exp, HashSet<Team> teams)
+        : this(hp, exp)
     {
         Teams = teams;
     }
 
+    public Character(
+        float hp,
+        int exp,
+        string name,
+        string skill,
+        bool evolvedOnly,
+        HashSet<Team> teams
+    )
+        : this(hp, exp, name, skill, evolvedOnly)
+    {
+        Teams = teams;
+    }
 
     /// <summary>
     /// See if a string is a valid character name.
     /// Strings are converted to TitleCase and compared to ValidNames only if validName is specified.
     /// </summary>
     public static bool IsValidName(string name) => ValidNames.Contains(name);
+
     public static bool IsValidName(string name, out string? validName)
     {
         name = name.Substring(0, 1).ToUpper() + name.Substring(1).ToLower();
@@ -86,7 +106,13 @@ public class Character
     /// <summary>
     /// Creates a new character from the given name, hp, and exp.
     /// </summary>
-    public static Character? From(string name, float hp, int exp, out string? errOut, bool noEvolve = true)
+    public static Character? From(
+        string name,
+        float hp,
+        int exp,
+        out string? errOut,
+        bool noEvolve = true
+    )
     {
         try
         {
@@ -100,6 +126,7 @@ public class Character
             return null;
         }
     }
+
     public static Character From(string name, float hp, int exp, bool noEvolve = true)
     {
         string? validName;
@@ -120,7 +147,8 @@ public class Character
         }
 
         // Handle evolved characters
-        if (noEvolve) throw new ArgumentException($"{validName} can only be obtained by evolving!");
+        if (noEvolve)
+            throw new ArgumentException($"{validName} can only be obtained by evolving!");
 
         switch (validName)
         {
@@ -139,8 +167,8 @@ public class Character
     /// See number of times character can be evolved
     ///
     /// </summary>
-    public static int TimesEvolvable(int charCount, int noToTransform)
-        => noToTransform == 0 ? 0 : (int)Math.Floor((decimal)(charCount / noToTransform));
+    public static int TimesEvolvable(int charCount, int noToTransform) =>
+        noToTransform == 0 ? 0 : (int)Math.Floor((decimal)(charCount / noToTransform));
 
     /// <summary>
     /// See if character can be evolved
@@ -165,7 +193,8 @@ public class Character
                 int charCount = db.Characters.Where((Character c) => c.Name == evo.Name).Count();
 
                 int evoCount;
-                if (!CanBeEvolved(charCount, evo.NoToTransform, out evoCount)) continue;
+                if (!CanBeEvolved(charCount, evo.NoToTransform, out evoCount))
+                    continue;
                 canEvolve.AddRange(Enumerable.Repeat(evo, evoCount));
             }
         }
@@ -183,14 +212,19 @@ public class Character
         {
             foreach (MushroomMaster m in evoList)
             {
-                List<Character> charList = db.Characters.Where((Character c) => c.Name == m.Name).ToList();
+                List<Character> charList = db
+                    .Characters.Where((Character c) => c.Name == m.Name)
+                    .ToList();
 
                 int evoCount;
-                if (!CanBeEvolved(charList.Count, m.NoToTransform, out evoCount)) continue;
+                if (!CanBeEvolved(charList.Count, m.NoToTransform, out evoCount))
+                    continue;
 
                 // Update DB
                 db.Characters.RemoveRange(charList.Take(m.NoToTransform * evoCount));
-                db.AddRange(Enumerable.Repeat(Character.From(m.TransformTo, 100, 0, false), evoCount));
+                db.AddRange(
+                    Enumerable.Repeat(Character.From(m.TransformTo, 100, 0, false), evoCount)
+                );
                 db.SaveChanges();
 
                 evolved.AddRange(Enumerable.Repeat(m, evoCount));

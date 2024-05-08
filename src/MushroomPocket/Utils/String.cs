@@ -1,9 +1,15 @@
-namespace MushroomPocket.Utils;
+/**
+ * SPDX-FileCopyrightText: 2024 Ng Jun Xiang <contact@ngjx.org>
+ * SPDX-License-Identifier: GPL-3.0-only
+ *
+ * Name: Ng Jun Xiang
+ * Admin: 230725N
+ */
 
+namespace MushroomPocket.Utils;
 
 public class Similarity
 {
-
     /// <summary>
     /// The score of the comparison.
     /// A value of 1 means a 100% confidence.
