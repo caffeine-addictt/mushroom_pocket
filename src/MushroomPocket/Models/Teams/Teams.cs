@@ -20,6 +20,7 @@ public class Team
     public string Name { get; set; }
     public string Description { get; set; }
 
+    public virtual Profile Profile { get; set; } = null!;
     public virtual HashSet<Character> Characters { get; set; }
 
     public Team(string name, string description)

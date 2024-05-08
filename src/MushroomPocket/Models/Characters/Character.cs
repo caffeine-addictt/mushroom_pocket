@@ -48,6 +48,8 @@ public class Character
     public string Skill { get; set; } = null!;
     public bool EvolvedOnly { get; set; } = true;
 
+
+    public virtual Profile Profile { get; set; } = null!;
     public virtual HashSet<Team> Teams { get; set; } = null!;
 
     /// <summary>
