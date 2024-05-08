@@ -7,8 +7,10 @@
  */
 
 using Microsoft.EntityFrameworkCore;
+using MushroomPocket.Utils;
 
 namespace MushroomPocket.Models;
+
 
 public class MushroomMaster
 {
@@ -23,6 +25,7 @@ public class MushroomMaster
         this.TransformTo = transformTo;
     }
 }
+
 
 [PrimaryKey("Id")]
 public class Character
@@ -54,7 +57,7 @@ public class Character
     {
         Hp = hp;
         Exp = exp;
-        Id = Guid.NewGuid().ToString();
+        Id = GenerateId();
     }
 
     public Character(float hp, int exp, string name, string skill, bool evolvedOnly)
@@ -82,6 +85,20 @@ public class Character
         : this(hp, exp, name, skill, evolvedOnly)
     {
         Teams = teams;
+    }
+
+    /// <summary>
+    /// Generate id
+    /// </summary>
+    private static string GenerateId(MushroomContext db)
+    {
+        List<string> ids = db.Characters.Select((Character c) => c.Id).ToList();
+        return StringUtils.TinyId(ids);
+    }
+    private static string GenerateId()
+    {
+        using (MushroomContext db = new MushroomContext())
+            return GenerateId(db);
     }
 
     /// <summary>

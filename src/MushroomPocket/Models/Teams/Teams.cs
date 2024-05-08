@@ -7,6 +7,7 @@
  */
 
 using Microsoft.EntityFrameworkCore;
+using MushroomPocket.Utils;
 
 namespace MushroomPocket.Models;
 
@@ -25,13 +26,27 @@ public class Team
     {
         Name = name;
         Description = description;
-        Id = Guid.NewGuid().ToString();
+        Id = GenerateId();
         Characters = new HashSet<Character>();
     }
 
     public Team(string name, string description, HashSet<Character> characters) : this(name, description)
     {
         Characters = characters;
+    }
+
+    /// <summary>
+    /// Generate id
+    /// </summary>
+    private static string GenerateId(MushroomContext db)
+    {
+        List<string> ids = db.Teams.Select((Team t) => t.Id).ToList();
+        return StringUtils.TinyId(ids);
+    }
+    private static string GenerateId()
+    {
+        using (MushroomContext db = new MushroomContext())
+            return GenerateId(db);
     }
 
     /// <summary>

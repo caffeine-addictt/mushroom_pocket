@@ -8,6 +8,8 @@
 
 namespace MushroomPocket.Utils;
 
+
+// Classes
 public class Similarity
 {
     /// <summary>
@@ -38,6 +40,7 @@ public class Similarity
 }
 
 
+// Utils
 public static class StringUtils
 {
     /// <summary>
@@ -51,6 +54,29 @@ public static class StringUtils
         => lowerCase
             ? input.ToString().Trim().ToLower()
             : input.ToString().Trim();
+
+    /// <summary>
+    /// Generate a tiny ID with hit detection
+    /// Is not thread safe
+    ///
+    /// <paramref name="fetchItemCount"/> is used to fetch the number of items in the table
+    /// <paramref name="hitDetection"/> is used to check if the id is already in the table
+    /// </summary>
+    public static string TinyId(IEnumerable<string> existing)
+    {
+        int length = 6;
+        string id;
+        void newId()
+        {
+            id = Guid.NewGuid().ToString().Substring(0, length);
+        }
+
+        newId();
+        while (existing.Contains(id))
+            newId();
+
+        return id;
+    }
 
     /// <summary>
     /// Tries to find the closes match from an input string and a list of possible matches.
