@@ -13,6 +13,22 @@ namespace MushroomPocket;
 
 class Program
 {
+    static readonly string InterfaceText = String.Join(
+        "\n",
+        [
+            @"********************************",
+            @"Welcome to Mushroom Pocket App",
+            @"********************************",
+            @"(1). Add Mushroom's character to my pocket",
+            @"(2). List character(s) in my pocket",
+            @"(3). Check if I can transform my characters",
+            @"(4). Transform my character(s)",
+            @"(5). Delete character(s) from my pocket",
+            @"(6). Manage my teams",
+            @"Please only enter [1, 2, 3, 4, 5, 6] or Q to quit: "
+        ]
+    );
+
     static void Main(string[] args)
     {
         if (args.Length > 0)
@@ -66,25 +82,7 @@ class Program
         // Main event loop.
         while (true)
         {
-            // Ask for action.
-            Console.Write(
-                String.Join(
-                    "\n",
-                    [
-                        @"********************************",
-                        @"Welcome to Mushroom Pocket App",
-                        @"********************************",
-                        @"(1). Add Mushroom's character to my pocket",
-                        @"(2). List character(s) in my pocket",
-                        @"(3). Check if I can transform my characters",
-                        @"(4). Transform my character(s)",
-                        @"(5). Delete character(s) from my pocket",
-                        @"(6). Manage my teams",
-                        @"Please only enter [1, 2, 3, 4, 5, 6] or Q to quit: "
-                    ]
-                )
-            );
-
+            Console.Write(InterfaceText);
             switch ((Console.ReadLine() ?? "").ToLower())
             {
                 case "1":
