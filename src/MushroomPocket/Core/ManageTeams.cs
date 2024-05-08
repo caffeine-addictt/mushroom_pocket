@@ -174,7 +174,8 @@ public static class ManageTeams
                 }
 
                 hasChange = true;
-                t.AddCharacterRange(charList);
+                profile.Teams.Where(team => team.Id == t.Id).First().Characters.UnionWith(charList);
+                /* t.AddCharacterRange(charList); */
             }
 
             if (!hasChange)
@@ -238,7 +239,7 @@ public static class ManageTeams
             if (
                 !StringUtils.SmartLookUp(
                     teamPattern,
-                    db.Teams.Select((Team t) => t.Name).ToList(),
+                    db.GetProfile(true, true).Teams.Select((Team t) => t.Name).ToList(),
                     out topSuggestion!
                 )
             )
