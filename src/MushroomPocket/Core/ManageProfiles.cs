@@ -65,6 +65,9 @@ static class ManageProfiles
 
     public static void FirstTimeOrAccess()
     {
+        if (!String.IsNullOrWhiteSpace(Constants.CurrentProfileId))
+            return;
+
         List<Profile> profiles;
         using (MushroomContext db = new MushroomContext())
             profiles = db.Profiles.ToList();

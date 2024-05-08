@@ -207,9 +207,10 @@ public class Character
         List<MushroomMaster> canEvolve = new List<MushroomMaster>();
         using (MushroomContext db = new MushroomContext())
         {
+            Profile profile = db.GetProfile(false, true);
             foreach (MushroomMaster evo in evoList)
             {
-                int charCount = db.Characters.Where((Character c) => c.Name == evo.Name).Count();
+                int charCount = profile.Characters.Where((Character c) => c.Name == evo.Name).Count();
 
                 int evoCount;
                 if (!CanBeEvolved(charCount, evo.NoToTransform, out evoCount))
@@ -229,9 +230,10 @@ public class Character
         List<MushroomMaster> evolved = new List<MushroomMaster>();
         using (MushroomContext db = new MushroomContext())
         {
+            Profile profile = db.GetProfile(true, true);
             foreach (MushroomMaster m in evoList)
             {
-                List<Character> charList = db
+                List<Character> charList = profile
                     .Characters.Where((Character c) => c.Name == m.Name)
                     .ToList();
 
@@ -240,8 +242,8 @@ public class Character
                     continue;
 
                 // Update DB
-                db.Characters.RemoveRange(charList.Take(m.NoToTransform * evoCount));
-                db.AddRange(
+                profile.Characters.ExceptWith(charList.Take(m.NoToTransform * evoCount));
+                profile.Characters.UnionWith(
                     Enumerable.Repeat(Character.From(m.TransformTo, 100, 0, false), evoCount)
                 );
                 db.SaveChanges();

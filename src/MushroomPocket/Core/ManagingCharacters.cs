@@ -76,7 +76,7 @@ public static class ManageCharacters
 
         using (MushroomContext db = new MushroomContext())
         {
-            db.Characters.Add(newChar!);
+            db.GetProfile(false, true).Characters.Add(newChar!);
             db.SaveChanges();
         }
         Console.WriteLine($"{topSuggestion.QualifiedText} has been added.");
@@ -90,7 +90,7 @@ public static class ManageCharacters
         List<Character> sorted;
         using (MushroomContext db = new MushroomContext())
         {
-            sorted = db.Characters.OrderByDescending((Character c) => c.Hp).ToList();
+            sorted = db.GetProfile(false, true).Characters.OrderByDescending((Character c) => c.Hp).ToList();
         }
 
         if (sorted.Count == 0)
@@ -154,10 +154,11 @@ public static class ManageCharacters
 
         using (MushroomContext db = new MushroomContext())
         {
+            Profile profile = db.GetProfile(false, true);
             List<Character> delList =
                 (delPattern! == "*")
-                    ? db.Characters.ToList()
-                    : db
+                    ? profile.Characters.ToList()
+                    : profile
                         .Characters.Where(
                             (Character c) =>
                                 c.Name.StartsWith(delPattern!) || c.Id.StartsWith(delPattern!)
@@ -176,7 +177,7 @@ public static class ManageCharacters
             if ((Console.ReadLine() ?? "").ToLower() != "y")
                 return;
 
-            db.RemoveRange(delList);
+            profile.Characters.ExceptWith(delList);
             db.SaveChanges();
             Console.WriteLine($"{delList.Count} character(s) have been deleted.");
         }

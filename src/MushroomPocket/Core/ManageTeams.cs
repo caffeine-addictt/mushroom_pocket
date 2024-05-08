@@ -6,7 +6,6 @@
  * Admin: 230725N
  */
 
-using Microsoft.EntityFrameworkCore;
 using MushroomPocket.Models;
 using MushroomPocket.Utils;
 
@@ -84,12 +83,13 @@ public static class ManageTeams
 
         using (MushroomContext db = new MushroomContext())
         {
-            if (db.Teams.Where((Team t) => t.Name == teamName).Count() > 0)
+            Profile profile = db.GetProfile(true);
+            if (profile.Teams.Where((Team t) => t.Name == teamName).Count() > 0)
             {
                 Console.WriteLine("\nTeam name already exists.");
                 return;
             }
-            db.Teams.Add(new Team(teamName, teamDesc));
+            profile.Teams.Add(new Team(teamName, teamDesc));
             db.SaveChanges();
         }
 
@@ -120,11 +120,11 @@ public static class ManageTeams
 
         using (MushroomContext db = new MushroomContext())
         {
+            Profile profile = db.GetProfile(true, true);
             List<Character> charList =
                 namePattern == "*"
-                    ? db.Characters.ToList()
-                    : db
-                        .Characters.Where(
+                    ? profile.Characters.ToList()
+                    : profile.Characters.Where(
                             (Character c) =>
                                 c.Name.StartsWith(namePattern) || c.Id.StartsWith(namePattern)
                         )
@@ -132,9 +132,8 @@ public static class ManageTeams
 
             HashSet<Team> teamList =
                 teamPattern == "*"
-                    ? db.Teams.Include(t => t.Characters).ToHashSet()
-                    : db
-                        .Teams.Include(t => t.Characters)
+                    ? profile.Teams.ToHashSet()
+                    : profile.Teams
                         .Where(
                             (Team t) =>
                                 t.Name.StartsWith(teamPattern) || t.Id.StartsWith(teamPattern)
@@ -200,7 +199,7 @@ public static class ManageTeams
         List<Team> sorted;
         using (MushroomContext db = new MushroomContext())
         {
-            sorted = db.Teams.Include(t => t.Characters).ToList();
+            sorted = db.GetProfile(true, true).Teams.ToList();
         }
         sorted.Sort((Team t1, Team t2) => t2.Characters.Count.CompareTo(t1.Characters.Count));
 
@@ -261,7 +260,8 @@ public static class ManageTeams
 
             // Stdout characters
             List<Character> charList = db
-                .Teams.Include(t => t.Characters)
+                .GetProfile(true)
+                .Teams
                 .Where((Team t) => t.Name == topSuggestion.QualifiedText)
                 .First()!
                 .Characters.ToList();
@@ -308,10 +308,11 @@ public static class ManageTeams
 
         using (MushroomContext db = new MushroomContext())
         {
+            Profile profile = db.GetProfile(true);
             List<Team> delList =
                 (delPattern! == "*")
-                    ? db.Teams.ToList()
-                    : db
+                    ? profile.Teams.ToList()
+                    : profile
                         .Teams.Where(
                             (Team t) =>
                                 t.Name.StartsWith(delPattern!) || t.Id.StartsWith(delPattern!)
@@ -330,7 +331,7 @@ public static class ManageTeams
             if ((Console.ReadLine() ?? "").ToLower() != "y")
                 return;
 
-            db.RemoveRange(delList);
+            profile.Teams.ExceptWith(delList);
             db.SaveChanges();
             Console.WriteLine($"{delList.Count} team(s) have been deleted.");
         }

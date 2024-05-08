@@ -7,6 +7,7 @@
  */
 
 using Microsoft.EntityFrameworkCore;
+using MushroomPocket.Core;
 
 namespace MushroomPocket.Models;
 
@@ -38,6 +39,20 @@ public class MushroomContext : DbContext
             .HasMany(p => p.Teams)
             .WithOne(t => t.Profile)
             .OnDelete(DeleteBehavior.Cascade);
+    }
+
+    /// <summary>
+    /// Short cut to get profile
+    /// </summary>
+    public Profile GetProfile(bool includeTeams = false, bool includeCharacters = false)
+    {
+        DbSet<Profile> profiles = this.Profiles;
+        IQueryable<Profile> query = profiles;
+
+        query = includeTeams ? query.Include(p => p.Teams) : query;
+        query = includeCharacters ? query.Include(p => p.Characters) : query;
+
+        return query.Where(p => p.Id == Constants.CurrentProfileId).First()!;
     }
 }
 
