@@ -24,8 +24,9 @@ class Program
             @"(3). Check if I can transform my characters",
             @"(4). Transform my character(s)",
             @"(5). Delete character(s) from my pocket",
-            @"(6). Manage my teams",
-            @"Please only enter [1, 2, 3, 4, 5, 6] or Q to quit: "
+            @"(6). Manage my team(s)",
+            @"(7). Manage my profile(s)",
+            @"Please only enter [1, 2, 3, 4, 5, 6, 7] or Q to quit: "
         ]
     );
 
@@ -82,6 +83,11 @@ class Program
         // Main event loop.
         while (true)
         {
+            // get/create a profile
+            ManageProfiles.FirstTimeOrAccess();
+
+            // Proceed on if there is a profile
+            if (Constants.CurrentProfileId == null) continue;
             Console.Write(InterfaceText);
             switch ((Console.ReadLine() ?? "").ToLower())
             {
@@ -109,6 +115,10 @@ class Program
                     ManageTeams.MainEntry();
                     break;
 
+                case "7":
+                    ManageProfiles.MainEntry();
+                    break;
+
                 case "q":
                     Console.WriteLine("Thanks for playing. Good bye!");
                     Environment.Exit(0);
@@ -116,7 +126,7 @@ class Program
 
                 default:
                     Console.WriteLine(
-                        "\nInvalid action. Please only enter [1, 2, 3, 4, 5, 6] or Q to quit."
+                        "\nInvalid action. Please only enter [1, 2, 3, 4, 5, 6, 7] or Q to quit."
                     );
                     break;
             }

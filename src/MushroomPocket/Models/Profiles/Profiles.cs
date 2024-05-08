@@ -19,8 +19,8 @@ public class Profile
     public string Name { get; set; }
     public float Wallet { get; set; }
 
-    public virtual DbSet<Team> Teams { get; set; } = null!;
-    public virtual DbSet<Character> Characters { get; set; } = null!;
+    public virtual HashSet<Team> Teams { get; set; } = null!;
+    public virtual HashSet<Character> Characters { get; set; } = null!;
 
     public Profile(string name)
     {
