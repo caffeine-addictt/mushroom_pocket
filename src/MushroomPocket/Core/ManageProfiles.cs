@@ -278,7 +278,7 @@ static class ManageProfiles
             db.Profiles.Remove(profile);
             db.SaveChanges();
 
-            Console.WriteLine($"Delete profile: {profile.Name}");
+            Console.WriteLine($"Deleted profile: {profile.Name}");
         }
     }
 
@@ -326,7 +326,7 @@ static class ManageProfiles
             db.Profiles.Remove(profile);
             db.SaveChanges();
 
-            Console.WriteLine($"Delete profile: {profile.Name}");
+            Console.WriteLine($"Deleted profile: {profile.Name}");
         }
     }
 
@@ -396,7 +396,7 @@ static class ManageProfiles
 
             // Delete
             db.Profiles.RemoveRange(profiles);
-            Console.WriteLine($"Delete {profiles.Count} profile(s).");
+            Console.WriteLine($"Deleted {profiles.Count} profile(s).");
         }
     }
 
