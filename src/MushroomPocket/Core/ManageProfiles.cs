@@ -152,7 +152,7 @@ static class ManageProfiles
         Constants.CurrentProfileId = profile.Id;
         Console.WriteLine(Constants.CurrentProfileId);
 
-        Console.WriteLine("Created profile successfully.");
+        Console.WriteLine("Created and switched to profile successfully.");
     }
 
     private static void UseProfile()
