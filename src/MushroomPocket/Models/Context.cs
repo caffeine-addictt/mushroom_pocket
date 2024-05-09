@@ -42,7 +42,7 @@ public class MushroomContext : DbContext
     }
 
     /// <summary>
-    /// Short cut to get profile
+    /// Short cut to get current profile
     /// </summary>
     public Profile GetProfile(bool includeTeams = false, bool includeCharacters = false)
     {
@@ -53,6 +53,17 @@ public class MushroomContext : DbContext
         query = includeCharacters ? query.Include(p => p.Characters) : query;
 
         return query.Where(p => p.Id == Constants.CurrentProfileId).First()!;
+    }
+
+    /// <summary>
+    /// Short cut to get Profiles
+    /// </summary>
+    public IQueryable<Profile> GetProfiles(bool includeCharacters = false, bool includeTeams = false)
+    {
+        IQueryable<Profile> query = this.Profiles;
+        query = includeTeams ? query.Include(p => p.Teams) : query;
+        query = includeCharacters ? query.Include(p => p.Characters) : query;
+        return query;
     }
 
     /// <summary>
