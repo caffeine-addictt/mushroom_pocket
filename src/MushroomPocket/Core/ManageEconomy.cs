@@ -11,5 +11,5 @@ namespace MushroomPocket.Core;
 
 public static class ManageEconomy
 {
-    
+
 }
