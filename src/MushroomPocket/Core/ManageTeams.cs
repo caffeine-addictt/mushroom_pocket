@@ -28,6 +28,19 @@ public static class ManageTeams
     );
 
 
+    // Echo
+    public static void EchoTeam(Team t)
+        => Console.WriteLine(String.Join(
+            "\n",
+            @"-----------------------",
+            $"ID: {t.Id}",
+            $"Name: {t.Name}",
+            $"Description: {t.Description}",
+            $"Character(s): {t.Characters.Count}",
+            @"-----------------------"
+        ));
+
+
     // Main entry point
     public static void MainEntry()
     {
@@ -211,19 +224,7 @@ public static class ManageTeams
         }
 
         foreach (Team t in sorted)
-        {
-            Console.WriteLine(
-                String.Join(
-                    "\n",
-                    @"-----------------------",
-                    $"ID: {t.Id}",
-                    $"Name: {t.Name}",
-                    $"Description: {t.Description}",
-                    $"Character(s): {t.Characters.Count}",
-                    @"-----------------------"
-                )
-            );
-        }
+            EchoTeam(t);
     }
 
     // Option 6-4: List character(s) in team
@@ -297,11 +298,129 @@ public static class ManageTeams
     // Option 6-5: Delete team(s)
     private static void DeleteTeams()
     {
-        // Ask for pattern
-        Console.Write("Enter Team Name or ID [* for all]: ");
-        string? delPattern = Console.ReadLine();
+        Console.Write(String.Join(
+            "\n",
+            @"",
+            @"(1). Delete team from ID",
+            @"(2). Delete team from Name",
+            @"(3). Delete team from pattern",
+            @"(4). Delete all teams",
+            @"Please only enter [1, 2, 3, 4] or b to go back: "
+        ));
 
-        if (String.IsNullOrWhiteSpace(delPattern))
+        switch ((Console.ReadLine() ?? "").ToLower()) {
+            case "1":
+                DeleteTeamFromID();
+                break;
+
+            case "2":
+                DeleteTeamFromName();
+                break;
+
+            case "3":
+                DeleteTeamFromPattern();
+                break;
+
+            case "4":
+                DeleteAllTeams();
+                break;
+
+            case "b":
+                return;
+            
+            default:
+                Console.WriteLine("\nInvalid input. Please only enter [1, 2, 3, 4] or b to go back.");
+                break;
+        }
+    }
+
+    // Option 5-1: Delete from ID
+    private static void DeleteTeamFromID()
+    {
+        // Ask for ID
+        Console.Write("Enter Team ID: ");
+        string id = (Console.ReadLine() ?? "").Trim();
+
+        if (String.IsNullOrWhiteSpace(id))
+        {
+            Console.WriteLine("\nTeam ID cannot be empty.");
+            return;
+        }
+
+        using (MushroomContext db = new MushroomContext())
+        {
+            Profile profile = db.GetProfile(false, true);
+            List<Team> teams = profile.Teams.ToList();
+
+            Similarity topSuggestion;
+            if (!StringUtils.SmartLookUp(id, teams.Select(t => t.Id.ToString()), out topSuggestion!))
+            {
+                Console.WriteLine("\nTeam not found.");
+                return;
+            }
+
+            if (topSuggestion.QualifiedText.ToLower() != topSuggestion.OriginalText.ToLower())
+            {
+                Console.Write($"\nDid you mean '{topSuggestion.QualifiedText}'? ({topSuggestion.ScoreToString()}%) [Y/N]: ");
+                if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+            }
+
+            Team delTeam = teams.Where(c => c.Id == topSuggestion.QualifiedText).First();
+
+            teams.Remove(delTeam);
+            db.SaveChanges();
+
+            Console.WriteLine($"Deleted team: {delTeam.Name}");
+        }
+    }
+
+    // Option 5-2: Delete from Name
+    private static void DeleteTeamFromName()
+    {
+        // Ask for name
+        Console.Write("Enter Team Name: ");
+        string name = (Console.ReadLine() ?? "").Trim();
+
+        if (String.IsNullOrWhiteSpace(name))
+        {
+            Console.WriteLine("\nTeam Name cannot be empty.");
+            return;
+        }
+
+        using (MushroomContext db = new MushroomContext())
+        {
+            Profile profile = db.GetProfile(false, true);
+            List<Team> teams = profile.Teams.ToList();
+
+            Similarity topSuggestion;
+            if (!StringUtils.SmartLookUp(name, teams.Select(t => t.Name), out topSuggestion!))
+            {
+                Console.WriteLine("\nTeam not found.");
+                return;
+            }
+
+            if (topSuggestion.QualifiedText.ToLower() != topSuggestion.OriginalText.ToLower())
+            {
+                Console.Write($"\nDid you mean '{topSuggestion.QualifiedText}'? ({topSuggestion.ScoreToString()}%) [Y/N]: ");
+                if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+            }
+
+            Team delTeam = teams.Where(t => t.Name == topSuggestion.QualifiedText).First();
+            profile.Teams.Remove(delTeam);
+            db.SaveChanges();
+
+            Console.WriteLine($"Deleted team: {delTeam.Name}");
+        }
+    }
+
+    // Option 5-3: Delete from pattern
+    private static void DeleteTeamFromPattern()
+    {
+        // Ask for pattern
+        Console.Write("Enter Team Name or ID: ");
+        string pattern = (Console.ReadLine() ?? "").Trim();
+
+        if (String.IsNullOrWhiteSpace(pattern))
         {
             Console.WriteLine("\nTeam name or ID cannot be empty.");
             return;
@@ -309,32 +428,56 @@ public static class ManageTeams
 
         using (MushroomContext db = new MushroomContext())
         {
-            Profile profile = db.GetProfile(true);
-            List<Team> delList =
-                (delPattern! == "*")
-                    ? profile.Teams.ToList()
-                    : profile
-                        .Teams.Where(
-                            (Team t) =>
-                                t.Name.StartsWith(delPattern!) || t.Id.StartsWith(delPattern!)
-                        )
-                        .ToList();
+            List<Team> teams = db.GetTeams(true)
+                .Where(t =>
+                    t.Id.ToLower().StartsWith(pattern)
+                    || t.Name.ToLower().StartsWith(pattern)
+                )
+                .ToList();
 
-            // Check if empty
-            if (delList.Count == 0)
+            if (teams.Count == 0)
             {
                 Console.WriteLine("\nNo team(s) found. Nothing to delete.");
                 return;
             }
 
             // Ask for confirmation
-            Console.Write($"Are you sure you want to delete {delList.Count} team(s)? [Y/N]: ");
-            if ((Console.ReadLine() ?? "").ToLower() != "y")
-                return;
+            Console.Write($"Are you sure you want to delete {teams.Count} team(s)? [Y/N] or L to list the affected team(s): ");            
+            switch ((Console.ReadLine() ?? "").ToLower()) {
+                case "l":
+                    foreach (Team t in teams)
+                        EchoTeam(t);
 
-            profile.Teams.ExceptWith(delList);
+                    // Final confirmation
+                    Console.Write("Are you sure you want to delete these teams? [Y/N]: ");
+                    if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+                    break;
+                case "y":
+                    break;
+
+                default:
+                    return;
+            }
+
+            // Delete
+            db.Teams.RemoveRange(teams);
+            Console.WriteLine($"Deleted {teams.Count} team(s).");
+        }
+    }
+
+    // Option 5-4: Delete all
+    private static void DeleteAllTeams()
+    {
+        using (MushroomContext db = new MushroomContext())
+        {
+            List<Team> teamList = db.GetTeams().ToList();
+
+            Console.Write($"Are you sure you want to delete {teamList.Count()} team(s)? [Y/N]: ");
+            if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+            db.Teams.RemoveRange(teamList);
             db.SaveChanges();
-            Console.WriteLine($"{delList.Count} team(s) have been deleted.");
+
+            Console.WriteLine("All teams deleted.");
         }
     }
 }
