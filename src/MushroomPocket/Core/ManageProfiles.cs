@@ -124,6 +124,7 @@ static class ManageProfiles
                 Console.WriteLine("\nInvalid input. Please only enter [1, 2, 3] or Q to quit.");
                 break;
         }
+        Console.WriteLine();
     }
 
     // Option 7-1: Add profile
