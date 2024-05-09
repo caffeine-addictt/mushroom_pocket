@@ -16,17 +16,23 @@ namespace MushroomPocket.Core;
 
 static class ManageProfiles
 {
+    public static readonly string FirstTimeInterfaceText = String.Join(
+        "\n",
+        @"Welcome to MushroomPocket, please select one of the following options to get started:",
+        @"(1). Add a new profile",
+        @"(2). Use profile",
+        @"(3). List all profile(s)",
+        @"Please only enter [1, 2, 3] or Q to quit: "
+    );
     public static readonly string InterfaceText = String.Join(
         "\n",
-        [
-            @"",
-            @"(1). Add a new profile",
-            @"(2). Use profile",
-            @"(3). Show current profile",
-            @"(4). List all profile(s)",
-            @"(5). Delete profile(s)",
-            @"Please only enter [1, 2, 3, 4, 5] or b to go back: "
-        ]
+        @"",
+        @"(1). Add a new profile",
+        @"(2). Use profile",
+        @"(3). Show current profile",
+        @"(4). List all profile(s)",
+        @"(5). Delete profile(s)",
+        @"Please only enter [1, 2, 3, 4, 5] or b to go back: "
     );
 
     // Main entry point
@@ -83,9 +89,28 @@ static class ManageProfiles
         }
 
         // Show interface text
-        Console.WriteLine("Welcome to MushroomPocket, please choose your profile.");
-        UseProfile();
-        Console.WriteLine();
+        Console.Write(FirstTimeInterfaceText);
+        switch ((Console.ReadLine() ?? "").ToLower()) {
+            case "1":
+                AddProfile();
+                break;
+
+            case "2":
+                UseProfile();
+                break;
+
+            case "3":
+                ListAllProfiles();
+                break;
+
+            case "q":
+                Environment.Exit(0);
+                break;
+
+            default:
+                Console.WriteLine("\nInvalid input. Please only enter [1, 2, 3] or Q to quit.");
+                break;
+        }
     }
 
     // Option 7-1: Add profile
