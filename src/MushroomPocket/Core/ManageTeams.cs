@@ -308,7 +308,8 @@ public static class ManageTeams
             @"Please only enter [1, 2, 3, 4] or b to go back: "
         ));
 
-        switch ((Console.ReadLine() ?? "").ToLower()) {
+        switch ((Console.ReadLine() ?? "").ToLower())
+        {
             case "1":
                 DeleteTeamFromID();
                 break;
@@ -327,7 +328,7 @@ public static class ManageTeams
 
             case "b":
                 return;
-            
+
             default:
                 Console.WriteLine("\nInvalid input. Please only enter [1, 2, 3, 4] or b to go back.");
                 break;
@@ -442,8 +443,9 @@ public static class ManageTeams
             }
 
             // Ask for confirmation
-            Console.Write($"Are you sure you want to delete {teams.Count} team(s)? [Y/N] or L to list the affected team(s): ");            
-            switch ((Console.ReadLine() ?? "").ToLower()) {
+            Console.Write($"Are you sure you want to delete {teams.Count} team(s)? [Y/N] or L to list the affected team(s): ");
+            switch ((Console.ReadLine() ?? "").ToLower())
+            {
                 case "l":
                     foreach (Team t in teams)
                         EchoTeam(t);

@@ -90,7 +90,8 @@ static class ManageProfiles
 
         // Show interface text
         Console.Write(FirstTimeInterfaceText);
-        switch ((Console.ReadLine() ?? "").ToLower()) {
+        switch ((Console.ReadLine() ?? "").ToLower())
+        {
             case "1":
                 AddProfile();
                 break;
@@ -233,7 +234,8 @@ static class ManageProfiles
             @"Please only enter [1, 2, 3, 4] or b to go back: "
         ));
 
-        switch ((Console.ReadLine() ?? "").ToLower()) {
+        switch ((Console.ReadLine() ?? "").ToLower())
+        {
             case "1":
                 DeleteProfileFromID();
                 break;
@@ -252,7 +254,7 @@ static class ManageProfiles
 
             case "b":
                 return;
-            
+
             default:
                 Console.WriteLine("\nInvalid input. Please only enter [1, 2, 3, 4] or b to go back.");
                 break;
@@ -384,8 +386,9 @@ static class ManageProfiles
             }
 
             // Ask for confirmation
-            Console.Write($"Are you sure you want to delete {profiles.Count} profile(s)? [Y/N] or L to list the affected profiles: ");            
-            switch ((Console.ReadLine() ?? "").ToLower()) {
+            Console.Write($"Are you sure you want to delete {profiles.Count} profile(s)? [Y/N] or L to list the affected profiles: ");
+            switch ((Console.ReadLine() ?? "").ToLower())
+            {
                 case "l":
                     foreach (Profile profile in profiles)
                         Console.WriteLine(String.Join(

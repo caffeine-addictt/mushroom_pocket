@@ -154,7 +154,8 @@ public static class ManageCharacters
             @"Please only enter [1, 2, 3, 4] or b to go back: "
         ));
 
-        switch ((Console.ReadLine() ?? "").ToLower()) {
+        switch ((Console.ReadLine() ?? "").ToLower())
+        {
             case "1":
                 DeleteCharacterFromID();
                 break;
@@ -173,7 +174,7 @@ public static class ManageCharacters
 
             case "b":
                 return;
-            
+
             default:
                 Console.WriteLine("\nInvalid input. Please only enter [1, 2, 3, 4] or b to go back.");
                 break;
@@ -288,8 +289,9 @@ public static class ManageCharacters
             }
 
             // Ask for confirmation
-            Console.Write($"Are you sure you want to delete {characters.Count} character(s)? [Y/N] or L to list the affected character(s): ");            
-            switch ((Console.ReadLine() ?? "").ToLower()) {
+            Console.Write($"Are you sure you want to delete {characters.Count} character(s)? [Y/N] or L to list the affected character(s): ");
+            switch ((Console.ReadLine() ?? "").ToLower())
+            {
                 case "l":
                     foreach (Character c in characters)
                         EchoCharacter(c);
