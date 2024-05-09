@@ -14,6 +14,22 @@ namespace MushroomPocket.Core;
 
 public static class ManageCharacters
 {
+    // Abstract echo
+    public static void EchoCharacter(Character c)
+        => Console.WriteLine(String.Join(
+            "\n",
+            @"-----------------------",
+            $"ID: {c.Id}",
+            $"Name: {c.Name}",
+            $"HP: {c.Hp}",
+            $"EXP: {c.Exp}",
+            $"Skill: {c.Skill}",
+            @"-----------------------"
+        ));
+
+
+
+
     // Option 1: Add character
     public static void AddCharacter()
     {
@@ -100,20 +116,7 @@ public static class ManageCharacters
         }
 
         foreach (Character c in sorted)
-        {
-            Console.WriteLine(
-                String.Join(
-                    "\n",
-                    @"-----------------------",
-                    $"ID: {c.Id}",
-                    $"Name: {c.Name}",
-                    $"HP: {c.Hp}",
-                    $"EXP: {c.Exp}",
-                    $"Skill: {c.Skill}",
-                    @"-----------------------"
-                )
-            );
-        }
+            EchoCharacter(c);
     }
 
     // Option 3: Check transformation
