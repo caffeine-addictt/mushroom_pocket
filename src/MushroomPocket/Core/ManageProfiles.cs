@@ -149,8 +149,6 @@ static class ManageProfiles
 
         // Update constants
         Constants.CurrentProfileId = profile.Id;
-        Console.WriteLine(Constants.CurrentProfileId);
-
         Console.WriteLine("Created and switched to profile successfully.");
     }
 
@@ -194,7 +192,6 @@ static class ManageProfiles
     // Option 7-3: Show current profile
     private static void ShowCurrentProfile()
     {
-        Console.WriteLine(Constants.CurrentProfileId);
         using (MushroomContext db = new MushroomContext())
         {
             Profile profile = db.Profiles.Where(p => p.Id == Constants.CurrentProfileId).Include(p => p.Characters).Include(p => p.Teams).First()!;
