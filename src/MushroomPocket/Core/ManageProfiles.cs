@@ -35,6 +35,18 @@ static class ManageProfiles
         @"Please only enter [1, 2, 3, 4, 5] or b to go back: "
     );
 
+    // Echo
+    public static void EchoProfile(Profile p)
+        => Console.WriteLine(String.Join(
+            "\n",
+            @"-----------------------",
+            $"Name: {p.Name}",
+            $"Wallet: ${p.Wallet}",
+            $"Team(s): {p.Teams.Count}",
+            $"Character(s): {p.Characters.Count}",
+            @"-----------------------"
+        ));
+
     // Main entry point
     public static void MainEntry()
     {
@@ -186,14 +198,7 @@ static class ManageProfiles
         using (MushroomContext db = new MushroomContext())
         {
             Profile profile = db.Profiles.Where(p => p.Id == Constants.CurrentProfileId).Include(p => p.Characters).Include(p => p.Teams).First()!;
-            Console.WriteLine(String.Join("\n", [
-                @"-----------------------",
-                $"Current profile: {profile.Name}",
-                $"Wallet: ${profile.Wallet}",
-                $"Team(s): {profile.Teams.Count()}",
-                $"Character(s): {profile.Characters.Count()}",
-                @"-----------------------",
-            ]));
+            EchoProfile(profile);
         }
     }
 
@@ -211,14 +216,7 @@ static class ManageProfiles
         }
 
         foreach (Profile profile in profiles)
-            Console.WriteLine(String.Join("\n", [
-                @"-----------------------",
-                $"Profile: {profile.Name}",
-                $"Wallet: ${profile.Wallet}",
-                $"Team(s): {profile.Teams.Count()}",
-                $"Character(s): {profile.Characters.Count()}",
-                @"-----------------------",
-            ]));
+            EchoProfile(profile);
     }
 
     // Option 7-5: Delete profiles
@@ -391,16 +389,7 @@ static class ManageProfiles
             {
                 case "l":
                     foreach (Profile profile in profiles)
-                        Console.WriteLine(String.Join(
-                            "\n",
-                            @"-----------------------",
-                            $"ID: {profile.Id}",
-                            $"Name: {profile.Name}",
-                            $"Wallet: ${profile.Wallet}",
-                            $"Team(s): {profile.Teams.Count()}",
-                            $"Character(s): {profile.Characters.Count()}",
-                            @"-----------------------"
-                        ));
+                        EchoProfile(profile);
 
                     // Final confirmation
                     Console.Write("Are you sure you want to delete these profiles? [Y/N]: ");
