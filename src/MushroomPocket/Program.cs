@@ -6,14 +6,30 @@
  * Admin: 230725N
  */
 
-using Microsoft.EntityFrameworkCore;
 using MushroomPocket.Models;
-using MushroomPocket.Utils;
+using MushroomPocket.Core;
 
 namespace MushroomPocket;
 
 class Program
 {
+    static readonly string InterfaceText = String.Join(
+        "\n",
+        [
+            @"********************************",
+            @"Welcome to Mushroom Pocket App",
+            @"********************************",
+            @"(1). Add Mushroom's character to my pocket",
+            @"(2). List character(s) in my pocket",
+            @"(3). Check if I can transform my characters",
+            @"(4). Transform my character(s)",
+            @"(5). Delete character(s) from my pocket",
+            @"(6). Manage my team(s)",
+            @"(7). Manage my profile(s)",
+            @"Please only enter [1, 2, 3, 4, 5, 6, 7] or Q to quit: "
+        ]
+    );
+
     static void Main(string[] args)
     {
         if (args.Length > 0)
@@ -21,9 +37,6 @@ class Program
             Console.WriteLine("Usage: MushroomPocket");
             Environment.Exit(1);
         }
-
-        // Ensure Save Dir
-        SaveUtils.EnsureSaveDir();
 
         // Ensure DB exists
         using (MushroomContext db = new MushroomContext())
@@ -70,54 +83,40 @@ class Program
         // Main event loop.
         while (true)
         {
-            // Ask for action.
-            Console.Write(
-                String.Join(
-                    "\n",
-                    [
-                        @"********************************",
-                        @"Welcome to Mushroom Pocket App",
-                        @"********************************",
-                        @"(1). Add Mushroom's character to my pocket",
-                        @"(2). List character(s) in my pocket",
-                        @"(3). Check if I can transform my characters",
-                        @"(4). Transform my character(s)",
-                        @"(5). Delete character(s) from my pocket",
-                        @"(6). Manage my teams",
-                        @"(7). Manage my saves",
-                        @"Please only enter [1, 2, 3, 4, 5, 6, 7] or Q to quit: "
-                    ]
-                )
-            );
+            // get/create a profile
+            ManageProfiles.FirstTimeOrAccess();
 
+            // Proceed on if there is a profile
+            if (Constants.CurrentProfileId == null) continue;
+            Console.Write(InterfaceText);
             switch ((Console.ReadLine() ?? "").ToLower())
             {
                 case "1":
-                    AddCharacter();
+                    ManageCharacters.AddCharacter();
                     break;
 
                 case "2":
-                    ListCharacters();
+                    ManageCharacters.ListCharacters();
                     break;
 
                 case "3":
-                    CheckTransformation(mushroomMasters);
+                    ManageCharacters.CheckTransformation(mushroomMasters);
                     break;
 
                 case "4":
-                    TransformCharacters(mushroomMasters);
+                    ManageCharacters.TransformCharacters(mushroomMasters);
                     break;
 
                 case "5":
-                    DeleteCharacters();
+                    ManageCharacters.DeleteCharacters();
                     break;
 
                 case "6":
-                    ManageTeams();
+                    ManageTeams.MainEntry();
                     break;
 
                 case "7":
-                    ManageSaves();
+                    ManageProfiles.MainEntry();
                     break;
 
                 case "q":
@@ -127,7 +126,7 @@ class Program
 
                 default:
                     Console.WriteLine(
-                        "\nInvalid action. Please only enter [1, 2, 3, 4] or Q to quit."
+                        "\nInvalid action. Please only enter [1, 2, 3, 4, 5, 6, 7] or Q to quit."
                     );
                     break;
             }
@@ -135,641 +134,5 @@ class Program
             // Insert newline
             Console.WriteLine();
         }
-    }
-
-    // Option 1: Add character
-    private static void AddCharacter()
-    {
-        // Name
-        Console.Write("Enter Character's Name: ");
-        Similarity? topSuggestion;
-        List<string> possibleNames = new List<string>() { "Daisy", "Wario", "Waluigi" };
-
-        if (
-            !StringUtils.SmartLookUp(Console.ReadLine() ?? "", possibleNames, out topSuggestion)
-            || topSuggestion == null
-        )
-        {
-            Console.WriteLine(
-                "\nInvalid character name. Please only enter ['Daisy', 'Wario', 'Waluigi']."
-            );
-            return;
-        }
-
-        if (topSuggestion.QualifiedText.ToLower() != topSuggestion.OriginalText.ToLower())
-        {
-            Console.Write(
-                $"\nDid you mean '{topSuggestion.QualifiedText}'? ({topSuggestion.ScoreToString()}%) [Y/N]: "
-            );
-            if ((Console.ReadLine() ?? "").ToLower() != "y")
-                return;
-        }
-
-        // HP
-        Console.Write("Enter Character's HP: ");
-        float charHP;
-        if (!float.TryParse(Console.ReadLine(), out charHP))
-        {
-            Console.WriteLine("\nInvalid HP. Please only enter a number.");
-            return;
-        }
-
-        // Exp
-        Console.Write("Enter Character's EXP: ");
-        int charEXP;
-        if (!int.TryParse(Console.ReadLine(), out charEXP))
-        {
-            Console.WriteLine("\nInvalid EXP. Please only enter an integer.");
-            return;
-        }
-
-        // Add char
-        string? errOut;
-        Character? newChar = Character.From(
-            topSuggestion.QualifiedText,
-            charHP,
-            charEXP,
-            out errOut
-        );
-        if (errOut != null)
-        {
-            Console.WriteLine("\n" + errOut);
-            return;
-        }
-
-        using (MushroomContext db = new MushroomContext())
-        {
-            db.Characters.Add(newChar!);
-            db.SaveChanges();
-        }
-        Console.WriteLine($"{topSuggestion.QualifiedText} has been added.");
-        return;
-    }
-
-    // Option 2: List Characters
-    private static void ListCharacters()
-    {
-        // Sort descending
-        List<Character> sorted;
-        using (MushroomContext db = new MushroomContext())
-        {
-            sorted = db.Characters.OrderByDescending((Character c) => c.Hp).ToList();
-        }
-
-        if (sorted.Count == 0)
-        {
-            Console.WriteLine("\nNo character(s) to list!");
-            return;
-        }
-
-        foreach (Character c in sorted)
-        {
-            Console.WriteLine(
-                String.Join(
-                    "\n",
-                    @"-----------------------",
-                    $"ID: {c.Id}",
-                    $"Name: {c.Name}",
-                    $"HP: {c.Hp}",
-                    $"EXP: {c.Exp}",
-                    $"Skill: {c.Skill}",
-                    @"-----------------------"
-                )
-            );
-        }
-    }
-
-    // Option 3: Check transformation
-    private static void CheckTransformation(List<MushroomMaster> mushroomMasters)
-    {
-        // Check transformation
-        List<MushroomMaster> canEvoList = Character.CanEvolve(mushroomMasters);
-        foreach (MushroomMaster m in canEvoList)
-        {
-            Console.WriteLine($"{m.Name} -> {m.TransformTo}");
-        }
-    }
-
-    // Option 4: Transform characters
-    private static void TransformCharacters(List<MushroomMaster> mushroomMasters)
-    {
-        // Transform character
-        List<MushroomMaster> evolved = Character.Evolve(mushroomMasters);
-        foreach (MushroomMaster m in evolved)
-        {
-            Console.WriteLine($"{m.Name} has been transformed to {m.TransformTo}.");
-        }
-    }
-
-    // Option 5: Delete characters
-    private static void DeleteCharacters()
-    {
-        // Ask for pattern
-        Console.Write("Enter Character Name or ID [* for all]: ");
-        string? delPattern = Console.ReadLine();
-
-        if (String.IsNullOrWhiteSpace(delPattern))
-        {
-            Console.WriteLine("\nCharacter name or ID cannot be empty.");
-            return;
-        }
-
-        using (MushroomContext db = new MushroomContext())
-        {
-            List<Character> delList =
-                (delPattern! == "*")
-                    ? db.Characters.ToList()
-                    : db
-                        .Characters.Where(
-                            (Character c) =>
-                                c.Name.StartsWith(delPattern!) || c.Id.StartsWith(delPattern!)
-                        )
-                        .ToList();
-
-            // Check if empty
-            if (delList.Count == 0)
-            {
-                Console.WriteLine("\nNo character(s) found. Nothing to delete.");
-                return;
-            }
-
-            // Ask for confirmation
-            Console.Write($"Are you sure you want to delete {delList.Count} character(s)? [Y/N]: ");
-            if ((Console.ReadLine() ?? "").ToLower() != "y")
-                return;
-
-            db.RemoveRange(delList);
-            db.SaveChanges();
-            Console.WriteLine($"{delList.Count} character(s) have been deleted.");
-        }
-    }
-
-    // Option 6: Manage teams
-    private static void ManageTeams()
-    {
-        // Ask for action.
-        Console.Write(
-            String.Join(
-                "\n",
-                [
-                    @"",
-                    @"(1). Add a new team to my pocket",
-                    @"(2). Add Mushroom's character to a team",
-                    @"(3). List team(s) in my pocket",
-                    @"(4). List character(s) in a team",
-                    @"(5). Delete team(s) from my pocket",
-                    @"Please only enter [1, 2, 3, 4, 5] or b to go back: "
-                ]
-            )
-        );
-        string action = Console.ReadLine() ?? "";
-
-        switch (action.ToLower())
-        {
-            case "1":
-                AddTeam();
-                break;
-
-            case "2":
-                AddCharacterToTeam();
-                break;
-
-            case "3":
-                ListTeams();
-                break;
-
-            case "4":
-                ListCharactersInTeam();
-                break;
-
-            case "5":
-                DeleteTeams();
-                break;
-
-            case "b":
-                break;
-
-            default:
-                Console.WriteLine(
-                    "\nInvalid action. Please only enter [1, 2, 3, 4, 5] or Q to quit."
-                );
-                break;
-        }
-    }
-
-    // Option 6-1: Add new team
-    private static void AddTeam()
-    {
-        // Name
-        Console.Write("Enter new team name: ");
-        string teamName = (Console.ReadLine() ?? "").Trim();
-        if (String.IsNullOrWhiteSpace(teamName))
-        {
-            Console.WriteLine("\nTeam name cannot be empty.");
-            return;
-        }
-
-        // Desc
-        Console.Write("Enter a team description: ");
-        string teamDesc = (Console.ReadLine() ?? "").Trim();
-
-        using (MushroomContext db = new MushroomContext())
-        {
-            if (db.Teams.Where((Team t) => t.Name == teamName).Count() > 0)
-            {
-                Console.WriteLine("\nTeam name already exists.");
-                return;
-            }
-            db.Teams.Add(new Team(teamName, teamDesc));
-            db.SaveChanges();
-        }
-
-        Console.WriteLine($"{teamName} has been added.");
-    }
-
-    // Option 6-2: Add character to team
-    private static void AddCharacterToTeam()
-    {
-        // Ask for pattern
-        Console.Write("Enter Character Name or ID [* for all]: ");
-        string namePattern = Console.ReadLine() ?? "";
-
-        if (String.IsNullOrWhiteSpace(namePattern))
-        {
-            Console.WriteLine("\nCharacter name or ID cannot be empty.");
-            return;
-        }
-
-        // Ask for team pattern
-        Console.Write("Enter Team Name or ID [* for all]: ");
-        string teamPattern = Console.ReadLine() ?? "";
-        if (String.IsNullOrWhiteSpace(teamPattern))
-        {
-            Console.WriteLine("\nTeam name or ID cannot be empty.");
-            return;
-        }
-
-        using (MushroomContext db = new MushroomContext())
-        {
-            List<Character> charList =
-                namePattern == "*"
-                    ? db.Characters.ToList()
-                    : db
-                        .Characters.Where(
-                            (Character c) =>
-                                c.Name.StartsWith(namePattern) || c.Id.StartsWith(namePattern)
-                        )
-                        .ToList();
-
-            HashSet<Team> teamList =
-                teamPattern == "*"
-                    ? db.Teams.Include(t => t.Characters).ToHashSet()
-                    : db
-                        .Teams.Include(t => t.Characters)
-                        .Where(
-                            (Team t) =>
-                                t.Name.StartsWith(teamPattern) || t.Id.StartsWith(teamPattern)
-                        )
-                        .ToHashSet();
-
-            // Check if empty
-            if (charList.Count == 0)
-            {
-                Console.WriteLine("\nNo character(s) found. Nothing to add to team.");
-                return;
-            }
-            if (teamList.Count == 0)
-            {
-                Console.WriteLine("\nNo team(s) found. Nothing to add to team.");
-                return;
-            }
-
-            // Confirmation
-            Console.Write(
-                $"Are you sure you want to add {charList.Count} character(s) to {teamList.Count} team(s)? [Y/N]: "
-            );
-            if ((Console.ReadLine() ?? "").ToLower() != "y")
-                return;
-
-            // Add
-            bool hasChange = false;
-            foreach (Team t in teamList)
-            {
-                if (t.Characters.Intersect(t.Characters).Count() > 0)
-                {
-                    if (teamPattern == "*")
-                        continue;
-                    Console.WriteLine(
-                        $"\nTeam {t.Name} already has the character(s) {String.Join(", ", t.Characters)}."
-                    );
-                    return;
-                }
-
-                hasChange = true;
-                t.AddCharacterRange(charList);
-            }
-
-            if (!hasChange)
-            {
-                Console.WriteLine(
-                    $"\nCharacter(s) {String.Join(", ", charList)} already exist in team(s)."
-                );
-                return;
-            }
-
-            db.SaveChanges();
-            Console.WriteLine(
-                $"{charList.Count} character(s) have been added to {teamList.Count} team(s)."
-            );
-        }
-    }
-
-    // Option 6-3: List team(s)
-    private static void ListTeams()
-    {
-        // Sort descending
-        List<Team> sorted;
-        using (MushroomContext db = new MushroomContext())
-        {
-            sorted = db.Teams.Include(t => t.Characters).ToList();
-        }
-        sorted.Sort((Team t1, Team t2) => t2.Characters.Count.CompareTo(t1.Characters.Count));
-
-        if (sorted.Count == 0)
-        {
-            Console.WriteLine("\nNo team(s) to list!");
-            return;
-        }
-
-        foreach (Team t in sorted)
-        {
-            Console.WriteLine(
-                String.Join(
-                    "\n",
-                    @"-----------------------",
-                    $"ID: {t.Id}",
-                    $"Name: {t.Name}",
-                    $"Description: {t.Description}",
-                    $"Character(s): {t.Characters.Count}",
-                    @"-----------------------"
-                )
-            );
-        }
-    }
-
-    // Option 6-4: List character(s) in team
-    private static void ListCharactersInTeam()
-    {
-        // Ask for pattern
-        Console.Write("Enter Team Name or ID: ");
-        string teamPattern = Console.ReadLine() ?? "";
-
-        using (MushroomContext db = new MushroomContext())
-        {
-            Similarity topSuggestion;
-            if (
-                !StringUtils.SmartLookUp(
-                    teamPattern,
-                    db.Teams.Select((Team t) => t.Name).ToList(),
-                    out topSuggestion!
-                )
-            )
-            {
-                Console.WriteLine("\nTeam name or ID not found.");
-                return;
-            }
-
-            // Confirmation if not the same
-            if (
-                StringUtils.Clean(teamPattern, true)
-                != StringUtils.Clean(topSuggestion.QualifiedText, true)
-            )
-            {
-                Console.Write($"\nDid you mean {topSuggestion.QualifiedText}? [Y/N]: ");
-                if ((Console.ReadLine() ?? "").ToLower() != "y")
-                    return;
-            }
-
-            // Stdout characters
-            List<Character> charList = db
-                .Teams.Include(t => t.Characters)
-                .Where((Team t) => t.Name == topSuggestion.QualifiedText)
-                .First()!
-                .Characters.ToList();
-            charList.Sort((Character c1, Character c2) => c2.Hp.CompareTo(c1.Hp));
-
-            if (charList.Count == 0)
-            {
-                Console.WriteLine("\nNo character(s) to list!");
-                return;
-            }
-
-            foreach (Character c in charList)
-            {
-                Console.WriteLine(
-                    String.Join(
-                        "\n",
-                        [
-                            @"-----------------------",
-                            $"ID: {c.Id}",
-                            $"Name: {c.Name}",
-                            $"HP: {c.Hp}",
-                            $"EXP: {c.Exp}",
-                            $"Skill: {c.Skill}",
-                            @"-----------------------"
-                        ]
-                    )
-                );
-            }
-        }
-    }
-
-    // Option 6-5: Delete team(s)
-    private static void DeleteTeams()
-    {
-        // Ask for pattern
-        Console.Write("Enter Team Name or ID [* for all]: ");
-        string? delPattern = Console.ReadLine();
-
-        if (String.IsNullOrWhiteSpace(delPattern))
-        {
-            Console.WriteLine("\nTeam name or ID cannot be empty.");
-            return;
-        }
-
-        using (MushroomContext db = new MushroomContext())
-        {
-            List<Team> delList =
-                (delPattern! == "*")
-                    ? db.Teams.ToList()
-                    : db
-                        .Teams.Where(
-                            (Team t) =>
-                                t.Name.StartsWith(delPattern!) || t.Id.StartsWith(delPattern!)
-                        )
-                        .ToList();
-
-            // Check if empty
-            if (delList.Count == 0)
-            {
-                Console.WriteLine("\nNo team(s) found. Nothing to delete.");
-                return;
-            }
-
-            // Ask for confirmation
-            Console.Write($"Are you sure you want to delete {delList.Count} team(s)? [Y/N]: ");
-            if ((Console.ReadLine() ?? "").ToLower() != "y")
-                return;
-
-            db.RemoveRange(delList);
-            db.SaveChanges();
-            Console.WriteLine($"{delList.Count} team(s) have been deleted.");
-        }
-    }
-
-    // Option 7: Manage saves
-    private static void ManageSaves()
-    {
-        Console.Write(
-            String.Join(
-                "\n",
-                [
-                    @"",
-                    @"(1). Save progress",
-                    @"(2). Load progress",
-                    @"(3). List saves",
-                    @"(4). Delete save(s)",
-                    @"Please only enter [1, 2, 3, 4] or b to go back: ",
-                ]
-            )
-        );
-
-        switch ((Console.ReadLine() ?? "").ToLower())
-        {
-            case "1":
-                SaveProgress();
-                break;
-
-            case "2":
-                LoadProgress();
-                break;
-
-            case "3":
-                ListSaves();
-                break;
-
-            case "4":
-                DeleteSaves();
-                break;
-
-            case "b":
-                return;
-
-            default:
-                Console.WriteLine(
-                    "\nInvalid input. Please only enter [1, 2, 3, 4] or b to go back."
-                );
-                break;
-        }
-    }
-
-    // Option 7-1: Save progress
-    private static void SaveProgress()
-    {
-        // Get name
-        Console.Write("Enter save name: ");
-        string saveName = Console.ReadLine() ?? "";
-
-        if (String.IsNullOrWhiteSpace(saveName))
-        {
-            Console.WriteLine("\nSave name cannot be empty.");
-            return;
-        }
-
-        SaveUtils.CreateSaveFile(saveName);
-        Console.WriteLine($"Save {saveName} has been created.");
-    }
-
-    // Option 7-2: Load progress
-    private static void LoadProgress()
-    {
-        // Get name
-        Console.Write("Enter save name: ");
-        string saveName = (Console.ReadLine() ?? "").Trim();
-
-        Similarity topSuggestion;
-        if (!StringUtils.SmartLookUp(saveName, SaveUtils.GetSaveNames(), out topSuggestion!))
-        {
-            Console.WriteLine("\nSave name not found.");
-            return;
-        }
-
-        if (
-            StringUtils.Clean(saveName, true)
-            != StringUtils.Clean(topSuggestion.QualifiedText, true)
-        )
-        {
-            Console.Write($"\nDid you mean {topSuggestion.QualifiedText}? [Y/N]: ");
-            if ((Console.ReadLine() ?? "").ToLower() != "y")
-                return;
-        }
-
-        SaveUtils.UseSafeFile(SaveUtils.GetFilePathFromName(topSuggestion.QualifiedText));
-        Console.WriteLine(
-            $"Save file {saveName} has been loaded, please restart the program to see the changes."
-        );
-        Environment.Exit(0); // Exit because replacing db is not supported by EF8 :"D
-    }
-
-    // Option 7-3: List saves
-    private static void ListSaves()
-    {
-        string[] saves = SaveUtils.GetSaveNames();
-        if (saves.Length == 0)
-        {
-            Console.WriteLine("\nNo save(s) to list!");
-            return;
-        }
-
-        Console.WriteLine(String.Join("\n", saves));
-    }
-
-    // Option 7-4: Delete save(s)
-    private static void DeleteSaves()
-    {
-        // Get name
-        Console.Write("Enter save name [* for all]: ");
-        string delPattern = (Console.ReadLine() ?? "").Trim();
-
-        if (String.IsNullOrWhiteSpace(delPattern))
-        {
-            Console.WriteLine("\nSave name cannot be empty.");
-            return;
-        }
-
-        if (delPattern == "*")
-        {
-            SaveUtils.DeleteSaveFiles(SaveUtils.ListSaveFiles());
-            Console.WriteLine("All save files have been deleted.");
-            return;
-        }
-
-        string[] saveFiles = SaveUtils
-            .ListSaveFiles()
-            .Where(s => s.ToLower().StartsWith(delPattern.ToLower()))
-            .ToArray();
-        if (saveFiles.Length == 0)
-        {
-            Console.WriteLine("\nNo save file(s) found. Nothing to delete.");
-            return;
-        }
-
-        // Check for confirmation
-        Console.Write($"Are you sure you want to delete {saveFiles.Length} save file(s)? [Y/N]: ");
-        if ((Console.ReadLine() ?? "").ToLower() != "y")
-            return;
-
-        SaveUtils.DeleteSaveFiles(saveFiles);
-        Console.WriteLine($"{saveFiles.Length} save file(s) have been deleted.");
     }
 }

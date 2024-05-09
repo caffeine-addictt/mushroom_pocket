@@ -7,8 +7,10 @@
  */
 
 using Microsoft.EntityFrameworkCore;
+using MushroomPocket.Utils;
 
 namespace MushroomPocket.Models;
+
 
 public class MushroomMaster
 {
@@ -23,6 +25,7 @@ public class MushroomMaster
         this.TransformTo = transformTo;
     }
 }
+
 
 [PrimaryKey("Id")]
 public class Character
@@ -45,6 +48,8 @@ public class Character
     public string Skill { get; set; } = null!;
     public bool EvolvedOnly { get; set; } = true;
 
+
+    public virtual Profile Profile { get; set; } = null!;
     public virtual HashSet<Team> Teams { get; set; } = null!;
 
     /// <summary>
@@ -54,7 +59,7 @@ public class Character
     {
         Hp = hp;
         Exp = exp;
-        Id = Guid.NewGuid().ToString();
+        Id = GenerateId();
     }
 
     public Character(float hp, int exp, string name, string skill, bool evolvedOnly)
@@ -82,6 +87,20 @@ public class Character
         : this(hp, exp, name, skill, evolvedOnly)
     {
         Teams = teams;
+    }
+
+    /// <summary>
+    /// Generate id
+    /// </summary>
+    private static string GenerateId(MushroomContext db)
+    {
+        List<string> ids = db.Characters.Select((Character c) => c.Id).ToList();
+        return StringUtils.TinyId(ids);
+    }
+    private static string GenerateId()
+    {
+        using (MushroomContext db = new MushroomContext())
+            return GenerateId(db);
     }
 
     /// <summary>
@@ -188,9 +207,10 @@ public class Character
         List<MushroomMaster> canEvolve = new List<MushroomMaster>();
         using (MushroomContext db = new MushroomContext())
         {
+            Profile profile = db.GetProfile(false, true);
             foreach (MushroomMaster evo in evoList)
             {
-                int charCount = db.Characters.Where((Character c) => c.Name == evo.Name).Count();
+                int charCount = profile.Characters.Where((Character c) => c.Name == evo.Name).Count();
 
                 int evoCount;
                 if (!CanBeEvolved(charCount, evo.NoToTransform, out evoCount))
@@ -210,9 +230,10 @@ public class Character
         List<MushroomMaster> evolved = new List<MushroomMaster>();
         using (MushroomContext db = new MushroomContext())
         {
+            Profile profile = db.GetProfile(true, true);
             foreach (MushroomMaster m in evoList)
             {
-                List<Character> charList = db
+                List<Character> charList = profile
                     .Characters.Where((Character c) => c.Name == m.Name)
                     .ToList();
 
@@ -221,8 +242,8 @@ public class Character
                     continue;
 
                 // Update DB
-                db.Characters.RemoveRange(charList.Take(m.NoToTransform * evoCount));
-                db.AddRange(
+                profile.Characters.ExceptWith(charList.Take(m.NoToTransform * evoCount));
+                profile.Characters.UnionWith(
                     Enumerable.Repeat(Character.From(m.TransformTo, 100, 0, false), evoCount)
                 );
                 db.SaveChanges();
