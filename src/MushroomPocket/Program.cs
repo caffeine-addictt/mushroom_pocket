@@ -26,7 +26,8 @@ class Program
             @"(5). Delete character(s) from my pocket",
             @"(6). Manage my team(s)",
             @"(7). Manage my profile(s)",
-            @"Please only enter [1, 2, 3, 4, 5, 6, 7] or Q to quit: "
+            @"(8). Store",
+            @"Please only enter [1, 2, 3, 4, 5, 6, 7, 8] or Q to quit: "
         ]
     );
 
@@ -119,6 +120,10 @@ class Program
                     ManageProfiles.MainEntry();
                     break;
 
+                case "8":
+                    ManageEconomy.MainEntry();
+                    break;
+
                 case "q":
                     Console.WriteLine("Thanks for playing. Good bye!");
                     Environment.Exit(0);
@@ -126,7 +131,7 @@ class Program
 
                 default:
                     Console.WriteLine(
-                        "\nInvalid action. Please only enter [1, 2, 3, 4, 5, 6, 7] or Q to quit."
+                        "\nInvalid action. Please only enter [1, 2, 3, 4, 5, 6, 7, 8] or Q to quit."
                     );
                     break;
             }
