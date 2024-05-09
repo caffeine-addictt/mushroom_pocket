@@ -54,6 +54,26 @@ public class MushroomContext : DbContext
 
         return query.Where(p => p.Id == Constants.CurrentProfileId).First()!;
     }
+
+    /// <summary>
+    /// Short cut to get Teams
+    /// </summary>
+    public IQueryable<Team> GetTeams(bool includeCharacters = false)
+    {
+        IQueryable<Team> query = this.Teams.Include(t => t.Profile).Where(t => t.Profile.Id == Constants.CurrentProfileId);
+        query = includeCharacters ? query.Include(t => t.Characters) : query;
+        return query;
+    }
+
+    /// <summary>
+    /// Short cut to get Characters
+    /// </summary>
+    public IQueryable<Character> GetCharacters(bool includeTeams = false)
+    {
+        IQueryable<Character> query = this.Characters.Include(c => c.Profile).Where(c => c.Profile.Id == Constants.CurrentProfileId);
+        query = includeTeams ? query.Include(c => c.Teams) : query;
+        return query;
+    }
 }
 
 

@@ -174,8 +174,8 @@ public static class ManageTeams
                 }
 
                 hasChange = true;
-                profile.Teams.Where(team => team.Id == t.Id).First().Characters.UnionWith(charList);
-                /* t.AddCharacterRange(charList); */
+                /* profile.Teams.Where(team => team.Id == t.Id).First().Characters.UnionWith(charList); */
+                t.Characters.UnionWith(charList);
             }
 
             if (!hasChange)
@@ -200,7 +200,7 @@ public static class ManageTeams
         List<Team> sorted;
         using (MushroomContext db = new MushroomContext())
         {
-            sorted = db.GetProfile(true, true).Teams.ToList();
+            sorted = db.GetTeams(true).ToList();
         }
         sorted.Sort((Team t1, Team t2) => t2.Characters.Count.CompareTo(t1.Characters.Count));
 
@@ -235,11 +235,13 @@ public static class ManageTeams
 
         using (MushroomContext db = new MushroomContext())
         {
+            List<Team> teamList = db.GetTeams(true).ToList();
+
             Similarity topSuggestion;
             if (
                 !StringUtils.SmartLookUp(
                     teamPattern,
-                    db.GetProfile(true, true).Teams.Select((Team t) => t.Name).ToList(),
+                    teamList.Select((Team t) => t.Name).ToList(),
                     out topSuggestion!
                 )
             )
@@ -260,9 +262,7 @@ public static class ManageTeams
             }
 
             // Stdout characters
-            List<Character> charList = db
-                .GetProfile(true)
-                .Teams
+            List<Character> charList = teamList
                 .Where((Team t) => t.Name == topSuggestion.QualifiedText)
                 .First()!
                 .Characters.ToList();
