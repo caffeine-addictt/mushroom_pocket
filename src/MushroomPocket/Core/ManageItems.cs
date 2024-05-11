@@ -34,7 +34,7 @@ public static class ManageItems
             $"ID: {i.Id}",
             $"Name: {i.Name}",
             $"Grade: {i.Grade}",
-            $"Description: {i.GetDescription()}",
+            $"Description: {i.GetEffectDescription()}",
             @"-----------------------"
         ));
 
@@ -78,13 +78,13 @@ public static class ManageItems
             "\n",
             @"-----------------------",
             @"Name: Exp Potion",
-            $"Price: {ExpPotion.Price}",
-            $"Description: {ExpPotion.Description}",
+            $"Price: {ExpPotion.GetPrice("ExpPotion")}",
+            $"Description: {ExpPotion.GetDescription("ExpPotion")}",
             @"-----------------------",
             @"-----------------------",
             @"Name: Hp Potion",
-            $"Price: {HpPotion.Price}",
-            $"Description: {HpPotion.Description}",
+            $"Price: {HpPotion.GetPrice("HpPotion")}",
+            $"Description: {HpPotion.GetDescription("HpPotion")}",
             @"-----------------------"
         ));
 
@@ -110,7 +110,7 @@ public static class ManageItems
         {
             Profile profile = db.GetProfile(false, false, true);
 
-            int maxCount = (int)Math.Floor(profile.Wallet / (topSuggestion.QualifiedText == "ExpPotion" ? ExpPotion.Price : HpPotion.Price));
+            int maxCount = (int)Math.Floor(profile.Wallet / Item.GetPrice(topSuggestion.QualifiedText));
             if (maxCount == 0)
             {
                 Console.WriteLine("You don't have enough money. Please check your wallet.");
@@ -132,7 +132,7 @@ public static class ManageItems
                 return;
             }
 
-            int cost = (int)(topSuggestion.QualifiedText == "ExpPotion" ? ExpPotion.Price : HpPotion.Price) * count;
+            int cost = (int)Item.GetPrice(topSuggestion.QualifiedText) * count;
 
             switch (topSuggestion.QualifiedText)
             {

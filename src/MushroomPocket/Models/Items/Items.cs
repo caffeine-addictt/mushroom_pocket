@@ -12,80 +12,142 @@ using MushroomPocket.Utils;
 namespace MushroomPocket.Models;
 
 
-public struct ItemData
-{
-    public int Price;
-    public string Description;
-}
-
-
 [PrimaryKey("Id")]
 public class Item
 {
     public string Id { get; set; }
 
-    public string Name { get; set; } = "";
+    public string Name { get; set; } = null!;
     public int Grade { get; set; } // Lower the grade, higher the priority
 
-    public static int Price = 0;
-    public static string Description = null!;
-
     public virtual Profile Profile { get; set; } = null!;
+
 
     public Item()
     {
         Id = GenerateId();
-        Grade = new Random().Next(0, 3);
+        Grade = new Random().Next(1, 4);
     }
-
-    public Item(string name) : this()
-    {
-        Name = name;
-    }
-
-
-    public int GetPrice()
-        => GetItemData().Price;
-    public virtual string GetDescription()
-        => GetItemData().Description;
 
 
     /// <summary>
-    /// Get Item data
+    /// Get description
     /// </summary>
-    public ItemData GetItemData()
+    public string GetDescription() => GetDescription(this);
+    public static string GetDescription(Item item) => GetDescription(item.Name);
+    public static string GetDescription(string itemName)
     {
-        switch (Name)
+        switch (itemName)
         {
             case "HpPotion":
-                return new ItemData()
-                {
-                    Price = HpPotion.Price,
-                    Description = HpPotion.Description
-                };
+                return "Poisonous mushrooms, Cyanide and some weird cloud. Forget healing - they lived?!";
 
             case "ExpPotion":
-                return new ItemData()
-                {
-                    Price = ExpPotion.Price,
-                    Description = ExpPotion.Description
-                };
-        }
+                return "Induces strangely vivid dreams. They claim not to remember anything, but they seem.. stronger...";
 
-        throw new ArgumentOutOfRangeException("Unknown item type");
+            default:
+                throw new Exception("No description for item: " + itemName);
+        }
     }
 
 
     /// <summary>
-    /// Success echo
+    /// Get price
     /// </summary>
-    public virtual string SuccessEcho()
-        => "";
+    public int GetPrice() => GetPrice(this);
+    public static int GetPrice(Item item) => GetPrice(item.Name);
+    public static int GetPrice(string itemName)
+    {
+        switch (itemName)
+        {
+            case "HpPotion":
+                return 10;
+
+            case "ExpPotion":
+                return 20;
+
+            default:
+                throw new Exception("No price for item: " + itemName);
+        }
+    }
+
+
+    /// <summary>
+    /// Get success message
+    /// StdOut when item is successfully used
+    /// </summary>
+    public string GetSuccessMessage() => GetSuccessMessage(this);
+    public static string GetSuccessMessage(Item item)
+    {
+        switch (item.Name)
+        {
+            case "HpPotion":
+                return $"Grade {item.Grade} Hp Potion healed {item.Calculate()}hp!";
+
+            case "ExpPotion":
+                return $"Increased experience by {item.Calculate()}!";
+
+            default:
+                throw new Exception("No success message for item: " + item.Name);
+        }
+    }
+
+
+    /// <summary>
+    /// Get effect description
+    /// </summary>
+    public string GetEffectDescription() => Item.GetEffectDescription(this);
+    public static string GetEffectDescription(Item item)
+    {
+        switch (item.Name)
+        {
+            case "HpPotion":
+                return $"Recovers {item.Calculate()} of character hp!";
+
+            case "ExpPotion":
+                return $"Increases character exp by {item.Calculate()}!";
+
+            default:
+                throw new Exception("No effect description for item: " + item.Name);
+        }
+    }
+
 
     /// <summary>
     /// Use the item
     /// </summary>
-    public virtual void Use(Character c) { }
+    public void Use(Character c)
+    {
+        switch (Name)
+        {
+            case "HpPotion":
+                c.Hp += Calculate();
+                break;
+
+            case "ExpPotion":
+                c.Exp += (int)Calculate();
+                break;
+        }
+    }
+
+
+    /// <summary>
+    /// Calculate effectiveness
+    /// </summary>
+    public float Calculate()
+    {
+        switch (Name)
+        {
+            case "HpPotion":
+                return (float)Math.Floor((decimal)50 / Grade); // Max 50 HP
+
+            case "ExpPotion":
+                return (float)Math.Floor((decimal)100 / Grade); // Max 100 EXP
+
+            default:
+                throw new Exception("No calculation for item: " + Name);
+        }
+    }
 
 
     /// <summary>

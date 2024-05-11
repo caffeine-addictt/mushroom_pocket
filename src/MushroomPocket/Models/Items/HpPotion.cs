@@ -11,24 +11,8 @@ namespace MushroomPocket.Models;
 
 public class HpPotion : Item
 {
-    public static new int Price = 3;
-    public static new string Description = "Poisonous mushrooms, Cyanide and some weird cloud. Forget healing - they lived?!";
-    public HpPotion() : base("HpPotion") { }
-
-    public override string SuccessEcho()
-        => $"Grade {Grade} Hp Potion healed {HpToHeal()}hp!";
-
-    /// <summary>
-    /// Calculates the amount of hp to heal
-    /// </summary>
-    public float HpToHeal()
-        => (float)Math.Floor((decimal)(100 / Grade));
-
-    /// <summary>
-    /// Heals (100/Grade) hp
-    /// </summary>
-    public override void Use(Character c)
+    public HpPotion() : base()
     {
-        c.Hp += HpToHeal();
+        Name = "HpPotion";
     }
 }
