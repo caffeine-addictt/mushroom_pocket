@@ -12,6 +12,13 @@ using MushroomPocket.Utils;
 namespace MushroomPocket.Models;
 
 
+public struct ItemData
+{
+    public int Price;
+    public string Description;
+}
+
+
 [PrimaryKey("Id")]
 public class Item
 {
@@ -20,8 +27,8 @@ public class Item
     public string Name { get; set; } = "";
     public int Grade { get; set; } // Lower the grade, higher the priority
 
-    public static int Price { get; set; }
-    public const string Description { get; set; } = "";
+    public static int Price = 0;
+    public static string Description = null!;
 
     public virtual Profile Profile { get; set; } = null!;
 
@@ -31,12 +38,43 @@ public class Item
         Grade = new Random().Next(0, 3);
     }
 
-    public Item(string name, string description, int price) : this()
+    public Item(string name) : this()
     {
         Name = name;
-        Price = price;
-        Description = description;
     }
+
+
+    public int GetPrice()
+        => GetItemData().Price;
+    public virtual string GetDescription()
+        => GetItemData().Description;
+
+
+    /// <summary>
+    /// Get Item data
+    /// </summary>
+    public ItemData GetItemData()
+    {
+        switch (Name)
+        {
+            case "HpPotion":
+                return new ItemData()
+                {
+                    Price = HpPotion.Price,
+                    Description = HpPotion.Description
+                };
+
+            case "ExpPotion":
+                return new ItemData()
+                {
+                    Price = ExpPotion.Price,
+                    Description = ExpPotion.Description
+                };
+        }
+
+        throw new ArgumentOutOfRangeException("Unknown item type");
+    }
+
 
     /// <summary>
     /// Success echo

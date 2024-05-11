@@ -11,7 +11,9 @@ namespace MushroomPocket.Models;
 
 public class ExpPotion : Item
 {
-    public ExpPotion() : base("ExpPotion", "Induces strangely vivid dreams. They claim not to remember anything, but they seem.. stronger...", 5) { }
+    public static new int Price = 5;
+    public static new string Description = "Induces strangely vivid dreams. They claim not to remember anything, but they seem.. stronger...";
+    public ExpPotion() : base("ExpPotion") { }
 
     public override string SuccessEcho()
         => $"Grade {Grade} Exp Potion increased experience by {ExpToAdd()}!";

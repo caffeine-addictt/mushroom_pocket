@@ -11,8 +11,9 @@ namespace MushroomPocket.Models;
 
 public class HpPotion : Item
 {
-    public override string Description {get{ return ""; } }
-    public HpPotion() : base("HpPotion", "Poisonious mushrooms, Cyanide and some weird cloud. Forget healing - they lived?!", 3) { }
+    public static new int Price = 3;
+    public static new string Description = "Poisonous mushrooms, Cyanide and some weird cloud. Forget healing - they lived?!";
+    public HpPotion() : base("HpPotion") { }
 
     public override string SuccessEcho()
         => $"Grade {Grade} Hp Potion healed {HpToHeal()}hp!";
