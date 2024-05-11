@@ -31,6 +31,7 @@ public static class ManageItems
         => Console.WriteLine(String.Join(
             "\n",
             @"-----------------------",
+            $"ID: {i.Id}",
             $"Name: {i.Name}",
             $"Grade: {i.Grade}",
             $"Description: {i.GetDescription()}",
