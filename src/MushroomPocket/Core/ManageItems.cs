@@ -54,6 +54,7 @@ public static class ManageItems
                 break;
 
             case "3":
+                UseItem();
                 break;
 
             case "4":
@@ -61,6 +62,7 @@ public static class ManageItems
                 break;
 
             case "5":
+                DeleteItems();
                 break;
 
             case "b":
