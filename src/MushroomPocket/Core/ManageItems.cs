@@ -179,7 +179,7 @@ public static class ManageItems
 
         using (MushroomContext db = new MushroomContext())
         {
-            List<Item> items = db.GetItems().Where(i => i.Name == topSuggestion.OriginalText).ToList();
+            List<Item> items = db.GetItems().Where(i => i.Name == topSuggestion.QualifiedText).ToList();
 
             if (items.Count == 0)
             {
