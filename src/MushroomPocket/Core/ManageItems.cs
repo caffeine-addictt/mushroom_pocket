@@ -12,7 +12,7 @@ using MushroomPocket.Utils;
 namespace MushroomPocket.Core;
 
 
-public static class ManageEconomy
+public static class ManageItems
 {
     public static readonly string InterfaceText = String.Join(
         "\n",
