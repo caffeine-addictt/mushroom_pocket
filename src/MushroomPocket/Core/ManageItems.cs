@@ -187,6 +187,8 @@ public static class ManageItems
                 return;
             }
 
+            Console.WriteLine();
+
             int[] grade = new int[4] { 0, 0, 0, 0 };
             foreach (Item i in items)
                 grade[i.Grade]++;
@@ -239,10 +241,18 @@ public static class ManageItems
             }
 
             // Get character to use on
-            Console.Write("Which character would you like to use on? Enter the ID: ");
-            Similarity charIdTopSuggestion;
+            Console.Write("Which character would you like to use on? Enter the ID or L to list all characters: ");
+            string charId = (Console.ReadLine() ?? "").Trim();
 
-            if (!StringUtils.SmartLookUp((Console.ReadLine() ?? "").Trim(), db.GetCharacters().Select(c => c.Id).ToList(), out charIdTopSuggestion!))
+            if (charId.ToLower() == "l")
+            {
+                ManageCharacters.ListCharacters();
+                Console.Write("Which character would you like to use on? Enter the ID: ");
+                charId = (Console.ReadLine() ?? "").Trim();
+            }
+
+            Similarity charIdTopSuggestion;
+            if (!StringUtils.SmartLookUp(charId, db.GetCharacters().Select(c => c.Id).ToList(), out charIdTopSuggestion!))
             {
                 Console.WriteLine("\nInvalid input. Unable to find the character.");
                 return;
@@ -263,6 +273,7 @@ public static class ManageItems
             db.SaveChanges();
 
             Console.WriteLine($"You used {count} {selectedItems[0].Name}s on {affectedChar.Name}.");
+            Console.WriteLine($"[x{selectedItems.Count - count} {topSuggestion.QualifiedText} left.]");
         }
     }
 
