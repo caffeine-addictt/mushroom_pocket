@@ -221,9 +221,10 @@ public static class ManageItems
 
             int selectedGrade = optionMap[choice];
             List<Item> selectedItems = items.Where(i => i.Grade == selectedGrade).ToList();
+            int maxCount = selectedItems.Count;
 
             // Get amount to use
-            Console.Write("How many would you like to use? ");
+            Console.Write($"How many would you like to use? [Max: {maxCount}]: ");
             int count;
             if (!int.TryParse((Console.ReadLine() ?? "").Trim(), out count))
             {
@@ -231,9 +232,9 @@ public static class ManageItems
                 return;
             }
 
-            if (count <= 0 || count > selectedItems.Count)
+            if (count <= 0 || count > maxCount)
             {
-                Console.WriteLine("\nInvalid input. Please only enter a number between 1 and {selectedItems.Count}.");
+                Console.WriteLine($"\nInvalid input. Please only enter a number up to {maxCount}.");
                 return;
             }
 
