@@ -292,6 +292,14 @@ public static class ManageItems
 
             foreach (Item i in profile.Items.OrderBy(i => i.Grade))
                 EchoItem(i);
+
+            // StdOut metric
+            int ExpPotionCount = profile.Items.Where(i => i is ExpPotion).Count();
+
+            List<string> stdOut = new List<string>();
+            if (ExpPotionCount > 0) stdOut.Add($"[x{ExpPotionCount}] ExpPotion(s)");
+            if (profile.Items.Count - ExpPotionCount > 0) stdOut.Add($"[x{profile.Items.Count - ExpPotionCount}] HpPotion(s)");
+            Console.WriteLine(String.Join(", ", stdOut));
         }
     }
 
