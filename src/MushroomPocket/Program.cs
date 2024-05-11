@@ -24,11 +24,15 @@ class Program
             @"(3). Check if I can transform my characters",
             @"(4). Transform my character(s)",
             @"(5). Delete character(s) from my pocket",
-            @"(6). Manage my team(s)",
-            @"(7). Manage my profile(s)",
-            @"Please only enter [1, 2, 3, 4, 5, 6, 7] or Q to quit: "
+            @"(6). Manage my item(s)",
+            @"(7). Manage my team(s)",
+            @"(8). Manage my profile(s)",
+            @"Please only enter [1, 2, 3, 4, 5, 6, 7, 8] or Q to quit: "
         ]
     );
+
+    private static DateTime LastEarned = DateTime.UtcNow;
+    private static int EarnPerMin = 50;
 
     static void Main(string[] args)
     {
@@ -80,6 +84,9 @@ class Program
             Environment.Exit(1);
         }
 
+        // Update start
+        LastEarned = DateTime.UtcNow;
+
         // Main event loop.
         while (true)
         {
@@ -88,6 +95,23 @@ class Program
 
             // Proceed on if there is a profile
             if (Constants.CurrentProfileId == null) continue;
+
+            // Handle passive earning
+            TimeSpan timePassed = DateTime.UtcNow - LastEarned;
+            if (timePassed.Minutes > 0)
+            {
+                int toEarn = EarnPerMin * timePassed.Minutes;
+                using (MushroomContext db = new MushroomContext())
+                {
+                    db.GetProfile().Wallet += toEarn;
+                    Console.WriteLine($"\n{toEarn} coins earned. ({timePassed.Minutes} minutes passed.)");
+                    db.SaveChanges();
+                }
+                LastEarned = DateTime.UtcNow;
+                Console.WriteLine();
+                continue;
+            }
+
             Console.Write(InterfaceText);
             switch ((Console.ReadLine() ?? "").ToLower())
             {
@@ -112,10 +136,14 @@ class Program
                     break;
 
                 case "6":
-                    ManageTeams.MainEntry();
+                    ManageItems.MainEntry();
                     break;
 
                 case "7":
+                    ManageTeams.MainEntry();
+                    break;
+
+                case "8":
                     ManageProfiles.MainEntry();
                     break;
 
@@ -126,7 +154,7 @@ class Program
 
                 default:
                     Console.WriteLine(
-                        "\nInvalid action. Please only enter [1, 2, 3, 4, 5, 6, 7] or Q to quit."
+                        "\nInvalid action. Please only enter [1, 2, 3, 4, 5, 6, 7, 8] or Q to quit."
                     );
                     break;
             }

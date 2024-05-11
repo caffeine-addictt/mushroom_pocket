@@ -6,8 +6,6 @@
  * Admin: 230725N
  */
 
-using System.Reflection.Metadata;
-using Microsoft.EntityFrameworkCore;
 using MushroomPocket.Models;
 using MushroomPocket.Utils;
 
@@ -42,6 +40,7 @@ static class ManageProfiles
             @"-----------------------",
             $"Name: {p.Name}",
             $"Wallet: ${p.Wallet}",
+            $"Item(s): {p.Items.Count}",
             $"Team(s): {p.Teams.Count}",
             $"Character(s): {p.Characters.Count}",
             @"-----------------------"
@@ -150,8 +149,6 @@ static class ManageProfiles
 
         // Update constants
         Constants.CurrentProfileId = profile.Id;
-        Console.WriteLine(Constants.CurrentProfileId);
-
         Console.WriteLine("Created and switched to profile successfully.");
     }
 
@@ -195,10 +192,9 @@ static class ManageProfiles
     // Option 7-3: Show current profile
     private static void ShowCurrentProfile()
     {
-        Console.WriteLine(Constants.CurrentProfileId);
         using (MushroomContext db = new MushroomContext())
         {
-            Profile profile = db.Profiles.Where(p => p.Id == Constants.CurrentProfileId).Include(p => p.Characters).Include(p => p.Teams).First()!;
+            Profile profile = db.GetProfile(true, true, true);
             EchoProfile(profile);
         }
     }
@@ -208,7 +204,7 @@ static class ManageProfiles
     {
         List<Profile> profiles;
         using (MushroomContext db = new MushroomContext())
-            profiles = db.Profiles.Include(p => p.Characters).Include(p => p.Teams).ToList();
+            profiles = db.GetProfiles(true, true, true).ToList();
 
         if (profiles.Count == 0)
         {

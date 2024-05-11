@@ -115,8 +115,19 @@ public static class ManageCharacters
             return;
         }
 
+        // Stdout metrics
+        Dictionary<string, int> collision = new Dictionary<string, int>();
+
         foreach (Character c in sorted)
+        {
+            collision[c.Name] = collision.ContainsKey(c.Name) ? collision[c.Name] + 1 : 1;
             EchoCharacter(c);
+        }
+
+        Console.WriteLine(String.Join(
+            "\n",
+            collision.Select((kv) => $"[x{kv.Value}] {kv.Key}")
+        ));
     }
 
     // Option 3: Check transformation

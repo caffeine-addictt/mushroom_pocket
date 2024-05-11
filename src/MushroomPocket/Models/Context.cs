@@ -15,6 +15,7 @@ namespace MushroomPocket.Models;
 public class MushroomContext : DbContext
 {
     public DbSet<Team> Teams => Set<Team>();
+    public DbSet<Item> Items => Set<Item>();
     public DbSet<Profile> Profiles => Set<Profile>();
     public DbSet<Character> Characters => Set<Character>();
 
@@ -39,17 +40,23 @@ public class MushroomContext : DbContext
             .HasMany(p => p.Teams)
             .WithOne(t => t.Profile)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Profile>()
+            .HasMany(p => p.Items)
+            .WithOne(i => i.Profile)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
     /// <summary>
     /// Short cut to get current profile
     /// </summary>
-    public Profile GetProfile(bool includeTeams = false, bool includeCharacters = false)
+    public Profile GetProfile(bool includeTeams = false, bool includeCharacters = false, bool includeItems = false)
     {
         DbSet<Profile> profiles = this.Profiles;
         IQueryable<Profile> query = profiles;
 
         query = includeTeams ? query.Include(p => p.Teams) : query;
+        query = includeItems ? query.Include(p => p.Items) : query;
         query = includeCharacters ? query.Include(p => p.Characters) : query;
 
         return query.Where(p => p.Id == Constants.CurrentProfileId).First()!;
@@ -58,11 +65,12 @@ public class MushroomContext : DbContext
     /// <summary>
     /// Short cut to get Profiles
     /// </summary>
-    public IQueryable<Profile> GetProfiles(bool includeCharacters = false, bool includeTeams = false)
+    public IQueryable<Profile> GetProfiles(bool includeCharacters = false, bool includeTeams = false, bool includeItems = false)
     {
         IQueryable<Profile> query = this.Profiles;
         query = includeTeams ? query.Include(p => p.Teams) : query;
         query = includeCharacters ? query.Include(p => p.Characters) : query;
+        query = includeItems ? query.Include(p => p.Items) : query;
         return query;
     }
 
@@ -85,6 +93,14 @@ public class MushroomContext : DbContext
         query = includeTeams ? query.Include(c => c.Teams) : query;
         return query;
     }
+
+    /// <summary>
+    /// Short cut to get Items
+    /// </summary>
+    public IQueryable<Item> GetItems(bool includeProfile = false)
+        => includeProfile
+            ? this.Items.Include(i => i.Profile).Where(p => p.Id == Constants.CurrentProfileId)
+            : this.Items;
 }
 
 
