@@ -290,7 +290,7 @@ public static class ManageItems
                 return;
             }
 
-            foreach (Item i in profile.Items)
+            foreach (Item i in profile.Items.OrderBy(i => i.Grade))
                 EchoItem(i);
         }
     }
