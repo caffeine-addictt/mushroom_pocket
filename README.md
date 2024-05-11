@@ -6,7 +6,7 @@
   <h3 align="center">Mushroom Pocket</h3>
 
   <p align="center">
-    NYP Advanced programming module final project
+    My Advanced Programming Assignment
     <br />
     <br />
     <a href="https://github.com/caffeine-addictt/mushroom_pocket/issues">Report Bug</a>
