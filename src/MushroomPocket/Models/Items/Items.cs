@@ -20,8 +20,8 @@ public class Item
     public string Name { get; set; } = "";
     public int Grade { get; set; } // Lower the grade, higher the priority
 
-    public static int Price { get; set; } = 0;
-    public static string Description { get; set; } = "";
+    public static int Price { get; set; }
+    public const string Description { get; set; } = "";
 
     public virtual Profile Profile { get; set; } = null!;
 
