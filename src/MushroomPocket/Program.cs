@@ -24,9 +24,9 @@ class Program
             @"(3). Check if I can transform my characters",
             @"(4). Transform my character(s)",
             @"(5). Delete character(s) from my pocket",
-            @"(6). Manage my team(s)",
-            @"(7). Manage my profile(s)",
-            @"(8). Store",
+            @"(6). Manage my item(s)",
+            @"(7). Manage my team(s)",
+            @"(8). Manage my profile(s)",
             @"Please only enter [1, 2, 3, 4, 5, 6, 7, 8] or Q to quit: "
         ]
     );
@@ -136,15 +136,15 @@ class Program
                     break;
 
                 case "6":
-                    ManageTeams.MainEntry();
+                    ManageItems.MainEntry();
                     break;
 
                 case "7":
-                    ManageProfiles.MainEntry();
+                    ManageTeams.MainEntry();
                     break;
 
                 case "8":
-                    ManageEconomy.MainEntry();
+                    ManageProfiles.MainEntry();
                     break;
 
                 case "q":
