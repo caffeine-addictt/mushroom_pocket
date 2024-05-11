@@ -171,6 +171,12 @@ public static class ManageItems
             return;
         }
 
+        if (topSuggestion.QualifiedText.ToLower() != topSuggestion.OriginalText.ToLower())
+        {
+            Console.Write($"\nDid you mean '{topSuggestion.QualifiedText}'? ({topSuggestion.ScoreToString()}%) [Y/N]: ");
+            if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+        }
+
         using (MushroomContext db = new MushroomContext())
         {
             List<Item> items = db.GetItems().Where(i => i.Name == topSuggestion.OriginalText).ToList();
