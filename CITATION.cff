@@ -9,12 +9,14 @@ identifiers:
     value: https://github.com/caffeine-addictt/mushroom_pocket/releases/tag/v1.0.0
     description: The GitHub release URL of tag v1.0.0.
 cff-version: 1.2.0
-date-released: yyyy-mm-dd
+date-released: 2024-05-12
 keywords:
-  -
+  - csharp
+  - dotnet
+  - entity-framework
 license: GPL-3.0+
 message: If you use this software, please cite it using these metadata.
 repository-code: https://github.com/caffeine-addictt/mushroom_pocket
-title: thread
+title: Mushroom Pocket
 type: software
 version: 1.0.0
