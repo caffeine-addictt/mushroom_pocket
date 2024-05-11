@@ -33,6 +33,7 @@ public static class ManageEconomy
             @"-----------------------",
             $"Name: {i.Name}",
             $"Grade: {i.Grade}",
+            $"Description: {i.GetDescription()}",
             @"-----------------------"
         ));
 
@@ -76,13 +77,13 @@ public static class ManageEconomy
             "\n",
             @"-----------------------",
             @"Name: Exp Potion",
-            $"Description: {ExpPotion.Description}",
             $"Price: {ExpPotion.Price}",
+            $"Description: {ExpPotion.Description}",
             @"-----------------------",
             @"-----------------------",
             @"Name: Hp Potion",
-            $"Description: {HpPotion.Description}",
             $"Price: {HpPotion.Price}",
+            $"Description: {HpPotion.Description}",
             @"-----------------------"
         ));
 
