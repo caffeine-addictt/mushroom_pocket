@@ -378,7 +378,7 @@ public static class ManageItems
             db.Items.Remove(item);
             db.SaveChanges();
 
-            Console.WriteLine($"Deleted item: {item.Name}");
+            Console.WriteLine($"Deleted grade {item.Grade} item: {item.Name}");
         }
     }
 
@@ -417,7 +417,7 @@ public static class ManageItems
             db.Items.Remove(item);
             db.SaveChanges();
 
-            Console.WriteLine($"Deleted item: {item.Name}");
+            Console.WriteLine($"Deleted grade {item.Grade} item: {item.Name}");
         }
     }
 
