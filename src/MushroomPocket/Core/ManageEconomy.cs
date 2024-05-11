@@ -261,6 +261,13 @@ public static class ManageEconomy
         using (MushroomContext db = new MushroomContext())
         {
             Profile profile = db.GetProfile(false, false, true);
+
+            if (profile.Items.Count == 0)
+            {
+                Console.WriteLine("\nNo item(s) found. Nothing to list.");
+                return;
+            }
+
             foreach (Item i in profile.Items)
                 EchoItem(i);
         }
