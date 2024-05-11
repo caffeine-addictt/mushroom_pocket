@@ -135,26 +135,23 @@ public static class ManageItems
             }
 
             int cost = (int)Item.GetPrice(topSuggestion.QualifiedText) * count;
+            profile.Wallet -= cost;
 
             switch (topSuggestion.QualifiedText)
             {
                 case "ExpPotion":
                     for (int i = 0; i < count; i++)
                         profile.Items.Add(new ExpPotion());
-
-                    profile.Wallet -= cost;
-                    Console.WriteLine($"\nYou have bought {count} ExpPotion(s) for {cost} coins.");
                     break;
 
                 case "HpPotion":
                     for (int i = 0; i < count; i++)
                         profile.Items.Add(new HpPotion());
-
-                    profile.Wallet -= cost;
-                    Console.WriteLine($"\nYou have bought {count} HpPotion(s) for {cost} coins.");
                     break;
             }
 
+            Console.WriteLine($"\nYou have bought {count} {topSuggestion.QualifiedText} for ${cost}.");
+            Console.WriteLine($"[${profile.Wallet} left.]");
             db.SaveChanges();
         }
     }
