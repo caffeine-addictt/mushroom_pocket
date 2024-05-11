@@ -104,24 +104,31 @@ public static class ManageEconomy
             if ((Console.ReadLine() ?? "").ToLower() != "y") return;
         }
 
-        // Count
-        Console.Write("How many would you like to buy? ");
-        int count;
-        if (!int.TryParse((Console.ReadLine() ?? "").Trim(), out count))
-        {
-            Console.WriteLine("\nInvalid input. Please only enter a number.");
-            return;
-        }
-
-        if (count <= 0)
-        {
-            Console.WriteLine("\nInvalid input. Please only enter a positive number.");
-            return;
-        }
-
         using (MushroomContext db = new MushroomContext())
         {
             Profile profile = db.GetProfile(false, false, true);
+
+            int maxCount = (int)Math.Floor(profile.Wallet / (topSuggestion.QualifiedText == "ExpPotion" ? ExpPotion.Price : HpPotion.Price));
+            if (maxCount == 0)
+            {
+                Console.WriteLine("You don't have enough money. Please check your wallet.");
+                return;
+            }
+
+            // Count
+            Console.Write($"How many would you like to buy? [Max: {maxCount}]: ");
+            int count;
+            if (!int.TryParse((Console.ReadLine() ?? "").Trim(), out count))
+            {
+                Console.WriteLine("\nInvalid input. Please only enter a number.");
+                return;
+            }
+
+            if (count <= 0)
+            {
+                Console.WriteLine("\nInvalid input. Please only enter a positive number.");
+                return;
+            }
 
             switch (topSuggestion.QualifiedText)
             {
