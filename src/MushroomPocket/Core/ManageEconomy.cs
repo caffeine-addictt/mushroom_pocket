@@ -130,30 +130,24 @@ public static class ManageEconomy
                 return;
             }
 
+            int cost = (int)(topSuggestion.QualifiedText == "ExpPotion" ? ExpPotion.Price : HpPotion.Price) * count;
+
             switch (topSuggestion.QualifiedText)
             {
                 case "ExpPotion":
-                    if (ExpPotion.Price * count > profile.Wallet)
-                    {
-                        Console.WriteLine("\nYou don't have enough money. Please check your wallet.");
-                        return;
-                    }
-
                     for (int i = 0; i < count; i++)
                         profile.Items.Add(new ExpPotion());
 
+                    profile.Wallet -= cost;
+                    Console.WriteLine($"\nYou have bought {count} ExpPotion(s) for {cost} coins.");
                     break;
 
                 case "HpPotion":
-                    if (HpPotion.Price * count > profile.Wallet)
-                    {
-                        Console.WriteLine("\nYou don't have enough money. Please check your wallet.");
-                        return;
-                    }
-
                     for (int i = 0; i < count; i++)
                         profile.Items.Add(new HpPotion());
 
+                    profile.Wallet -= cost;
+                    Console.WriteLine($"\nYou have bought {count} HpPotion(s) for {cost} coins.");
                     break;
             }
 
