@@ -6,7 +6,6 @@
  * Admin: 230725N
  */
 
-using Microsoft.EntityFrameworkCore;
 using MushroomPocket.Models;
 using MushroomPocket.Utils;
 
@@ -41,6 +40,7 @@ static class ManageProfiles
             @"-----------------------",
             $"Name: {p.Name}",
             $"Wallet: ${p.Wallet}",
+            $"Item(s): {p.Items.Count}",
             $"Team(s): {p.Teams.Count}",
             $"Character(s): {p.Characters.Count}",
             @"-----------------------"
@@ -194,7 +194,7 @@ static class ManageProfiles
     {
         using (MushroomContext db = new MushroomContext())
         {
-            Profile profile = db.Profiles.Where(p => p.Id == Constants.CurrentProfileId).Include(p => p.Characters).Include(p => p.Teams).First()!;
+            Profile profile = db.GetProfile(true, true, true);
             EchoProfile(profile);
         }
     }
@@ -204,7 +204,7 @@ static class ManageProfiles
     {
         List<Profile> profiles;
         using (MushroomContext db = new MushroomContext())
-            profiles = db.Profiles.Include(p => p.Characters).Include(p => p.Teams).ToList();
+            profiles = db.GetProfiles(true, true, true).ToList();
 
         if (profiles.Count == 0)
         {
