@@ -192,17 +192,17 @@ public static class ManageItems
                 grade[i.Grade]++;
 
             // Map input option to grade index
-            int[] optionMap = new int[4];
+            List<int> optionMap = new List<int>();
             for (int i = 0; i < grade.Length; i++)
             {
                 if (grade[i] > 0)
                 {
-                    optionMap.Append(i);
-                    Console.WriteLine($"({optionMap.Length}). x{grade[i]} Grade {i} item(s)");
+                    optionMap.Add(i);
+                    Console.WriteLine($"({optionMap.Count}). [x{grade[i]}] Grade {i} item(s)");
                 }
             }
 
-            Console.Write($"Enter your choice [1 .. {optionMap.Length}]: ");
+            Console.Write($"Enter your choice [{(optionMap.Count > 1 ? $"1 .. {optionMap.Count}" : "1")}]: ");
             int choice;
             if (!int.TryParse((Console.ReadLine() ?? "").Trim(), out choice))
             {
@@ -210,7 +210,7 @@ public static class ManageItems
                 return;
             }
 
-            if (choice <= 0 || choice > optionMap.Length)
+            if (choice <= 0 || choice > optionMap.Count)
             {
                 Console.WriteLine("\nInvalid input. Please only enter a number between 1 and {optionMap.Length}.");
                 return;
