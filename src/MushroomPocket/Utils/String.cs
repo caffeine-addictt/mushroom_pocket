@@ -100,7 +100,7 @@ public static class StringUtils
             // input is perfect match
             if (Clean(possibleMatch, true) == Clean(input, true))
             {
-                results = new List<Similarity> { new Similarity(input, possibleMatch, 1.0f) };
+                results = new List<Similarity> { new Similarity(possibleMatch, input, 1.0f) };
                 return true;
             }
 
