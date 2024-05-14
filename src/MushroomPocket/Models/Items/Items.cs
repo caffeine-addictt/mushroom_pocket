@@ -97,18 +97,19 @@ public class Item
     /// Get effect description
     /// </summary>
     public string GetEffectDescription() => Item.GetEffectDescription(this);
-    public static string GetEffectDescription(Item item)
+    public static string GetEffectDescription(Item item) => GetEffectDescription(item.Name, item.Grade);
+    public static string GetEffectDescription(string name, int grade)
     {
-        switch (item.Name)
+        switch (name)
         {
             case "HpPotion":
-                return $"Recovers {item.Calculate()} of character hp!";
+                return $"Recovers {Calculate(name, grade)} of character hp!";
 
             case "ExpPotion":
-                return $"Increases character exp by {item.Calculate()}!";
+                return $"Increases character exp by {Calculate(name, grade)}!";
 
             default:
-                throw new Exception("No effect description for item: " + item.Name);
+                throw new Exception("No effect description for item: " + name);
         }
     }
 
@@ -134,18 +135,19 @@ public class Item
     /// <summary>
     /// Calculate effectiveness
     /// </summary>
-    public float Calculate()
+    public float Calculate() => Calculate(Name, Grade);
+    public static float Calculate(string name, int grade)
     {
-        switch (Name)
+        switch (name)
         {
             case "HpPotion":
-                return (float)Math.Floor((decimal)50 / Grade); // Max 50 HP
+                return (float)Math.Floor((decimal)50 / grade); // Max 50 HP
 
             case "ExpPotion":
-                return (float)Math.Floor((decimal)100 / Grade); // Max 100 EXP
+                return (float)Math.Floor((decimal)100 / grade); // Max 100 EXP
 
             default:
-                throw new Exception("No calculation for item: " + Name);
+                throw new Exception("No calculation for item: " + name);
         }
     }
 
