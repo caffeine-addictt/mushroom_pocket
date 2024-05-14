@@ -197,7 +197,7 @@ public static class ManageItems
                 if (grade[i] > 0)
                 {
                     optionMap.Add(i);
-                    Console.WriteLine($"({optionMap.Count}). [x{grade[i]}] Grade {i} item(s)");
+                    Console.WriteLine($"({optionMap.Count}). [x{grade[i]}] Grade {i} item(s): {Item.GetEffectDescription(topSuggestion.QualifiedText, i)}");
                 }
             }
 
