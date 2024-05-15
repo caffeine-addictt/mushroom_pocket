@@ -128,7 +128,7 @@ public static class ManageItems
                 return;
             }
 
-            if (count <= 0)
+            if (count <= 0 || count > maxCount)
             {
                 Console.WriteLine($"\nInvalid input. Please only enter an integer up to {maxCount}.");
                 return;
