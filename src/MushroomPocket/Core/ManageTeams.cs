@@ -143,15 +143,15 @@ public static class ManageTeams
                         )
                         .ToList();
 
-            HashSet<Team> teamList =
+            List<Team> teamList =
                 teamPattern == "*"
-                    ? profile.Teams.ToHashSet()
+                    ? profile.Teams.ToList()
                     : profile.Teams
                         .Where(
                             (Team t) =>
                                 t.Name.StartsWith(teamPattern) || t.Id.StartsWith(teamPattern)
                         )
-                        .ToHashSet();
+                        .ToList();
 
             // Check if empty
             if (charList.Count == 0)
@@ -176,7 +176,8 @@ public static class ManageTeams
             bool hasChange = false;
             foreach (Team t in teamList)
             {
-                if (t.Characters.Intersect(t.Characters).Count() > 0)
+                // TODO: aaaif 
+                // if (t.Characters.Intersect(charList).Count() > 0)
                 {
                     if (teamPattern == "*")
                         continue;
