@@ -369,7 +369,7 @@ public static class ManageTeams
 
             Team delTeam = teams.Where(c => c.Id == topSuggestion.QualifiedText).First();
 
-            teams.Remove(delTeam);
+            db.Teams.Remove(delTeam);
             db.SaveChanges();
 
             Console.WriteLine($"Deleted team: {delTeam.Name}");
@@ -408,7 +408,7 @@ public static class ManageTeams
             }
 
             Team delTeam = teams.Where(t => t.Name == topSuggestion.QualifiedText).First();
-            profile.Teams.Remove(delTeam);
+            db.Teams.Remove(delTeam);
             db.SaveChanges();
 
             Console.WriteLine($"Deleted team: {delTeam.Name}");
