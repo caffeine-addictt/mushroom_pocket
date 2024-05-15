@@ -467,6 +467,7 @@ public static class ManageItems
 
             // Delete
             db.Items.RemoveRange(items);
+            db.SaveChanges();
             Console.WriteLine($"Deleted {items.Count} item(s).");
         }
     }

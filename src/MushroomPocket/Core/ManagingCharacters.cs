@@ -320,6 +320,7 @@ public static class ManageCharacters
 
             // Delete
             db.Characters.RemoveRange(characters);
+            db.SaveChanges();
             Console.WriteLine($"Deleted {characters.Count} character(s).");
         }
     }

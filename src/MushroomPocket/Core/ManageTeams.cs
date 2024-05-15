@@ -464,6 +464,7 @@ public static class ManageTeams
 
             // Delete
             db.Teams.RemoveRange(teams);
+            db.SaveChanges();
             Console.WriteLine($"Deleted {teams.Count} team(s).");
         }
     }
