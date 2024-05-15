@@ -133,11 +133,10 @@ public static class ManageTeams
 
         using (MushroomContext db = new MushroomContext())
         {
-            Profile profile = db.GetProfile(true, true);
             List<Character> charList =
                 namePattern == "*"
-                    ? profile.Characters.ToList()
-                    : profile.Characters.Where(
+                    ? db.GetCharacters().ToList()
+                    : db.GetCharacters().Where(
                             (Character c) =>
                                 c.Name.StartsWith(namePattern) || c.Id.StartsWith(namePattern)
                         )
@@ -145,8 +144,8 @@ public static class ManageTeams
 
             List<Team> teamList =
                 teamPattern == "*"
-                    ? profile.Teams.ToList()
-                    : profile.Teams
+                    ? db.GetTeams(true).ToList()
+                    : db.GetTeams(true)
                         .Where(
                             (Team t) =>
                                 t.Name.StartsWith(teamPattern) || t.Id.StartsWith(teamPattern)
@@ -176,8 +175,7 @@ public static class ManageTeams
             bool hasChange = false;
             foreach (Team t in teamList)
             {
-                // TODO: aaaif 
-                // if (t.Characters.Intersect(charList).Count() > 0)
+                if (t.Characters.Intersect(charList).Count() > 0)
                 {
                     if (teamPattern == "*")
                         continue;
@@ -351,8 +349,7 @@ public static class ManageTeams
 
         using (MushroomContext db = new MushroomContext())
         {
-            Profile profile = db.GetProfile(false, true);
-            List<Team> teams = profile.Teams.ToList();
+            List<Team> teams = db.GetTeams().ToList();
 
             Similarity topSuggestion;
             if (!StringUtils.SmartLookUp(id, teams.Select(t => t.Id.ToString()), out topSuggestion!))
@@ -391,8 +388,7 @@ public static class ManageTeams
 
         using (MushroomContext db = new MushroomContext())
         {
-            Profile profile = db.GetProfile(false, true);
-            List<Team> teams = profile.Teams.ToList();
+            List<Team> teams = db.GetTeams().ToList();
 
             Similarity topSuggestion;
             if (!StringUtils.SmartLookUp(name, teams.Select(t => t.Name), out topSuggestion!))
