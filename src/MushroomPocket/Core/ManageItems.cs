@@ -124,13 +124,13 @@ public static class ManageItems
             int count;
             if (!int.TryParse((Console.ReadLine() ?? "").Trim(), out count))
             {
-                Console.WriteLine("\nInvalid input. Please only enter a number.");
+                Console.WriteLine($"\nInvalid input. Please only enter an integer up to {maxCount}.");
                 return;
             }
 
             if (count <= 0)
             {
-                Console.WriteLine("\nInvalid input. Please only enter a positive number.");
+                Console.WriteLine($"\nInvalid input. Please only enter an integer up to {maxCount}.");
                 return;
             }
 
