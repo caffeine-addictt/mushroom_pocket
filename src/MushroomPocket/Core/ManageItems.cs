@@ -271,6 +271,10 @@ public static class ManageItems
 
             Console.WriteLine($"You used {count} {selectedItems[0].Name}s on {affectedChar.Name}.");
             Console.WriteLine($"[x{selectedItems.Count - count} {topSuggestion.QualifiedText} left.]");
+
+            // Award money
+            Economy.AwardMoney(5 * count);
+            Console.WriteLine($"[+${5 * count}]");
         }
     }
 
@@ -291,7 +295,7 @@ public static class ManageItems
                 EchoItem(i);
 
             // StdOut metric
-            int ExpPotionCount = profile.Items.Where(i => i is ExpPotion).Count();
+            int ExpPotionCount = profile.Items.Where(i => i.Name == "ExpPotion").Count();
 
             List<string> stdOut = new List<string>();
             if (ExpPotionCount > 0) stdOut.Add($"[x{ExpPotionCount}] ExpPotion(s)");
