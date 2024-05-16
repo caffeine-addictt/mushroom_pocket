@@ -112,96 +112,91 @@ public static class ManageTeams
     // Option 6-2: Add character to team
     private static void AddCharacterToTeam()
     {
-        // Ask for pattern
-        Console.Write("Enter Character Name or ID [* for all]: ");
-        string namePattern = Console.ReadLine() ?? "";
-
-        if (String.IsNullOrWhiteSpace(namePattern))
-        {
-            Console.WriteLine("\nCharacter name or ID cannot be empty.");
-            return;
-        }
-
-        // Ask for team pattern
-        Console.Write("Enter Team Name or ID [* for all]: ");
-        string teamPattern = Console.ReadLine() ?? "";
-        if (String.IsNullOrWhiteSpace(teamPattern))
-        {
-            Console.WriteLine("\nTeam name or ID cannot be empty.");
-            return;
-        }
-
         using (MushroomContext db = new MushroomContext())
         {
-            List<Character> charList =
-                namePattern == "*"
-                    ? db.GetCharacters().ToList()
-                    : db.GetCharacters().Where(
-                            (Character c) =>
-                                c.Name.StartsWith(namePattern) || c.Id.StartsWith(namePattern)
-                        )
-                        .ToList();
+            List<Character> charList = db.GetCharacters().ToList();
+            List<Team> teamList = db.GetTeams(true).ToList();
 
-            List<Team> teamList =
-                teamPattern == "*"
-                    ? db.GetTeams(true).ToList()
-                    : db.GetTeams(true)
-                        .Where(
-                            (Team t) =>
-                                t.Name.StartsWith(teamPattern) || t.Id.StartsWith(teamPattern)
-                        )
-                        .ToList();
-
-            // Check if empty
-            if (charList.Count == 0)
+            // Ask for pattern
+            Console.Write("Enter Character ID or L to list all characters: ");
+            string charID = (Console.ReadLine() ?? "").Trim();
+            if (charID.ToLower() == "l")
             {
-                Console.WriteLine("\nNo character(s) found. Nothing to add to team.");
+                foreach (Character c in charList)
+                    ManageCharacters.EchoCharacter(c);
+
+                // Confirmation
+                Console.Write("Enter Character ID: ");
+                charID = (Console.ReadLine() ?? "").Trim();
+            }
+
+            Similarity charTopID;
+            if (!StringUtils.SmartLookUp(charID, charList.Select(c => c.Id), out charTopID!))
+            {
+                Console.WriteLine("\nCharacter ID does not exist.");
                 return;
             }
-            if (teamList.Count == 0)
+
+            if (charTopID.QualifiedText.ToLower() != charTopID.OriginalText.ToLower())
             {
-                Console.WriteLine("\nNo team(s) found. Nothing to add to team.");
+                Console.Write($"\nDid you mean '{charTopID.QualifiedText}'? ({charTopID.ScoreToString()}%) [Y/N]: ");
+                if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+            }
+
+            // Ask for team pattern
+            Console.Write("Enter Team Name or ID or L to list all teams: ");
+            string teamNameID = Console.ReadLine() ?? "";
+            if (teamNameID.ToLower() == "l")
+            {
+                foreach (Team t in teamList)
+                    ManageTeams.EchoTeam(t);
+
+                // Confirmation
+                Console.Write("Enter Team Name or ID: ");
+                teamNameID = (Console.ReadLine() ?? "").Trim();
+            }
+
+            Similarity topTeamID;
+            if (!StringUtils.SmartLookUp(teamNameID, teamList.Select(t => t.Name).Union(teamList.Select(t => t.Id)), out topTeamID!))
+            {
+                Console.WriteLine("\nTeam Name or ID does not exist.");
+                return;
+            }
+
+            if (topTeamID.QualifiedText.ToLower() != topTeamID.OriginalText.ToLower())
+            {
+                Console.Write($"\nDid you mean '{topTeamID.QualifiedText}'? ({topTeamID.ScoreToString()}%) [Y/N]: ");
+                if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+            }
+
+
+            Character affectedCharacter = charList.First(c => c.Id == charTopID.QualifiedText);
+            Team affectedTeam = teamList.First(t => t.Id == topTeamID.QualifiedText);
+
+            // Check team limits
+            if (affectedTeam.Characters.Count == 5)
+            {
+                Console.WriteLine("\nTeam can have only a maximum of 5 characters");
+                return;
+            }
+
+            // Check colision
+            if (affectedTeam.Characters.Any(c => c.Id == affectedCharacter.Id))
+            {
+                Console.WriteLine("\nCharacter is already in the team!");
                 return;
             }
 
             // Confirmation
-            Console.Write(
-                $"Are you sure you want to add {charList.Count} character(s) to {teamList.Count} team(s)? [Y/N]: "
-            );
+            Console.Write($"Are you sure you want to add Character {affectedCharacter.Id} in Team {affectedTeam.Id}? [Y/N]: ");
             if ((Console.ReadLine() ?? "").ToLower() != "y")
                 return;
 
             // Add
-            bool hasChange = false;
-            foreach (Team t in teamList)
-            {
-                if (t.Characters.Intersect(charList).Count() > 0)
-                {
-                    if (teamPattern == "*")
-                        continue;
-                    Console.WriteLine(
-                        $"\nTeam {t.Name} already has the character(s) {String.Join(", ", t.Characters)}."
-                    );
-                    return;
-                }
-
-                hasChange = true;
-                /* profile.Teams.Where(team => team.Id == t.Id).First().Characters.UnionWith(charList); */
-                t.Characters.UnionWith(charList);
-            }
-
-            if (!hasChange)
-            {
-                Console.WriteLine(
-                    $"\nCharacter(s) {String.Join(", ", charList)} already exist in team(s)."
-                );
-                return;
-            }
-
+            affectedTeam.Characters.Add(affectedCharacter);
             db.SaveChanges();
-            Console.WriteLine(
-                $"{charList.Count} character(s) have been added to {teamList.Count} team(s)."
-            );
+
+            Console.WriteLine($"{affectedCharacter.Id} added to team {affectedTeam.Id}!");
         }
     }
 
