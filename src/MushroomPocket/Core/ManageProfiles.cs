@@ -410,6 +410,7 @@ static class ManageProfiles
 
             // Delete
             db.Profiles.RemoveRange(profiles);
+            db.SaveChanges();
             Console.WriteLine($"Deleted {profiles.Count} profile(s).");
         }
     }

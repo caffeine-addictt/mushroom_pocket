@@ -225,7 +225,7 @@ public static class ManageCharacters
 
             Character delChar = characters.Where(c => c.Id == topSuggestion.QualifiedText).First();
 
-            characters.Remove(delChar);
+            db.Characters.Remove(delChar);
             db.SaveChanges();
 
             Console.WriteLine($"Deleted character: {delChar.Name}");
@@ -264,7 +264,7 @@ public static class ManageCharacters
             }
 
             Character delChar = characters.Where(c => c.Name == topSuggestion.QualifiedText).First();
-            profile.Characters.Remove(delChar);
+            db.Characters.Remove(delChar);
             db.SaveChanges();
 
             Console.WriteLine($"Deleted character: {delChar.Name}");
@@ -320,6 +320,7 @@ public static class ManageCharacters
 
             // Delete
             db.Characters.RemoveRange(characters);
+            db.SaveChanges();
             Console.WriteLine($"Deleted {characters.Count} character(s).");
         }
     }

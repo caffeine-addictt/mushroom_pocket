@@ -133,25 +133,24 @@ public static class ManageTeams
 
         using (MushroomContext db = new MushroomContext())
         {
-            Profile profile = db.GetProfile(true, true);
             List<Character> charList =
                 namePattern == "*"
-                    ? profile.Characters.ToList()
-                    : profile.Characters.Where(
+                    ? db.GetCharacters().ToList()
+                    : db.GetCharacters().Where(
                             (Character c) =>
                                 c.Name.StartsWith(namePattern) || c.Id.StartsWith(namePattern)
                         )
                         .ToList();
 
-            HashSet<Team> teamList =
+            List<Team> teamList =
                 teamPattern == "*"
-                    ? profile.Teams.ToHashSet()
-                    : profile.Teams
+                    ? db.GetTeams(true).ToList()
+                    : db.GetTeams(true)
                         .Where(
                             (Team t) =>
                                 t.Name.StartsWith(teamPattern) || t.Id.StartsWith(teamPattern)
                         )
-                        .ToHashSet();
+                        .ToList();
 
             // Check if empty
             if (charList.Count == 0)
@@ -176,7 +175,7 @@ public static class ManageTeams
             bool hasChange = false;
             foreach (Team t in teamList)
             {
-                if (t.Characters.Intersect(t.Characters).Count() > 0)
+                if (t.Characters.Intersect(charList).Count() > 0)
                 {
                     if (teamPattern == "*")
                         continue;
@@ -350,8 +349,7 @@ public static class ManageTeams
 
         using (MushroomContext db = new MushroomContext())
         {
-            Profile profile = db.GetProfile(false, true);
-            List<Team> teams = profile.Teams.ToList();
+            List<Team> teams = db.GetTeams().ToList();
 
             Similarity topSuggestion;
             if (!StringUtils.SmartLookUp(id, teams.Select(t => t.Id.ToString()), out topSuggestion!))
@@ -368,7 +366,7 @@ public static class ManageTeams
 
             Team delTeam = teams.Where(c => c.Id == topSuggestion.QualifiedText).First();
 
-            teams.Remove(delTeam);
+            db.Teams.Remove(delTeam);
             db.SaveChanges();
 
             Console.WriteLine($"Deleted team: {delTeam.Name}");
@@ -390,8 +388,7 @@ public static class ManageTeams
 
         using (MushroomContext db = new MushroomContext())
         {
-            Profile profile = db.GetProfile(false, true);
-            List<Team> teams = profile.Teams.ToList();
+            List<Team> teams = db.GetTeams().ToList();
 
             Similarity topSuggestion;
             if (!StringUtils.SmartLookUp(name, teams.Select(t => t.Name), out topSuggestion!))
@@ -407,7 +404,7 @@ public static class ManageTeams
             }
 
             Team delTeam = teams.Where(t => t.Name == topSuggestion.QualifiedText).First();
-            profile.Teams.Remove(delTeam);
+            db.Teams.Remove(delTeam);
             db.SaveChanges();
 
             Console.WriteLine($"Deleted team: {delTeam.Name}");
@@ -463,6 +460,7 @@ public static class ManageTeams
 
             // Delete
             db.Teams.RemoveRange(teams);
+            db.SaveChanges();
             Console.WriteLine($"Deleted {teams.Count} team(s).");
         }
     }
