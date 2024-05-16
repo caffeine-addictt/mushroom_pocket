@@ -295,7 +295,7 @@ public static class ManageItems
                 EchoItem(i);
 
             // StdOut metric
-            int ExpPotionCount = profile.Items.Where(i => i is ExpPotion).Count();
+            int ExpPotionCount = profile.Items.Where(i => i.Name == "ExpPotion").Count();
 
             List<string> stdOut = new List<string>();
             if (ExpPotionCount > 0) stdOut.Add($"[x{ExpPotionCount}] ExpPotion(s)");
