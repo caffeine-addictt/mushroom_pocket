@@ -96,6 +96,8 @@ public static class ManageCharacters
             db.SaveChanges();
         }
         Console.WriteLine($"{topSuggestion.QualifiedText} has been added.");
+        Economy.AwardMoney(10);
+        Console.WriteLine($"[+$10]");
         return;
     }
 

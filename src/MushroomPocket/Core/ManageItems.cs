@@ -271,6 +271,10 @@ public static class ManageItems
 
             Console.WriteLine($"You used {count} {selectedItems[0].Name}s on {affectedChar.Name}.");
             Console.WriteLine($"[x{selectedItems.Count - count} {topSuggestion.QualifiedText} left.]");
+
+            // Award money
+            Economy.AwardMoney(5 * count);
+            Console.WriteLine($"[+${5 * count}]");
         }
     }
 
