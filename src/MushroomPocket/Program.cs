@@ -31,9 +31,6 @@ class Program
         ]
     );
 
-    private static DateTime LastEarned = DateTime.UtcNow;
-    private static int EarnPerMin = 50;
-
     static void Main(string[] args)
     {
         if (args.Length > 0)
@@ -84,9 +81,6 @@ class Program
             Environment.Exit(1);
         }
 
-        // Update start
-        LastEarned = DateTime.UtcNow;
-
         // Main event loop.
         while (true)
         {
@@ -95,22 +89,6 @@ class Program
 
             // Proceed on if there is a profile
             if (Constants.CurrentProfileId == null) continue;
-
-            // Handle passive earning
-            TimeSpan timePassed = DateTime.UtcNow - LastEarned;
-            if (timePassed.Minutes > 0)
-            {
-                int toEarn = EarnPerMin * timePassed.Minutes;
-                using (MushroomContext db = new MushroomContext())
-                {
-                    db.GetProfile().Wallet += toEarn;
-                    Console.WriteLine($"\n{toEarn} coins earned. ({timePassed.Minutes} minutes passed.)");
-                    db.SaveChanges();
-                }
-                LastEarned = DateTime.UtcNow;
-                Console.WriteLine();
-                continue;
-            }
 
             Console.Write(InterfaceText);
             switch ((Console.ReadLine() ?? "").ToLower())
@@ -158,6 +136,9 @@ class Program
                     );
                     break;
             }
+
+            // Handle passive
+            Economy.HandlePassiveEarning();
 
             // Insert newline
             Console.WriteLine();
