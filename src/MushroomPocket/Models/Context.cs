@@ -18,6 +18,7 @@ public class MushroomContext : DbContext
     public DbSet<Item> Items => Set<Item>();
     public DbSet<Profile> Profiles => Set<Profile>();
     public DbSet<Character> Characters => Set<Character>();
+    public DbSet<BattleLog> BattleLogs => Set<BattleLog>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
@@ -45,12 +46,22 @@ public class MushroomContext : DbContext
             .HasMany(p => p.Items)
             .WithOne(i => i.Profile)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Profile>()
+            .HasMany(p => p.BattleLogs)
+            .WithOne(b => b.Profile)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 
     /// <summary>
     /// Short cut to get current profile
     /// </summary>
-    public Profile GetProfile(bool includeTeams = false, bool includeCharacters = false, bool includeItems = false)
+    public Profile GetProfile(
+        bool includeTeams = false,
+        bool includeCharacters = false,
+        bool includeItems = false,
+        bool includeBattleLogs = false
+    )
     {
         DbSet<Profile> profiles = this.Profiles;
         IQueryable<Profile> query = profiles;
@@ -58,6 +69,7 @@ public class MushroomContext : DbContext
         query = includeTeams ? query.Include(p => p.Teams) : query;
         query = includeItems ? query.Include(p => p.Items) : query;
         query = includeCharacters ? query.Include(p => p.Characters) : query;
+        query = includeBattleLogs ? query.Include(p => p.BattleLogs) : query;
 
         return query.Where(p => p.Id == Constants.CurrentProfileId).First()!;
     }
@@ -97,10 +109,18 @@ public class MushroomContext : DbContext
     /// <summary>
     /// Short cut to get Items
     /// </summary>
-    public IQueryable<Item> GetItems(bool includeProfile = false)
-        => includeProfile
-            ? this.Items.Include(i => i.Profile).Where(p => p.Id == Constants.CurrentProfileId)
-            : this.Items;
+    public IQueryable<Item> GetItems()
+        => this.Items
+            .Include(i => i.Profile)
+            .Where(i => i.Profile.Id == Constants.CurrentProfileId);
+    
+    /// <summary>
+    /// Short cut to get BattleLogs
+    /// </summary>
+    public IQueryable<BattleLog> GetBattleLogs()
+        => this.BattleLogs
+            .Include(b => b.Profile)
+            .Where(b => b.Profile.Id == Constants.CurrentProfileId);
 }
 
 

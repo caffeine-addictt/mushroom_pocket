@@ -46,4 +46,37 @@ public static class ManageDungeon
                 break;
         }
     }
+
+    // Option 9-1: Enter a dungeon
+
+    // Option 9-2: View dungeon(s)
+
+    // Option 9-3: View battle log
+    private static void ListBattleLog()
+    {
+        using (MushroomContext db = new MushroomContext())
+        {
+            List<BattleLog> battleLogs = db.GetBattleLogs().ToList();
+
+            if (battleLogs.Count == 0)
+            {
+                Console.WriteLine("\nNo battle logs to list!");
+                return;
+            }
+
+            foreach (BattleLog b in battleLogs)
+                Console.WriteLine(String.Join(
+                    "\n",
+                    @"-----------------------",
+                    b.ClearedDungeon ? "CLEAR" : "FAIL",
+                    $"Difficulty: {b.DungeonDifficulty}",
+                    $"Characters used: {b.CharactersUsed}",
+                    $"Characters dead: {b.CharactersDead}",
+                    $"Total Damage Dealt: {b.TotalDamageDealt}",
+                    $"Total Damage Taken: {b.TotalDamageTaken}",
+                    $"Date: {b.Date.ToShortDateString()}",
+                    @"-----------------------"
+                ));
+        }
+    }
 }
