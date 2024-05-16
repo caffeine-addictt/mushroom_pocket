@@ -27,7 +27,8 @@ class Program
             @"(6). Manage my item(s)",
             @"(7). Manage my team(s)",
             @"(8). Manage my profile(s)",
-            @"Please only enter [1, 2, 3, 4, 5, 6, 7, 8] or Q to quit: "
+            @"(9). Visit the Dungeon",
+            @"Please only enter [1, 2, 3, 4, 5, 6, 7, 8, 9] or Q to quit: "
         ]
     );
 
@@ -123,6 +124,10 @@ class Program
 
                 case "8":
                     ManageProfiles.MainEntry();
+                    break;
+
+                case "9":
+                    ManageDungeon.MainEntry();
                     break;
 
                 case "q":
