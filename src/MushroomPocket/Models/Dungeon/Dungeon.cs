@@ -22,8 +22,8 @@ public class Dungeon
     public int Difficulty { get; set; }
     public int EntryCost { get; set; }
 
-    public DateTime Open { get; set; }
-    public DateTime Close { get; set; }
+    /// <summary>Unopened, Open, Cleared</summary>
+    public string Status { get; set; }
 
     public virtual Profile Profile { get; set; } = null!;
 
@@ -56,9 +56,7 @@ public class Dungeon
         Id = GenerateId();
         Difficulty = new Random().Next(1, 6);
 
-        // Make time open scale with diff
-        Open = DateTime.UtcNow;
-        Close = Open.AddDays(Difficulty);
+        Status = "Unopened";
 
         // Make entry cost and rewards scale with diff
         EntryCost = 25 * Difficulty;
