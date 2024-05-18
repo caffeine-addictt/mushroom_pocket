@@ -33,12 +33,13 @@ public class BattleLog
     public int TotalDamageDealt { get; set; }
     public int TotalDamageTaken { get; set; }
     public DateTime Date { get; set; }
-    
+
     public virtual Profile Profile { get; set; } = null!;
 
 
     public BattleLog(
-        Team team,
+        int charactersUsed,
+        int charactersDead,
         bool clearedDungeon,
         string dungeonDifficulty,
         int totalDamageDealt,
@@ -51,8 +52,8 @@ public class BattleLog
         TotalDamageDealt = totalDamageDealt;
         TotalDamageTaken = totalDamageTaken;
         DungeonDifficulty = dungeonDifficulty;
-        CharactersUsed = team.Characters.Count;
-        CharactersDead = team.Characters.Where(c => c.Hp <= 0).Count();
+        CharactersUsed = charactersUsed;
+        CharactersDead = charactersDead;
     }
 
 

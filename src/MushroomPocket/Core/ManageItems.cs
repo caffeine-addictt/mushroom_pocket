@@ -110,7 +110,7 @@ public static class ManageItems
 
         using (MushroomContext db = new MushroomContext())
         {
-            Profile profile = db.GetProfile(false, false, true);
+            Profile profile = db.GetProfile(IncludeFlags.Items);
 
             int maxCount = (int)Math.Floor(profile.Wallet / Item.GetPrice(topSuggestion.QualifiedText));
             if (maxCount == 0)
@@ -283,7 +283,7 @@ public static class ManageItems
     {
         using (MushroomContext db = new MushroomContext())
         {
-            Profile profile = db.GetProfile(false, false, true);
+            Profile profile = db.GetProfile(IncludeFlags.Items);
 
             if (profile.Items.Count == 0)
             {

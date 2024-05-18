@@ -96,7 +96,7 @@ public static class ManageTeams
 
         using (MushroomContext db = new MushroomContext())
         {
-            Profile profile = db.GetProfile(true);
+            Profile profile = db.GetProfile(IncludeFlags.Teams);
             if (profile.Teams.Where((Team t) => t.Name == teamName).Count() > 0)
             {
                 Console.WriteLine("\nTeam name already exists.");
@@ -115,7 +115,7 @@ public static class ManageTeams
         using (MushroomContext db = new MushroomContext())
         {
             List<Character> charList = db.GetCharacters().ToList();
-            List<Team> teamList = db.GetTeams(true).ToList();
+            List<Team> teamList = db.GetTeams(IncludeFlags.Characters).ToList();
 
             // Ask for pattern
             Console.Write("Enter Character ID or L to list all characters: ");
@@ -207,7 +207,7 @@ public static class ManageTeams
         List<Team> sorted;
         using (MushroomContext db = new MushroomContext())
         {
-            sorted = db.GetTeams(true).ToList();
+            sorted = db.GetTeams(IncludeFlags.Characters).ToList();
         }
         sorted.Sort((Team t1, Team t2) => t2.Characters.Count.CompareTo(t1.Characters.Count));
 
@@ -230,7 +230,7 @@ public static class ManageTeams
 
         using (MushroomContext db = new MushroomContext())
         {
-            List<Team> teamList = db.GetTeams(true).ToList();
+            List<Team> teamList = db.GetTeams(IncludeFlags.Characters).ToList();
 
             Similarity topSuggestion;
             if (
@@ -421,7 +421,7 @@ public static class ManageTeams
 
         using (MushroomContext db = new MushroomContext())
         {
-            List<Team> teams = db.GetTeams(true)
+            List<Team> teams = db.GetTeams(IncludeFlags.Characters)
                 .Where(t =>
                     t.Id.ToLower().StartsWith(pattern)
                     || t.Name.ToLower().StartsWith(pattern)

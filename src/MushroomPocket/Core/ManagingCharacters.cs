@@ -92,7 +92,7 @@ public static class ManageCharacters
 
         using (MushroomContext db = new MushroomContext())
         {
-            db.GetProfile(false, true).Characters.Add(newChar!);
+            db.GetCharacters().ToList().Add(newChar!);
             db.SaveChanges();
         }
         Console.WriteLine($"{topSuggestion.QualifiedText} has been added.");
@@ -108,7 +108,7 @@ public static class ManageCharacters
         List<Character> sorted;
         using (MushroomContext db = new MushroomContext())
         {
-            sorted = db.GetProfile(false, true).Characters.OrderByDescending((Character c) => c.Hp).ToList();
+            sorted = db.GetCharacters().OrderByDescending((Character c) => c.Hp).ToList();
         }
 
         if (sorted.Count == 0)
@@ -209,8 +209,7 @@ public static class ManageCharacters
 
         using (MushroomContext db = new MushroomContext())
         {
-            Profile profile = db.GetProfile(false, true);
-            List<Character> characters = profile.Characters.ToList();
+            List<Character> characters = db.GetCharacters().ToList();
 
             Similarity topSuggestion;
             if (!StringUtils.SmartLookUp(id, characters.Select(c => c.Id.ToString()), out topSuggestion!))
@@ -249,8 +248,7 @@ public static class ManageCharacters
 
         using (MushroomContext db = new MushroomContext())
         {
-            Profile profile = db.GetProfile(false, true);
-            List<Character> characters = profile.Characters.ToList();
+            List<Character> characters = db.GetCharacters().ToList();
 
             Similarity topSuggestion;
             if (!StringUtils.SmartLookUp(name, characters.Select(c => c.Name), out topSuggestion!))
@@ -288,7 +286,7 @@ public static class ManageCharacters
 
         using (MushroomContext db = new MushroomContext())
         {
-            List<Character> characters = db.GetCharacters(true)
+            List<Character> characters = db.GetCharacters(IncludeFlags.Teams)
                 .Where(c =>
                     c.Id.ToLower().StartsWith(pattern)
                     || c.Name.ToLower().StartsWith(pattern)

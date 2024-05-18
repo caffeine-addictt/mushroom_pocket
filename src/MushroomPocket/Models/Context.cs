@@ -12,6 +12,35 @@ using MushroomPocket.Core;
 namespace MushroomPocket.Models;
 
 
+/// Flags
+/// <summary>
+/// Allow using an integer to store the flags
+///
+/// Example:
+///     - Including Teams mean to pass the IncludeFlags.Teams or 0b00000001
+///     - Including Teams or Dungeons mean to pass IncludeFlags.Teams | IncludeFlags.Dungeons or 0b00010001
+/// </summary>
+public enum IncludeFlags : byte
+{
+    None = 0,
+    Teams = 1,
+    Characters = 2,
+    Items = 4,
+    BattleLogs = 8,
+    Dungeons = 16,
+
+    /// <summary>Includes Character.Teams</summary>
+    CharacterTeams = 32,
+
+    /// <summary>Includes Team.Characters</summary>
+    TeamCharacters = 64,
+
+    CharactersAndItems = Characters | Items,
+    TeamsAndDungeons = Teams | Dungeons,
+}
+
+
+// Context
 public class MushroomContext : DbContext
 {
     public DbSet<Team> Teams => Set<Team>();
@@ -61,72 +90,109 @@ public class MushroomContext : DbContext
 
     /// <summary>
     /// Short cut to get current profile
+    ///
+    /// Includes are 2 deep max
     /// </summary>
-    public Profile GetProfile(
-        bool includeTeams = false,
-        bool includeCharacters = false,
-        bool includeItems = false,
-        bool includeBattleLogs = false
-    )
+    public Profile GetProfile(IncludeFlags flags = IncludeFlags.None)
     {
-        DbSet<Profile> profiles = this.Profiles;
-        IQueryable<Profile> query = profiles;
+        IQueryable<Profile> query = this.Profiles;
 
-        query = includeTeams ? query.Include(p => p.Teams) : query;
-        query = includeItems ? query.Include(p => p.Items) : query;
-        query = includeCharacters ? query.Include(p => p.Characters) : query;
-        query = includeBattleLogs ? query.Include(p => p.BattleLogs) : query;
+        // Handle the non multi-linked includes
+        if (flags.HasFlag(IncludeFlags.BattleLogs))
+            query = query.Include(p => p.BattleLogs);
 
-        return query.Where(p => p.Id == Constants.CurrentProfileId).First()!;
+        if (flags.HasFlag(IncludeFlags.Dungeons))
+            query = query.Include(p => p.Dungeons);
+
+        if (flags.HasFlag(IncludeFlags.Items))
+            query = query.Include(p => p.Items);
+
+        // Handle multi-linked includes
+        if (flags.HasFlag(IncludeFlags.Teams))
+            query = flags.HasFlag(IncludeFlags.Characters)
+                ? query.Include(p => p.Teams).ThenInclude(t => t.Characters)
+                : query.Include(p => p.Teams);
+
+        if (flags.HasFlag(IncludeFlags.Characters))
+            query = flags.HasFlag(IncludeFlags.Teams)
+                ? query.Include(p => p.Characters).ThenInclude(c => c.Teams)
+                : query.Include(p => p.Characters);
+
+        return query.First(p => p.Id == Constants.CurrentProfileId);
     }
 
     /// <summary>
     /// Short cut to get Profiles
+    ///
+    /// Includes are 2 deep max
     /// </summary>
-    public IQueryable<Profile> GetProfiles(bool includeCharacters = false, bool includeTeams = false, bool includeItems = false)
+    public IQueryable<Profile> GetProfiles(IncludeFlags flags = IncludeFlags.None)
     {
         IQueryable<Profile> query = this.Profiles;
-        query = includeTeams ? query.Include(p => p.Teams) : query;
-        query = includeCharacters ? query.Include(p => p.Characters) : query;
-        query = includeItems ? query.Include(p => p.Items) : query;
+
+        // Handle the non multi-linked includes
+        if (flags.HasFlag(IncludeFlags.BattleLogs))
+            query = query.Include(p => p.BattleLogs);
+
+        if (flags.HasFlag(IncludeFlags.Dungeons))
+            query = query.Include(p => p.Dungeons);
+
+        if (flags.HasFlag(IncludeFlags.Items))
+            query = query.Include(p => p.Items);
+
+        // Handle multi-linked includes
+        if (flags.HasFlag(IncludeFlags.Teams))
+            query = flags.HasFlag(IncludeFlags.TeamCharacters)
+                ? query.Include(p => p.Teams).ThenInclude(t => t.Characters)
+                : query.Include(p => p.Teams);
+
+        if (flags.HasFlag(IncludeFlags.Characters))
+            query = flags.HasFlag(IncludeFlags.CharacterTeams)
+                ? query.Include(p => p.Characters).ThenInclude(c => c.Teams)
+                : query.Include(p => p.Characters);
+
         return query;
     }
 
     /// <summary>
     /// Short cut to get Teams
+    ///
+    /// Converts IncludeFlags.Characters to IncludeFlags.TeamCharacters
+    /// Force flags to only be able to contain IncludeFlags.Characters then ensure IncludeFlags.Teams is set.
     /// </summary>
-    public IQueryable<Team> GetTeams(bool includeCharacters = false)
-    {
-        IQueryable<Team> query = this.Teams.Include(t => t.Profile).Where(t => t.Profile.Id == Constants.CurrentProfileId);
-        query = includeCharacters ? query.Include(t => t.Characters) : query;
-        return query;
-    }
+    public IQueryable<Team> GetTeams(IncludeFlags flags = IncludeFlags.None)
+        => GetProfile(
+            IncludeFlags.Teams
+            | (
+                (flags.HasFlag(IncludeFlags.Characters) ? IncludeFlags.TeamCharacters : flags)
+                & IncludeFlags.TeamCharacters
+            )).Teams.AsQueryable();
 
     /// <summary>
     /// Short cut to get Characters
+    ///
+    /// Converts IncludeFlags.Teams to IncludeFlags.CharacterTeams
+    /// Force flags to only be able to contain IncludeFlags.CharacterTeams then ensure IncludeFlags.Characters is set.
     /// </summary>
-    public IQueryable<Character> GetCharacters(bool includeTeams = false)
-    {
-        IQueryable<Character> query = this.Characters.Include(c => c.Profile).Where(c => c.Profile.Id == Constants.CurrentProfileId);
-        query = includeTeams ? query.Include(c => c.Teams) : query;
-        return query;
-    }
+    public IQueryable<Character> GetCharacters(IncludeFlags flags = IncludeFlags.None)
+        => GetProfile(
+            IncludeFlags.Characters
+            | (
+                (flags.HasFlag(IncludeFlags.Teams) ? IncludeFlags.CharacterTeams : flags)
+                & IncludeFlags.CharacterTeams
+            )).Characters.AsQueryable();
 
     /// <summary>
     /// Short cut to get Items
     /// </summary>
     public IQueryable<Item> GetItems()
-        => this.Items
-            .Include(i => i.Profile)
-            .Where(i => i.Profile.Id == Constants.CurrentProfileId);
-    
+        => GetProfile(IncludeFlags.Items).Items.AsQueryable();
+
     /// <summary>
     /// Short cut to get BattleLogs
     /// </summary>
     public IQueryable<BattleLog> GetBattleLogs()
-        => this.BattleLogs
-            .Include(b => b.Profile)
-            .Where(b => b.Profile.Id == Constants.CurrentProfileId);
+        => GetProfile(IncludeFlags.BattleLogs).BattleLogs.AsQueryable();
 }
 
 
