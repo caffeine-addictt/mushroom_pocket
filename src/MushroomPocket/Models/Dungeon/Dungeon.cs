@@ -97,4 +97,17 @@ public class Dungeon
             default: throw new Exception($"{difficulty} is not a valid difficulty");
         }
     }
+    public int GetDifficultyNum() => Difficulty;
+    public static int GetDifficultyNum(string difficulty)
+    {
+        switch (difficulty)
+        {
+            case "S": return 1;
+            case "A": return 2;
+            case "B": return 3;
+            case "C": return 4;
+            case "D": return 5;
+            default: throw new Exception($"{difficulty} is not a valid difficulty");
+        }
+    }
 }
