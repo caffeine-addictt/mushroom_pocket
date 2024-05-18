@@ -7,6 +7,7 @@
  */
 
 using MushroomPocket.Models;
+using MushroomPocket.Utils;
 
 namespace MushroomPocket.Core;
 
@@ -49,6 +50,7 @@ public static class ManageDungeon
                 break;
 
             case "2":
+                ListDungeon();
                 break;
 
             case "3":
@@ -67,6 +69,68 @@ public static class ManageDungeon
     // Option 9-1: Enter a dungeon
 
     // Option 9-2: View dungeon(s)
+    private static void ListDungeon()
+    {
+        using (MushroomContext db = new MushroomContext())
+        {
+            IEnumerable<Dungeon> dungeonList = db.GetDungeons();
+
+            // Early length check
+            if (dungeonList.Count() == 0)
+            {
+                Console.WriteLine("\nNo dungeon to list!");
+                return;
+            }
+
+            // Handle difficulty filter
+            Console.Write("Do you want to filter by difficulty? [Y/N]: ");
+            if ((Console.ReadLine() ?? "").Trim().ToLower() == "y")
+            {
+                Console.Write("Enter difficulty [S, A, B, C, D]: ");
+                string difficulty = (Console.ReadLine() ?? "").Trim().ToUpper();
+
+                if (new List<string>(["S", "A", "B", "C", "D"]).Contains(difficulty))
+                {
+                    dungeonList = dungeonList.Where(d => d.Difficulty == Dungeon.GetDifficultyNum(difficulty));
+                }
+                else
+                {
+                    Console.WriteLine("\nInvalid difficulty. Please enter only [S, A, B, C, D].");
+                    return;
+                }
+            }
+
+            // Handle status filter
+            Console.Write("Do you want to filter by status? [Y/N]: ");
+            if ((Console.ReadLine() ?? "").Trim().ToLower() == "y")
+            {
+                Console.Write("Enter status [Unopened, Opened, Cleared]: ");
+                Similarity topSuggestion;
+                if (!StringUtils.SmartLookUp((Console.ReadLine() ?? "").Trim(), new List<string>(["Unopened", "Opened", "Cleared"]), out topSuggestion!))
+                {
+                    Console.WriteLine("\nInvalid status. Please enter only [Unopened, Opened, Cleared].");
+                    return;
+                }
+
+                if (topSuggestion.QualifiedText.ToLower() != topSuggestion.OriginalText.ToLower())
+                {
+                    Console.Write($"\nDid you mean '{topSuggestion.QualifiedText}'? ({topSuggestion.ScoreToString()}%) [Y/N]: ");
+                    if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+                }
+
+                dungeonList = dungeonList.Where(d => d.Status == topSuggestion.QualifiedText);
+            }
+
+            if (dungeonList.Count() == 0)
+            {
+                Console.WriteLine("\nNo dungeons to list!");
+                return;
+            }
+
+            foreach (Dungeon d in dungeonList)
+                EchoDungeon(d);
+        }
+    }
 
     // Option 9-3: View battle log
     private static void ListBattleLog()
