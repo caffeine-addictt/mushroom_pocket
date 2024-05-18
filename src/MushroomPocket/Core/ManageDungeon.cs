@@ -52,6 +52,7 @@ public static class ManageDungeon
                 break;
 
             case "3":
+                ListBattleLog();
                 break;
 
             case "b":
