@@ -23,6 +23,22 @@ public static class ManageDungeon
     );
 
 
+    // Echo
+    public static void EchoDungeon(Dungeon d)
+        => Console.WriteLine(String.Join(
+            "\n",
+            @"-----------------------",
+            $"ID: {d.Id}",
+            $"Rank: {d.GetDifficulty()}",
+            $"Status: {d.Status}",
+            $"Name: {d.Name}",
+            $"Description: {d.Description}",
+            (d.Status == "Unopened")
+                ? $"Bribe needed: ${d.EntryCost}\n-----------------------"
+                : @"-----------------------"
+        ));
+
+
     // Main entry point
     public static void MainEntry()
     {
