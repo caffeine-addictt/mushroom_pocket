@@ -47,6 +47,7 @@ public static class ManageDungeon
         switch ((Console.ReadLine() ?? "").Trim())
         {
             case "1":
+                EnterDungeon();
                 break;
 
             case "2":
@@ -67,6 +68,59 @@ public static class ManageDungeon
     }
 
     // Option 9-1: Enter a dungeon
+    private static void EnterDungeon()
+    {
+        using (MushroomContext db = new MushroomContext())
+        {
+            Profile profile = db.GetProfile(IncludeFlags.Dungeons);
+            List<Dungeon> dungeonList = profile.Dungeons.Where(d => d.Status != "Cleared").ToList();
+            if (dungeonList.Count == 0)
+            {
+                Console.WriteLine("\nNo dungeons have been discovered! Keep playing and dungeons might show itself!");
+                return;
+            }
+
+            Console.Write("Enter Dungeon Name, ID or L to list all dungeons: ");
+            string dungeonNameId = (Console.ReadLine() ?? "").Trim();
+
+            if (dungeonNameId.ToLower() == "l")
+            {
+                foreach (Dungeon d in dungeonList)
+                    EchoDungeon(d);
+
+                Console.Write("Enter Dungeon Name or ID: ");
+                dungeonNameId = (Console.ReadLine() ?? "").Trim();
+            }
+
+            Similarity topSuggestion;
+            if (!StringUtils.SmartLookUp(dungeonNameId, dungeonList.Select(d => d.Id).Union(dungeonList.Select(d => d.Name)), out topSuggestion!))
+            {
+                Console.WriteLine("\nDungeon Name or ID not found!");
+                return;
+            }
+
+            if (topSuggestion.QualifiedText.ToLower() != topSuggestion.OriginalText.ToLower())
+            {
+                Console.Write($"\nDid you mean '{topSuggestion.QualifiedText}'? ({topSuggestion.ScoreToString()}%) [Y/N]: ");
+                if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+            }
+
+            Dungeon dungeon = dungeonList.First(d => d.Id == topSuggestion.QualifiedText || d.Name == topSuggestion.QualifiedText);
+            // Return if too expensive
+            if (profile.Wallet < dungeon.EntryCost)
+            {
+                Console.WriteLine(dungeon.UnlockReject(profile.Wallet));
+                return;
+            }
+
+            Console.Write(dungeon.UnlockAsk);
+            if ((Console.ReadLine() ?? "").Trim().ToLower() != "y") return;
+            profile.Wallet -= dungeon.EntryCost;
+            db.SaveChanges();
+        }
+
+        // TODO: Start game loop
+    }
 
     // Option 9-2: View dungeon(s)
     private static void ListDungeon()
@@ -78,7 +132,7 @@ public static class ManageDungeon
             // Early length check
             if (dungeonList.Count() == 0)
             {
-                Console.WriteLine("\nNo dungeon to list!");
+                Console.WriteLine("\nNo dungeons to list!");
                 return;
             }
 
