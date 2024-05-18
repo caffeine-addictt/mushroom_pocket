@@ -80,7 +80,7 @@ public static class ManageDungeon
                 return;
             }
 
-            Console.Write("Enter Dungeon Name, ID or L to list all dungeons: ");
+            Console.Write("Enter Dungeon ID or L to list all dungeons: ");
             string dungeonNameId = (Console.ReadLine() ?? "").Trim();
 
             if (dungeonNameId.ToLower() == "l")
@@ -88,14 +88,14 @@ public static class ManageDungeon
                 foreach (Dungeon d in dungeonList)
                     EchoDungeon(d);
 
-                Console.Write("Enter Dungeon Name or ID: ");
+                Console.Write("Enter Dungeon ID: ");
                 dungeonNameId = (Console.ReadLine() ?? "").Trim();
             }
 
             Similarity topSuggestion;
-            if (!StringUtils.SmartLookUp(dungeonNameId, dungeonList.Select(d => d.Id).Union(dungeonList.Select(d => d.Name)), out topSuggestion!))
+            if (!StringUtils.SmartLookUp(dungeonNameId, dungeonList.Select(d => d.Id), out topSuggestion!))
             {
-                Console.WriteLine("\nDungeon Name or ID not found!");
+                Console.WriteLine("\nDungeon ID not found!");
                 return;
             }
 
@@ -105,7 +105,7 @@ public static class ManageDungeon
                 if ((Console.ReadLine() ?? "").ToLower() != "y") return;
             }
 
-            Dungeon dungeon = dungeonList.First(d => d.Id == topSuggestion.QualifiedText || d.Name == topSuggestion.QualifiedText);
+            Dungeon dungeon = dungeonList.First(d => d.Id == topSuggestion.QualifiedText);
             // Return if too expensive
             if (profile.Wallet < dungeon.EntryCost)
             {
