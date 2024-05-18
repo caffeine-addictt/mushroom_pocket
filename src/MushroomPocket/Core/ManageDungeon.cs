@@ -81,31 +81,84 @@ public static class ManageDungeon
             }
 
             Console.Write("Enter Dungeon ID or L to list all dungeons: ");
-            string dungeonNameId = (Console.ReadLine() ?? "").Trim();
+            string dungeonId = (Console.ReadLine() ?? "").Trim();
 
-            if (dungeonNameId.ToLower() == "l")
+            if (dungeonId.ToLower() == "l")
             {
                 foreach (Dungeon d in dungeonList)
                     EchoDungeon(d);
 
                 Console.Write("Enter Dungeon ID: ");
-                dungeonNameId = (Console.ReadLine() ?? "").Trim();
+                dungeonId = (Console.ReadLine() ?? "").Trim();
             }
 
-            Similarity topSuggestion;
-            if (!StringUtils.SmartLookUp(dungeonNameId, dungeonList.Select(d => d.Id), out topSuggestion!))
+            Similarity topDungeonSuggestion;
+            if (!StringUtils.SmartLookUp(dungeonId, dungeonList.Select(d => d.Id), out topDungeonSuggestion!))
             {
                 Console.WriteLine("\nDungeon ID not found!");
                 return;
             }
 
-            if (topSuggestion.QualifiedText.ToLower() != topSuggestion.OriginalText.ToLower())
+            if (topDungeonSuggestion.QualifiedText.ToLower() != topDungeonSuggestion.OriginalText.ToLower())
             {
-                Console.Write($"\nDid you mean '{topSuggestion.QualifiedText}'? ({topSuggestion.ScoreToString()}%) [Y/N]: ");
+                Console.Write($"\nDid you mean '{topDungeonSuggestion.QualifiedText}'? ({topDungeonSuggestion.ScoreToString()}%) [Y/N]: ");
                 if ((Console.ReadLine() ?? "").ToLower() != "y") return;
             }
 
-            Dungeon dungeon = dungeonList.First(d => d.Id == topSuggestion.QualifiedText);
+            // Get team to use
+            List<Team> teamList = db.GetTeams(IncludeFlags.TeamCharacters).ToList();
+            if (teamList.Count == 0)
+            {
+                Console.WriteLine("\nYou do not have any team. Create one first!");
+                return;
+            }
+
+            Console.Write("Enter team ID or L to list all team: ");
+            string teamId = (Console.ReadLine() ?? "").Trim();
+
+            if (teamId.ToLower() == "l")
+            {
+                foreach (Team t in teamList)
+                    ManageTeams.EchoTeam(t);
+
+                Console.Write("Enter team ID: ");
+                teamId = (Console.ReadLine() ?? "").Trim();
+            }
+
+            Similarity topTeamSuggestion;
+            if (!StringUtils.SmartLookUp(teamId, teamList.Select(t => t.Id), out topTeamSuggestion!))
+            {
+                Console.WriteLine("\nTeam not found!");
+                return;
+            }
+
+            if (topTeamSuggestion.QualifiedText.ToLower() != topTeamSuggestion.OriginalText.ToLower())
+            {
+                Console.Write($"\nDid you mean '{topTeamSuggestion.QualifiedText}'? ({topTeamSuggestion.ScoreToString()}%) [Y/N]: ");
+                if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+            }
+
+            // Affected Dungeon and Team
+            Team team = teamList.First(t => t.Id == topTeamSuggestion.QualifiedText);
+            Dungeon dungeon = dungeonList.First(d => d.Id == topDungeonSuggestion.QualifiedText);
+
+            // Return if no characters in team
+            if (team.Characters.Count == 0)
+            {
+                Console.WriteLine("\nNo character in this team. Add some first!");
+                return;
+            }
+
+            // Return if a character is dead
+            foreach (Character c in team.Characters)
+            {
+                if (c.Hp <= 0)
+                {
+                    Console.WriteLine($"\n{c.Name} [{c.Id}] is dead, causing the team morale to be low! You won't be able to clear this dungeon!\nEither heal {c.Name} or use a difference team!");
+                    return;
+                }
+            }
+
             // Return if too expensive
             if (profile.Wallet < dungeon.EntryCost)
             {
@@ -116,6 +169,7 @@ public static class ManageDungeon
             Console.Write(dungeon.UnlockAsk);
             if ((Console.ReadLine() ?? "").Trim().ToLower() != "y") return;
             profile.Wallet -= dungeon.EntryCost;
+            Console.WriteLine(dungeon.UnlockSuccess(profile.Wallet));
             db.SaveChanges();
         }
 
