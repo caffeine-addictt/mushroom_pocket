@@ -193,6 +193,12 @@ public class MushroomContext : DbContext
     /// </summary>
     public IQueryable<BattleLog> GetBattleLogs()
         => GetProfile(IncludeFlags.BattleLogs).BattleLogs.AsQueryable();
+
+    /// <summary>
+    /// Short cut to get Dungeons
+    /// </summary>
+    public IQueryable<Dungeon> GetDungeons()
+        => GetProfile(IncludeFlags.Dungeons).Dungeons.AsQueryable();
 }
 
 
