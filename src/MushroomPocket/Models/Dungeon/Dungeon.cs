@@ -48,6 +48,8 @@ public class Dungeon
         "A lunar landscape with low gravity and mysterious secrets.",
     };
 
+    public string GetUnlockAsk => $"A mysterious force prevents you from entering the {GetDifficulty()} ranked dungeon... Bribe it with ${EntryCost}? [Y/N]";
+
 
     public Dungeon()
     {
