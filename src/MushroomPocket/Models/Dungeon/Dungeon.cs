@@ -29,10 +29,23 @@ public class Dungeon
 
     // STATIC STUFF
     private static readonly List<string> NAME_POOL = new List<string>() {
-        ""
+        "Big Boo's Haunt",
+        "Lethal Lava Land",
+        "Pinna Park",
+        "Sirena Beach",
+        "Ghostly Galaxy",
+        "Gusty Garden Galaxy",
+        "Luncheon Kingdom",
+        "Bowser's Kingdom",
+        "Moon Kingdom",
     };
     private static readonly List<string> DESC_POOL = new List<string>() {
-        ""
+        "A vast battlefield with rolling hills and dangerous foes.",
+        "A fortress with narrow ledges and moving platforms.",
+        "An amusement park with exciting rides and attractions.",
+        "A food-themed world with boiling lava and giant vegetables.",
+        "A fortified castle with dangerous traps and powerful foes.",
+        "A lunar landscape with low gravity and mysterious secrets.",
     };
 
 
