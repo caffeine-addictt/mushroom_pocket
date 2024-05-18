@@ -25,6 +25,8 @@ public class Dungeon
     public DateTime Open { get; set; }
     public DateTime Close { get; set; }
 
+    public virtual Profile Profile { get; set; } = null!;
+
     // STATIC STUFF
     private static readonly List<string> NAME_POOL = new List<string>() {
         ""

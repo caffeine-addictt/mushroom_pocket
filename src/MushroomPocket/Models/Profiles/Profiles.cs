@@ -21,6 +21,7 @@ public class Profile
 
     public virtual HashSet<Team> Teams { get; set; } = null!;
     public virtual HashSet<Item> Items { get; set; } = null!;
+    public virtual HashSet<Dungeon> Dungeons { get; set; } = null!;
     public virtual HashSet<Character> Characters { get; set; } = null!;
     public virtual HashSet<BattleLog> BattleLogs { get; set; } = null!;
 

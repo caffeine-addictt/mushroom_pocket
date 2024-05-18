@@ -16,6 +16,7 @@ public class MushroomContext : DbContext
 {
     public DbSet<Team> Teams => Set<Team>();
     public DbSet<Item> Items => Set<Item>();
+    public DbSet<Dungeon> Dungeons => Set<Dungeon>();
     public DbSet<Profile> Profiles => Set<Profile>();
     public DbSet<Character> Characters => Set<Character>();
     public DbSet<BattleLog> BattleLogs => Set<BattleLog>();
@@ -50,6 +51,11 @@ public class MushroomContext : DbContext
         modelBuilder.Entity<Profile>()
             .HasMany(p => p.BattleLogs)
             .WithOne(b => b.Profile)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Profile>()
+            .HasMany(p => p.Dungeons)
+            .WithOne(d => d.Profile)
             .OnDelete(DeleteBehavior.Cascade);
     }
 
