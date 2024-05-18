@@ -61,7 +61,7 @@ public class Dungeon
         Status = "Uncleared";
 
         // Make entry cost and rewards scale with diff
-        EntryCost = 25 * Difficulty;
+        EntryCost = 100 / Difficulty;
 
         Name = NAME_POOL[new Random().Next(0, NAME_POOL.Count)];
         Description = DESC_POOL[new Random().Next(0, DESC_POOL.Count)];
