@@ -104,11 +104,11 @@ public static class ManageDungeon
             Console.Write("Do you want to filter by status? [Y/N]: ");
             if ((Console.ReadLine() ?? "").Trim().ToLower() == "y")
             {
-                Console.Write("Enter status [Unopened, Opened, Cleared]: ");
+                Console.Write("Enter status [Uncleared, Cleared]: ");
                 Similarity topSuggestion;
-                if (!StringUtils.SmartLookUp((Console.ReadLine() ?? "").Trim(), new List<string>(["Unopened", "Opened", "Cleared"]), out topSuggestion!))
+                if (!StringUtils.SmartLookUp((Console.ReadLine() ?? "").Trim(), new List<string>(["Uncleared", "Cleared"]), out topSuggestion!))
                 {
-                    Console.WriteLine("\nInvalid status. Please enter only [Unopened, Opened, Cleared].");
+                    Console.WriteLine("\nInvalid status. Please enter only [Uncleared, Cleared].");
                     return;
                 }
 
