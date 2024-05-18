@@ -21,7 +21,10 @@ public static class ManageCharacters
             @"-----------------------",
             $"ID: {c.Id}",
             $"Name: {c.Name}",
+            $"Atk: {c.Atk}",
             $"HP: {c.Hp}",
+            $"Crit Rate: {c.CritRate}",
+            $"Crit Multiplier: {c.CritMultiplier}",
             $"EXP: {c.Exp}",
             $"Skill: {c.Skill}",
             @"-----------------------"

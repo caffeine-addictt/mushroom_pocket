@@ -44,6 +44,10 @@ public class Character
 
     public int Exp { get; set; }
     public float Hp { get; set; }
+    public int Atk { get; set; }
+    public float CritRate { get; set; }
+    public float CritMultiplier { get; set; }
+
     public string Name { get; set; } = null!;
     public string Skill { get; set; } = null!;
     public bool EvolvedOnly { get; set; } = true;
@@ -59,19 +63,20 @@ public class Character
     {
         Hp = hp;
         Exp = exp;
+        Atk = new Random().Next(1, 5);
+        CritRate = new Random().Next(1, 5) / 10f; // Rate 0.1 - 0.5
+        CritMultiplier = 1 + new Random().Next(1, 5) / 10f; // Multiplier 1.1 - 1.5
         Id = GenerateId();
     }
 
-    public Character(float hp, int exp, string name, string skill, bool evolvedOnly)
-        : this(hp, exp)
+    public Character(float hp, int exp, string name, string skill, bool evolvedOnly) : this(hp, exp)
     {
         Name = name;
         Skill = skill;
         EvolvedOnly = evolvedOnly;
     }
 
-    public Character(float hp, int exp, HashSet<Team> teams)
-        : this(hp, exp)
+    public Character(float hp, int exp, HashSet<Team> teams) : this(hp, exp)
     {
         Teams = teams;
     }
@@ -83,8 +88,7 @@ public class Character
         string skill,
         bool evolvedOnly,
         HashSet<Team> teams
-    )
-        : this(hp, exp, name, skill, evolvedOnly)
+    ) : this(hp, exp, name, skill, evolvedOnly)
     {
         Teams = teams;
     }
