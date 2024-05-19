@@ -18,9 +18,10 @@ public class IUsingContext : IDisposable
 
     protected IUsingContext()
     {
-        Db = new MushroomContext();
+        Db = new MushroomContext($"testing-{Guid.NewGuid().ToString()}.db");
 
         // Ensure created
+        Db.Database.EnsureDeleted();
         Db.Database.EnsureCreated();
 
         // Create new testing profile
@@ -34,7 +35,7 @@ public class IUsingContext : IDisposable
     public void Dispose()
     {
         // Delete testing profile
-        Db.Profiles.Remove(Db.Profiles.First(p => p.Id == ProfileId));
+        Db.Database.EnsureDeleted();
         Db.Dispose();
     }
 }

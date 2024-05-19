@@ -43,6 +43,8 @@ public enum IncludeFlags : byte
 // Context
 public class MushroomContext : DbContext
 {
+    public string Source;
+
     public DbSet<Team> Teams => Set<Team>();
     public DbSet<Item> Items => Set<Item>();
     public DbSet<Dungeon> Dungeons => Set<Dungeon>();
@@ -50,9 +52,15 @@ public class MushroomContext : DbContext
     public DbSet<Character> Characters => Set<Character>();
     public DbSet<BattleLog> BattleLogs => Set<BattleLog>();
 
+    public MushroomContext(string dbSource = "mushroom.db")
+    {
+        Source = dbSource;
+        Database.EnsureCreated();
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
-        options.UseSqlite($"Data Source=mushroom.db");
+        options.UseSqlite($"Data Source={Source}");
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
