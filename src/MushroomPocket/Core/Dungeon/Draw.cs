@@ -65,7 +65,7 @@ public static class Frame
         // Build team
         int teamSpacing = 2;
         List<List<string>> teamMembers = new List<List<string>>();
-        Dimension teamASCIIDimension = new Dimension(ASCIIArt.CharacterDimensions.X * 2, ASCIIArt.CharacterDimensions.Y);
+        Dimension teamASCIIDimension = new Dimension(ASCIIArt.CharacterDimensions.X * 3, ASCIIArt.CharacterDimensions.Y);
 
         foreach (Character character in team.Characters)
         {
