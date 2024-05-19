@@ -69,7 +69,7 @@ public static class Frame
         frame += CenterAlign(GenerateHpIndicator(ASCIIArt.DungeonMasterDimensions, dm.Hp, dm.MaxHp), canvas.X) + "\n\n\n";
 
         // Build team
-        int teamSpacing = 2;
+        int teamSpacing = 4;
         List<List<string>> teamMembers = new List<List<string>>();
         Dimension teamASCIIDimension = new Dimension(ASCIIArt.CharacterDimensions.X * 3, ASCIIArt.CharacterDimensions.Y);
 
