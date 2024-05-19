@@ -47,6 +47,7 @@ public class Character
     public int Atk { get; set; }
     public float CritRate { get; set; }
     public float CritMultiplier { get; set; }
+    public float MaxHp { get; private set; }
 
     public string Name { get; set; } = null!;
     public string Skill { get; set; } = null!;
@@ -67,6 +68,8 @@ public class Character
         CritRate = new Random().Next(1, 5) / 10f; // Rate 0.1 - 0.5
         CritMultiplier = 1 + new Random().Next(1, 5) / 10f; // Multiplier 1.1 - 1.5
         Id = GenerateId();
+
+        MaxHp = Hp;
     }
 
     public Character(float hp, int exp, string name, string skill, bool evolvedOnly) : this(hp, exp)
