@@ -176,6 +176,13 @@ public static class ManageDungeon
                 return;
             }
 
+            // Warn if not full team
+            if (team.Characters.Count != 5)
+            {
+                Console.Write($"\nYour team has [{team.Characters.Count}/5] characters. Are you sure you want to enter this dungeon? [Y/N]: ");
+                if ((Console.ReadLine() ?? "").Trim().ToLower() != "y") return;
+            }
+
             // Return if a character is dead
             foreach (Character c in team.Characters)
             {
