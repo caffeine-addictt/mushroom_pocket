@@ -117,6 +117,18 @@ public static class ManageTeams
             List<Character> charList = db.GetCharacters().ToList();
             List<Team> teamList = db.GetTeams(IncludeFlags.Characters).ToList();
 
+            // check for char and team
+            if (charList.Count == 0)
+            {
+                Console.WriteLine("\nNo character(s) to add.");
+                return;
+            }
+            if (teamList.Count == 0)
+            {
+                Console.WriteLine("\nNo team(s) to add.");
+                return;
+            }
+
             // Ask for pattern
             Console.Write("Enter Character ID or L to list all characters: ");
             string charID = (Console.ReadLine() ?? "").Trim();
