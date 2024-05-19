@@ -21,7 +21,7 @@ public static class Frame
 
     public static string GenerateHpIndicator(Dimension xy, float hp, float maxHp)
     {
-        int barWidth = (int)Math.Floor((decimal)ASCIIArt.DungeonMasterDimensions.X / 2);
+        int barWidth = Math.Max((int)Math.Floor((double)xy.X / 1.5), 4);
 
         return String.Join(
             "\n",
