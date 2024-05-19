@@ -64,7 +64,7 @@ public class Dungeon
         "A lunar landscape with low gravity and mysterious secrets.",
     };
 
-    public string UnlockAsk => $"A mysterious force prevents you from entering the {GetDifficulty()} ranked dungeon... Bribe it with ${EntryCost}? [Y/N]";
+    public string UnlockAsk => $"A mysterious force prevents you from entering the {GetDifficulty()} ranked dungeon... Bribe it with ${EntryCost}? [Y/N]: ";
     public string UnlockReject(float wallet) => $"A mysterious force scoffs at your measely ${wallet} while flinging you away. \"${EntryCost} or leave!\"";
     public string UnlockSuccess(float wallet) => $"You feel the mysterious force dissapate. You have ${EntryCost} left.";
 
