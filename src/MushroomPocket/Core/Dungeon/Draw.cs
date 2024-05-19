@@ -38,7 +38,7 @@ public static class Frame
         foreach (string line in s.Split("\n"))
         {
             int leading = (int)Math.Floor((decimal)(width - line.Length) / 2);
-            leading = Math.Clamp(leading, 0, width);
+            leading = Math.Clamp(leading, 0, s.Length);
 
             formatted.Add(
                 String.Join("", Enumerable.Repeat(" ", leading))
