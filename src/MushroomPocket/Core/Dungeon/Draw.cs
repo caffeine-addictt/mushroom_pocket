@@ -43,7 +43,7 @@ public static class Frame
             formatted.Add(
                 String.Join("", Enumerable.Repeat(" ", leading))
                 + line
-                + String.Join("", Enumerable.Repeat(" ", width - line.Length - leading))
+                + String.Join("", Enumerable.Repeat(" ", leading))
             );
         }
 
