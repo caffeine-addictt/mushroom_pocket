@@ -93,33 +93,10 @@ public class MushroomContext : DbContext
     ///
     /// Includes are 2 deep max
     /// </summary>
+    public Profile GetProfile(string? profileId, IncludeFlags flags = IncludeFlags.None)
+        => GetProfiles(flags).First(p => p.Id == (profileId ?? Constants.CurrentProfileId));
     public Profile GetProfile(IncludeFlags flags = IncludeFlags.None)
-    {
-        IQueryable<Profile> query = this.Profiles;
-
-        // Handle the non multi-linked includes
-        if (flags.HasFlag(IncludeFlags.BattleLogs))
-            query = query.Include(p => p.BattleLogs);
-
-        if (flags.HasFlag(IncludeFlags.Dungeons))
-            query = query.Include(p => p.Dungeons);
-
-        if (flags.HasFlag(IncludeFlags.Items))
-            query = query.Include(p => p.Items);
-
-        // Handle multi-linked includes
-        if (flags.HasFlag(IncludeFlags.Teams))
-            query = flags.HasFlag(IncludeFlags.Characters)
-                ? query.Include(p => p.Teams).ThenInclude(t => t.Characters)
-                : query.Include(p => p.Teams);
-
-        if (flags.HasFlag(IncludeFlags.Characters))
-            query = flags.HasFlag(IncludeFlags.Teams)
-                ? query.Include(p => p.Characters).ThenInclude(c => c.Teams)
-                : query.Include(p => p.Characters);
-
-        return query.First(p => p.Id == Constants.CurrentProfileId);
-    }
+        => GetProfile(Constants.CurrentProfileId, flags);
 
     /// <summary>
     /// Short cut to get Profiles
@@ -160,8 +137,9 @@ public class MushroomContext : DbContext
     /// Converts IncludeFlags.Characters to IncludeFlags.TeamCharacters
     /// Force flags to only be able to contain IncludeFlags.Characters then ensure IncludeFlags.Teams is set.
     /// </summary>
-    public IQueryable<Team> GetTeams(IncludeFlags flags = IncludeFlags.None)
-        => GetProfile(
+    public IQueryable<Team> GetTeams(IncludeFlags flags = IncludeFlags.None) => GetTeams(Constants.CurrentProfileId, flags);
+    public IQueryable<Team> GetTeams(string? profileId, IncludeFlags flags = IncludeFlags.None)
+        => GetProfile(profileId,
             IncludeFlags.Teams
             | (
                 (flags.HasFlag(IncludeFlags.Characters) ? IncludeFlags.TeamCharacters : flags)
@@ -174,8 +152,9 @@ public class MushroomContext : DbContext
     /// Converts IncludeFlags.Teams to IncludeFlags.CharacterTeams
     /// Force flags to only be able to contain IncludeFlags.CharacterTeams then ensure IncludeFlags.Characters is set.
     /// </summary>
-    public IQueryable<Character> GetCharacters(IncludeFlags flags = IncludeFlags.None)
-        => GetProfile(
+    public IQueryable<Character> GetCharacters(IncludeFlags flags = IncludeFlags.None) => GetCharacters(Constants.CurrentProfileId, flags);
+    public IQueryable<Character> GetCharacters(string? profileId, IncludeFlags flags = IncludeFlags.None)
+        => GetProfile(profileId,
             IncludeFlags.Characters
             | (
                 (flags.HasFlag(IncludeFlags.Teams) ? IncludeFlags.CharacterTeams : flags)
@@ -185,20 +164,23 @@ public class MushroomContext : DbContext
     /// <summary>
     /// Short cut to get Items
     /// </summary>
-    public IQueryable<Item> GetItems()
+    public IQueryable<Item> GetItems() => GetItems(Constants.CurrentProfileId);
+    public IQueryable<Item> GetItems(string? profileId = null)
         => GetProfile(IncludeFlags.Items).Items.AsQueryable();
 
     /// <summary>
     /// Short cut to get BattleLogs
     /// </summary>
-    public IQueryable<BattleLog> GetBattleLogs()
-        => GetProfile(IncludeFlags.BattleLogs).BattleLogs.AsQueryable();
+    public IQueryable<BattleLog> GetBattleLogs() => GetBattleLogs(Constants.CurrentProfileId);
+    public IQueryable<BattleLog> GetBattleLogs(string? profileId)
+        => GetProfile(profileId, IncludeFlags.BattleLogs).BattleLogs.AsQueryable();
 
     /// <summary>
     /// Short cut to get Dungeons
     /// </summary>
-    public IQueryable<Dungeon> GetDungeons()
-        => GetProfile(IncludeFlags.Dungeons).Dungeons.AsQueryable();
+    public IQueryable<Dungeon> GetDungeons() => GetDungeons(Constants.CurrentProfileId);
+    public IQueryable<Dungeon> GetDungeons(string? profileId)
+        => GetProfile(profileId, IncludeFlags.Dungeons).Dungeons.AsQueryable();
 }
 
 
