@@ -65,8 +65,13 @@ public static class Frame
         string frame = "";
 
         // Build dungeon DungeonMaster
-        frame += CenterAlign(ASCIIArt.DungeonMaster, canvas.X) + "\n";
-        frame += CenterAlign(GenerateHpIndicator(ASCIIArt.DungeonMasterDimensions, dm.Hp, dm.MaxHp), canvas.X) + "\n\n\n";
+        frame += CenterAlign(String.Join(
+            "\n",
+            ASCIIArt.DungeonMaster,
+            GenerateHpIndicator(ASCIIArt.DungeonMasterDimensions, dm.Hp, dm.MaxHp),
+            "",
+            ""
+        ), canvas.X);
 
         // Build team
         int teamSpacing = 4;
@@ -77,10 +82,10 @@ public static class Frame
         {
             string ascii = String.Join(
                 "\n",
-                CenterAlign(ASCIIArt.Character, teamASCIIDimension.X),
-                CenterAlign(GenerateHpIndicator(teamASCIIDimension, character.Hp, character.MaxHp), teamASCIIDimension.X)
+                ASCIIArt.Character,
+                GenerateHpIndicator(teamASCIIDimension, character.Hp, character.MaxHp),
             );
-            teamMembers.Add(ascii.Split("\n").ToList());
+            teamMembers.Add(CenterAlign(ascii, teamASCIIDimension.X).Split("\n").ToList());
         }
 
         // Join
