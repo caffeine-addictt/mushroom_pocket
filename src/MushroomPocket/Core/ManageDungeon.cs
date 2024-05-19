@@ -94,6 +94,9 @@ public static class ManageDungeon
     // Option 9-1: Enter a dungeon
     private static void EnterDungeon()
     {
+        Team team;
+        Dungeon dungeon;
+
         using (MushroomContext db = new MushroomContext())
         {
             Profile profile = db.GetProfile(IncludeFlags.Dungeons);
@@ -163,8 +166,8 @@ public static class ManageDungeon
             }
 
             // Affected Dungeon and Team
-            Team team = teamList.First(t => t.Id == topTeamSuggestion.QualifiedText);
-            Dungeon dungeon = dungeonList.First(d => d.Id == topDungeonSuggestion.QualifiedText);
+            team = teamList.First(t => t.Id == topTeamSuggestion.QualifiedText);
+            dungeon = dungeonList.First(d => d.Id == topDungeonSuggestion.QualifiedText);
 
             // Return if no characters in team
             if (team.Characters.Count == 0)
@@ -197,7 +200,7 @@ public static class ManageDungeon
             db.SaveChanges();
         }
 
-        // TODO: Start game loop
+        DungeonGameLogic.GameLogic.Start(team, dungeon);
     }
 
     // Option 9-2: View dungeon(s)
