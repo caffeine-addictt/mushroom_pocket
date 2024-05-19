@@ -176,6 +176,13 @@ public static class ManageDungeon
                 return;
             }
 
+            // Return if too expensive
+            if (profile.Wallet < dungeon.EntryCost)
+            {
+                Console.WriteLine(dungeon.UnlockReject(profile.Wallet));
+                return;
+            }
+
             // Warn if not full team
             if (team.Characters.Count != 5)
             {
@@ -191,13 +198,6 @@ public static class ManageDungeon
                     Console.WriteLine($"\n{c.Name} [{c.Id}] is dead, causing the team morale to be low! You won't be able to clear this dungeon!\nEither heal {c.Name} or use a difference team!");
                     return;
                 }
-            }
-
-            // Return if too expensive
-            if (profile.Wallet < dungeon.EntryCost)
-            {
-                Console.WriteLine(dungeon.UnlockReject(profile.Wallet));
-                return;
             }
 
             Console.Write(dungeon.UnlockAsk);
