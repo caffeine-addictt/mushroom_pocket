@@ -115,7 +115,7 @@ public static class ManageTeams
         using (MushroomContext db = new MushroomContext())
         {
             List<Character> charList = db.GetCharacters().ToList();
-            List<Team> teamList = db.GetTeams(IncludeFlags.Characters).ToList();
+            List<Team> teamList = db.GetTeams(IncludeFlags.TeamCharacters).ToList();
 
             // check for char and team
             if (charList.Count == 0)
@@ -248,7 +248,7 @@ public static class ManageTeams
             if (
                 !StringUtils.SmartLookUp(
                     teamPattern,
-                    teamList.Select((Team t) => t.Name).ToList(),
+                    teamList.Select((Team t) => t.Name).Union(teamList.Select((Team t) => t.Id)),
                     out topSuggestion!
                 )
             )
@@ -270,7 +270,7 @@ public static class ManageTeams
 
             // Stdout characters
             List<Character> charList = teamList
-                .Where((Team t) => t.Name == topSuggestion.QualifiedText)
+                .Where((Team t) => t.Name == topSuggestion.QualifiedText || t.Id == topSuggestion.QualifiedText)
                 .First()!
                 .Characters.ToList();
             charList.Sort((Character c1, Character c2) => c2.Hp.CompareTo(c1.Hp));

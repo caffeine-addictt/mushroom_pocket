@@ -133,7 +133,7 @@ public static class ManageDungeon
             }
 
             // Get team to use
-            List<Team> teamList = db.GetTeams(IncludeFlags.TeamCharacters).ToList();
+            List<Team> teamList = db.GetTeams(IncludeFlags.TeamCharacters | IncludeFlags.Characters).ToList();
             if (teamList.Count == 0)
             {
                 Console.WriteLine("\nYou do not have any team. Create one first!");

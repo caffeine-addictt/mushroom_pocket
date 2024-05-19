@@ -95,7 +95,7 @@ public static class ManageCharacters
 
         using (MushroomContext db = new MushroomContext())
         {
-            db.GetCharacters().ToList().Add(newChar!);
+            db.GetProfile(IncludeFlags.Characters).Characters.Add(newChar!);
             db.SaveChanges();
         }
         Console.WriteLine($"{topSuggestion.QualifiedText} has been added.");
