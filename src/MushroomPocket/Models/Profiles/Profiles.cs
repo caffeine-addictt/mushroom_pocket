@@ -8,6 +8,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using MushroomPocket.Utils;
+using MushroomPocket.Core;
 
 namespace MushroomPocket.Models;
 
@@ -18,6 +19,8 @@ public class Profile
     public string Id { get; }
     public string Name { get; set; }
     public float Wallet { get; set; }
+
+    public DateTime NextDungeonSpawn { get; set; }
 
     public virtual HashSet<Team> Teams { get; set; } = null!;
     public virtual HashSet<Item> Items { get; set; } = null!;
@@ -30,6 +33,7 @@ public class Profile
         Name = name;
         Wallet = 0.0f;
         Id = GenerateId();
+        NextDungeonSpawn = ManageDungeon.GetNextDungeonSpawn(DateTime.UtcNow);
     }
 
     /// <summary>

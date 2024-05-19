@@ -145,6 +145,9 @@ class Program
             // Handle passive
             Economy.HandlePassiveEarning();
 
+            // Handle Dungeon
+            ManageDungeon.HandleDungeonSpawn();
+
             // Insert newline
             Console.WriteLine();
         }

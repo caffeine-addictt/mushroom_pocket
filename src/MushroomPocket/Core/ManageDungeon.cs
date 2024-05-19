@@ -24,6 +24,30 @@ public static class ManageDungeon
     );
 
 
+    // Handle dungeon spawn
+    public static DateTime GetNextDungeonSpawn(DateTime currentTime)
+        => currentTime.AddMinutes(1);
+    public static void HandleDungeonSpawn()
+    {
+        using (MushroomContext db = new MushroomContext())
+        {
+            Profile profile = db.GetProfile(IncludeFlags.Dungeons);
+
+            if (profile.NextDungeonSpawn > DateTime.UtcNow)
+                return;
+
+            profile.NextDungeonSpawn = GetNextDungeonSpawn(DateTime.UtcNow);
+
+            // New Dungeon
+            Dungeon dungeon = new Dungeon();
+            Console.WriteLine($"\n{dungeon.GetDifficulty()} Rank Dungeon \"{dungeon.Name}\" has revealed itself!");
+
+            profile.Dungeons.Add(dungeon);
+            db.SaveChanges();
+        }
+    }
+
+
     // Echo
     public static void EchoDungeon(Dungeon d)
         => Console.WriteLine(String.Join(
