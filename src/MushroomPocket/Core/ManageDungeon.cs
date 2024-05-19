@@ -26,7 +26,7 @@ public static class ManageDungeon
 
     // Handle dungeon spawn
     public static DateTime GetNextDungeonSpawn(DateTime currentTime)
-        => currentTime.AddMinutes(1);
+        => currentTime.AddMinutes(new Random().Next(2, 10));
     public static void HandleDungeonSpawn()
     {
         using (MushroomContext db = new MushroomContext())
