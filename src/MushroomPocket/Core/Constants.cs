@@ -30,5 +30,8 @@ public static class Constants
     public static string? CurrentProfileId { get; set; }
 
     // Terminal
-    public static readonly Dimension TerminalSize = new Dimension(Console.WindowWidth, Console.WindowHeight);
+    public static readonly Dimension TerminalSize = new Dimension(
+        Console.WindowWidth,
+        Console.WindowHeight
+    );
 }
