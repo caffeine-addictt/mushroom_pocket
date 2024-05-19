@@ -37,7 +37,18 @@ public static class GameLogic
         {
             // DM moves first
             Frame.DrawFrame(team, dm);
-            Thread.Sleep(1000);
+            Console.WriteLine("DM's turn");
+
+            Character target = PickCharacter();
+            float damage = RollDamage(dm);
+            totalDamageTaken += damage;
+            DamageCharacter(target, damage);
+
+            // Redraw
+            Frame.DrawFrame(team, dm);
+            Console.WriteLine($"DM hits {target.Name} [{target.Id}] with {damage} damage. [{target.Hp}] HP remaining.");
+
+
         }
 
         // Treat as defeated
