@@ -100,7 +100,7 @@ public static class ManageDungeon
         using (MushroomContext db = new MushroomContext())
         {
             Profile profile = db.GetProfile(IncludeFlags.Dungeons);
-            List<Dungeon> dungeonList = profile.Dungeons.Where(d => d.Status != "Cleared").ToList();
+            List<Dungeon> dungeonList = profile.Dungeons.Where(d => d.Status != "Cleared").OrderBy(d => d.Difficulty).ToList();
             if (dungeonList.Count == 0)
             {
                 Console.WriteLine("\nNo dungeons have been discovered! Keep playing and dungeons might show itself!");
@@ -269,7 +269,7 @@ public static class ManageDungeon
                 return;
             }
 
-            foreach (Dungeon d in dungeonList)
+            foreach (Dungeon d in dungeonList.OrderBy(d => d.Difficulty))
                 EchoDungeon(d);
         }
     }
