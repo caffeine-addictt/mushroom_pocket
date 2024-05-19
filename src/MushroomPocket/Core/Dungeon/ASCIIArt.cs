@@ -22,6 +22,7 @@ public static class ASCIIArt
         @" \ | (--)---| /'-..-'BP    '-..-~'  ",
         @"  ^^^ ''   ^^^                      "
     );
+    public static readonly Dimension DungeonMasterDimensions = new Dimension(36, 6);
 
     /// Reference chatgpt.com
     public static readonly string Character = String.Join(
@@ -30,4 +31,5 @@ public static class ASCIIArt
         @"( •_•)",
         @"/ >🌸 "
     );
+    public static readonly Dimension CharacterDimensions = new Dimension(5, 3);
 }
