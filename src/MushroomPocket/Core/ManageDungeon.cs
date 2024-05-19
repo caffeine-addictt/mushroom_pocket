@@ -58,7 +58,7 @@ public static class ManageDungeon
             $"Status: {d.Status}",
             $"Name: {d.Name}",
             $"Description: {d.Description}",
-            (d.Status == "Unopened")
+            (d.Status == "Uncleared")
                 ? $"Bribe needed: ${d.EntryCost}\n-----------------------"
                 : @"-----------------------"
         ));
