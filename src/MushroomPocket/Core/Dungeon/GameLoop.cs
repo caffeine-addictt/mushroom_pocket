@@ -15,7 +15,7 @@ namespace MushroomPocket.Core.DungeonGameLogic;
 
 public static class GameLogic
 {
-    public static void Start(Team team, Dungeon dungeon)
+    public static void Start(MushroomContext db, Team team, Dungeon dungeon)
     {
         // Threaded so I can setup some stuff while it shows loading screen in the meantime
         LoadingHandler initialLoadHandler = Loading.Start();

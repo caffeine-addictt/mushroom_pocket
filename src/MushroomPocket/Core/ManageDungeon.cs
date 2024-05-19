@@ -205,9 +205,9 @@ public static class ManageDungeon
             profile.Wallet -= dungeon.EntryCost;
             Console.WriteLine(dungeon.UnlockSuccess(profile.Wallet));
             db.SaveChanges();
-        }
 
-        DungeonGameLogic.GameLogic.Start(team, dungeon);
+            DungeonGameLogic.GameLogic.Start(db, team, dungeon);
+        }
     }
 
     // Option 9-2: View dungeon(s)
