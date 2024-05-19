@@ -37,6 +37,12 @@ public static class Frame
 
         foreach (string line in s.Split("\n"))
         {
+            if (line.Length == 0)
+            {
+                formatted.Add(line);
+                continue;
+            }
+
             int leading = (int)Math.Floor((decimal)(width - line.Length) / 2);
             leading = Math.Clamp(leading, 0, s.Length);
 
