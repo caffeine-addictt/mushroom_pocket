@@ -69,6 +69,8 @@ public static class Frame
             "\n",
             ASCIIArt.DungeonMaster,
             GenerateHpIndicator(ASCIIArt.DungeonMasterDimensions, dm.Hp, dm.MaxHp),
+            dm.Name,
+            $"Atk: {dm.Atk}",
             "",
             ""
         ), canvas.X);
@@ -84,6 +86,8 @@ public static class Frame
                 "\n",
                 ASCIIArt.Character,
                 GenerateHpIndicator(teamASCIIDimension, character.Hp, character.MaxHp),
+                character.Name,
+                $"Atk: {character.Atk}"
             );
             teamMembers.Add(CenterAlign(ascii, teamASCIIDimension.X).Split("\n").ToList());
         }
