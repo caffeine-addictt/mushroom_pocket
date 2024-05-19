@@ -22,7 +22,7 @@ public static class GameLogic
         DungeonMaster dm = new DungeonMaster(dungeon);
 
         /* int totalDamageDone; */
-        /* int totalDamageTaken; */
+        float totalDamageTaken = 0;
 
         Thread.Sleep(3000);
         initialLoadHandler.Dispose();
@@ -49,6 +49,19 @@ public static class GameLogic
             Console.WriteLine($"DM hits {target.Name} [{target.Id}] with {damage} damage. [{target.Hp}] HP remaining.");
 
 
+            // Characters' move
+            foreach (Character character in team.Characters)
+            {
+                Console.WriteLine($"{character.Name} [{character.Id}]'s turn");
+
+                // TODO: Show moveset
+                // TODO: Handle moveset
+                // TODO: Damage/Use skill
+                // TODO: Handle logic
+                // TODO: Update damage done
+                // TODO: Redraw
+                // TODO: StdOut action
+            }
         }
 
         // Treat as defeated
