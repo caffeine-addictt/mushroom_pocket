@@ -59,6 +59,25 @@ public static class Frame
     }
 
 
+    public static void DrawCountDown(int ms, int intervalMs = 1000)
+    {
+        DateTime start = DateTime.UtcNow;
+        DateTime end = start.AddMilliseconds(ms);
+        TimeSpan TotalMilliseconds = end - start;
+
+        Console.Write("\nContinuing in: ");
+        while (true)
+        {
+            TimeSpan elapsed = DateTime.UtcNow - start;
+            if (TotalMilliseconds.Seconds - elapsed.Seconds <= 0) break;
+
+            Console.Write($"{TotalMilliseconds.Seconds - elapsed.Seconds}s.. ");
+            Thread.Sleep(intervalMs);
+        }
+        Console.WriteLine("\n");
+    }
+
+
     public static void DrawFrame(Team team, DungeonMaster dm)
         => DrawFrame(team.Characters, dm);
     public static void DrawFrame(ExplorationParty explorationParty, DungeonMaster dm)

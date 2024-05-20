@@ -33,19 +33,19 @@ public static class GameLogic
         while (ContinueGame())
         {
             // DM moves first
-            Frame.DrawFrame(team, dm);
-            Console.WriteLine("DM's turn");
+            Frame.DrawFrame(party, dm);
 
             PartyMember target = party.PickRandomMember();
             float damage = dm.RollDamage();
             target.TakeDamage(damage);
 
             // Redraw
-            Frame.DrawFrame(team, dm);
-            Console.WriteLine($"DM hits {target.Character.Name} [{target.Character.Id}] with {damage} damage. [{target.Character.Hp}] HP remaining.");
+            Frame.DrawFrame(party, dm);
+            Console.WriteLine("[GAME]: DM's turn");
+            Console.WriteLine($"[GAME]: DM hits {target.Character.Name} [{target.Character.Id}] with {damage} damage. [{target.Character.Hp}] HP remaining.");
 
             Console.WriteLine(damage);
-            Thread.Sleep(3000);
+            Frame.DrawCountDown(3000);
 
 
             // Characters' move
