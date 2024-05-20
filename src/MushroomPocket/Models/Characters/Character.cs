@@ -53,9 +53,9 @@ public class Character
     public string Skill { get; set; } = null!;
     public bool EvolvedOnly { get; set; } = true;
 
-
     public virtual Profile Profile { get; set; } = null!;
     public virtual HashSet<Team> Teams { get; set; } = null!;
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Character"/> class.
@@ -96,6 +96,7 @@ public class Character
         Teams = teams;
     }
 
+
     /// <summary>
     /// Generate id
     /// </summary>
@@ -109,6 +110,7 @@ public class Character
         using (MushroomContext db = new MushroomContext())
             return GenerateId(db);
     }
+
 
     /// <summary>
     /// See if a string is a valid character name.
@@ -128,6 +130,7 @@ public class Character
         validName = null;
         return false;
     }
+
 
     /// <summary>
     /// Creates a new character from the given name, hp, and exp.
@@ -189,12 +192,13 @@ public class Character
         throw new ArgumentException($"{validName} is an unknown character!");
     }
 
+
     /// <summary>
     /// See number of times character can be evolved
-    ///
     /// </summary>
     public static int TimesEvolvable(int charCount, int noToTransform) =>
         noToTransform == 0 ? 0 : (int)Math.Floor((decimal)(charCount / noToTransform));
+
 
     /// <summary>
     /// See if character can be evolved
@@ -205,6 +209,7 @@ public class Character
         evoCount = TimesEvolvable(charCount, noToTransform);
         return evoCount != 0;
     }
+
 
     /// <summary>
     /// Check if character can evolve
@@ -228,6 +233,7 @@ public class Character
 
         return canEvolve;
     }
+
 
     /// <summary>
     /// Evolve Characters
