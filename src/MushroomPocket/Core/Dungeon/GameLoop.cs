@@ -44,7 +44,6 @@ public static class GameLogic
             Console.WriteLine("[GAME]: DM's turn");
             Console.WriteLine($"[GAME]: DM hits {target.Character.Name} [{target.Character.Id}] with {damage} damage. [{target.Character.Name} has {target.Character.Hp} HP remaining.]");
 
-            Console.WriteLine(damage);
             Frame.DrawCountDown(3000);
 
 
