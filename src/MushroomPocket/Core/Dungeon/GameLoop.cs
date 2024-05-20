@@ -30,7 +30,6 @@ public static class GameLogic
         // Helper functions
         bool ContinueGame() => !team.Characters.All(c => c.Hp == 0) && dm.Hp != 0;
         Character PickCharacter() => team.Characters.ToList()[new Random().Next(0, team.Characters.Count)];
-        void DamageCharacter(Character character, float damage) => character.Hp -= damage;
 
         // Game loop
         while (ContinueGame())
@@ -42,7 +41,7 @@ public static class GameLogic
             Character target = PickCharacter();
             float damage = RollDamage(dm);
             totalDamageTaken += damage;
-            DamageCharacter(target, damage);
+            Damage(target, damage);
 
             // Redraw
             Frame.DrawFrame(team, dm);
@@ -78,4 +77,10 @@ public static class GameLogic
         => c.Atk * (c.CritRate * 10 < new Random().Next(11) ? 1 : c.CritMultiplier);
     private static float RollDamage(DungeonMaster dm)
         => dm.Atk * (new Random().Next(11) / 10);
+
+
+    private static void Damage(Character c, float damage)
+        => c.Hp = Math.Clamp(c.Hp - damage, 0, c.MaxHp);
+    private static void Damage(DungeonMaster dm, float damage)
+        => dm.Hp = (int)Math.Floor(Math.Clamp(dm.Hp - damage, 0, dm.MaxHp));
 }
