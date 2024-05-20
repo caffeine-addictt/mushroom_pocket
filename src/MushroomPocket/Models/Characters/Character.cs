@@ -47,7 +47,7 @@ public class Character
     public int Atk { get; set; }
     public float CritRate { get; set; }
     public float CritMultiplier { get; set; }
-    public float MaxHp { get; private set; }
+    public float MaxHp { get; set; }
 
     public string Name { get; set; } = null!;
     public string Skill { get; set; } = null!;

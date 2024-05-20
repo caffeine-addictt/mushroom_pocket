@@ -123,6 +123,7 @@ public class Item
         {
             case "HpPotion":
                 c.Hp += Calculate();
+                c.MaxHp = Math.Max(c.Hp, c.MaxHp);
                 break;
 
             case "ExpPotion":
