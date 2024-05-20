@@ -88,7 +88,7 @@ public static class Loading
             }
 
             // Delay (ms)
-            Thread.Sleep(100);
+            Thread.Sleep(500);
 
             // Draw
             DrawLoading(yHeight);
@@ -97,7 +97,7 @@ public static class Loading
         // Animate waiting
         while (State == 1)
         {
-            Thread.Sleep(200);
+            Thread.Sleep(500);
             DrawLoading(yHeight);
         }
 
@@ -114,7 +114,7 @@ public static class Loading
             }
 
             // Delay (ms)
-            Thread.Sleep(100);
+            Thread.Sleep(500);
 
             // Draw
             DrawLoading(yHeight);
