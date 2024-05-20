@@ -26,7 +26,7 @@ public static class Frame
         return String.Join(
             "\n",
             CenterAlign($"Hp: {hp}/{maxHp}", barWidth),
-            $"| {String.Join("", Enumerable.Repeat("#", barWidth - 4))} |"
+            $"| {String.Join("", Enumerable.Repeat("#", (int)Math.Ceiling((barWidth - 4) * (hp / maxHp))))} |"
         );
     }
 
