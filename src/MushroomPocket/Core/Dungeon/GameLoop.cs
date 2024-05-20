@@ -76,7 +76,7 @@ public static class GameLogic
     private static float RollDamage(Character c)
         => c.Atk * (c.CritRate * 10 < new Random().Next(11) ? 1 : c.CritMultiplier);
     private static float RollDamage(DungeonMaster dm)
-        => dm.Atk * (new Random().Next(11) / 10);
+        => dm.Atk * (float)(5 < new Random().Next(11) ? 1.5 : 1);
 
 
     private static void Damage(Character c, float damage)
