@@ -212,14 +212,19 @@ public static class GameLogic
                 $"EXP: {exp}",
                 ""
             ), congratsText.Length));
-            return;
+        }
+        else
+        {
+            Console.WriteLine("[GAME]: All characters are dead. Game over.");
+            Console.WriteLine("\nA mysterious force sighs before expelling you from the dungeon\n");
         }
 
         profile.BattleLogs.Add(battleLog);
         db.SaveChanges();
 
-        // Treat as all dead
-        Console.WriteLine("[GAME]: All characters are dead. Game over.");
-        Console.WriteLine("\nA mysterious force sighs before expelling you from the dungeon\n");
+        Frame.DrawCountDown(3000);
+        LoadingHandler endingLoading = Loading.Start();
+        Thread.Sleep(3000);
+        endingLoading.Dispose();
     }
 }
