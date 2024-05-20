@@ -20,16 +20,14 @@ public static class GameLogic
         // Threaded so I can setup some stuff while it shows loading screen in the meantime
         LoadingHandler initialLoadHandler = Loading.Start();
         DungeonMaster dm = new DungeonMaster(dungeon);
+        ExplorationParty party = new ExplorationParty(team);
 
-        /* int totalDamageDone; */
-        float totalDamageTaken = 0;
-
+        // Dispose loading screen
         Thread.Sleep(3000);
         initialLoadHandler.Dispose();
 
         // Helper functions
-        bool ContinueGame() => !team.Characters.All(c => c.Hp == 0) && dm.Hp != 0;
-        Character PickCharacter() => team.Characters.ToList()[new Random().Next(0, team.Characters.Count)];
+        bool ContinueGame() => party.IsAllAlive() && dm.Hp != 0;
 
         // Game loop
         while (ContinueGame())
@@ -38,19 +36,22 @@ public static class GameLogic
             Frame.DrawFrame(team, dm);
             Console.WriteLine("DM's turn");
 
-            Character target = PickCharacter();
-            float damage = RollDamage(dm);
-            totalDamageTaken += damage;
-            Damage(target, damage);
+            PartyMember target = party.PickRandomMember();
+            float damage = dm.RollDamage();
+            target.TakeDamage(damage);
 
             // Redraw
             Frame.DrawFrame(team, dm);
-            Console.WriteLine($"DM hits {target.Name} [{target.Id}] with {damage} damage. [{target.Hp}] HP remaining.");
+            Console.WriteLine($"DM hits {target.Character.Name} [{target.Character.Id}] with {damage} damage. [{target.Character.Hp}] HP remaining.");
+
+            Console.WriteLine(damage);
+            Thread.Sleep(3000);
 
 
             // Characters' move
-            foreach (Character character in team.Characters)
+            foreach (PartyMember member in party.PartyMembers)
             {
+                Character character = member.Character;
                 Console.WriteLine($"{character.Name} [{character.Id}]'s turn");
 
                 // Show moveset
@@ -92,16 +93,4 @@ public static class GameLogic
 
         // Treat as all dead
     }
-
-
-    private static float RollDamage(Character c)
-        => c.Atk * (c.CritRate * 10 < new Random().Next(11) ? 1 : c.CritMultiplier);
-    private static float RollDamage(DungeonMaster dm)
-        => dm.Atk * (float)(5 < new Random().Next(11) ? 1.5 : 1);
-
-
-    private static void Damage(Character c, float damage)
-        => c.Hp = Math.Clamp(c.Hp - damage, 0, c.MaxHp);
-    private static void Damage(DungeonMaster dm, float damage)
-        => dm.Hp = (int)Math.Floor(Math.Clamp(dm.Hp - damage, 0, dm.MaxHp));
 }

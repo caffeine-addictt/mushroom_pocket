@@ -12,25 +12,6 @@ using MushroomPocket.Utils;
 namespace MushroomPocket.Models;
 
 
-// Dungeon master
-public class DungeonMaster
-{
-    public readonly string Name = "Dungeon Master";
-    public readonly string Description = "The master of the dungeon. He manages the dungeon and keeps it safe. Good luck!";
-    public int Hp { get; set; }
-    public int Atk { get; private set; }
-
-    public int MaxHp { get; private set; }
-
-    public DungeonMaster(Dungeon dungeon)
-    {
-        Hp = 100 / dungeon.Difficulty;
-        Atk = 20 / dungeon.Difficulty;
-        MaxHp = Hp;
-    }
-}
-
-
 [PrimaryKey("Id")]
 public class Dungeon
 {
