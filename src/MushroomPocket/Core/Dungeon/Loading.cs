@@ -78,10 +78,13 @@ public static class Loading
         // Animate top-down
         while (yHeight.Any(i => i != Constants.TerminalSize.Y))
         {
-            // Increment Y 1-2 each time
             for (int i = 0; i < Constants.TerminalSize.X; i++)
             {
-                yHeight[i] = Math.Clamp(yHeight[i] + new Random().Next(1, 5), 0, Constants.TerminalSize.Y);
+                // Use 10% of TerminalSize.Y as the minimum clamped to 3-5
+                int incrementMin = Math.Clamp(Constants.TerminalSize.Y / 10, 3, 5);
+
+                // Increment Y by minY-minY+3
+                yHeight[i] = Math.Clamp(yHeight[i] + new Random().Next(incrementMin, incrementMin + 4), 0, Constants.TerminalSize.Y);
             }
 
             // Delay (ms)
@@ -101,10 +104,13 @@ public static class Loading
         // Animate away
         while (yHeight.Any(i => i != 0))
         {
-            // Decrement Y 1-2 each time
             for (int i = 0; i < Constants.TerminalSize.X; i++)
             {
-                yHeight[i] = Math.Clamp(yHeight[i] - new Random().Next(1, 5), 0, Constants.TerminalSize.Y);
+                // Use 10% of TerminalSize.Y as the minimum clamped to 3-5
+                int incrementMin = Math.Clamp(Constants.TerminalSize.Y / 10, 3, 5);
+
+                // Increment Y by minY-minY+3
+                yHeight[i] = Math.Clamp(yHeight[i] - new Random().Next(incrementMin, incrementMin + 4), 0, Constants.TerminalSize.Y);
             }
 
             // Delay (ms)
