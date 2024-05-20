@@ -22,11 +22,13 @@ public static class Frame
     public static string GenerateHpIndicator(Dimension xy, float hp, float maxHp)
     {
         int barWidth = Math.Max((int)Math.Floor((double)xy.X / 1.5), 4);
+        int tagCount = (int)Math.Ceiling((barWidth - 4) * (hp / maxHp));
+        int spaceCount = (int)Math.Ceiling((float)barWidth - 4 - tagCount);
 
         return String.Join(
             "\n",
             CenterAlign($"Hp: {hp}/{maxHp}", barWidth),
-            $"| {String.Join("", Enumerable.Repeat("#", (int)Math.Ceiling((barWidth - 4) * (hp / maxHp))))} |"
+            $"| {String.Join("", Enumerable.Repeat("#", tagCount))}{String.Join("", Enumerable.Repeat(" ", spaceCount))} |"
         );
     }
 
