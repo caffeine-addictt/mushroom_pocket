@@ -22,8 +22,8 @@ public static class Frame
     public static string GenerateHpIndicator(Dimension xy, float hp, float maxHp)
     {
         int barWidth = Math.Max((int)Math.Floor((double)xy.X / 1.5), 4);
-        int tagCount = (int)Math.Ceiling((barWidth - 4) * (hp / maxHp));
-        int spaceCount = (int)Math.Ceiling((float)barWidth - 4 - tagCount);
+        int tagCount = (int)Math.Max(Math.Ceiling((barWidth - 4) * (hp / maxHp)), 0);
+        int spaceCount = (int)Math.Max(Math.Ceiling((float)barWidth - 4 - tagCount), 0);
 
         return String.Join(
             "\n",
