@@ -124,6 +124,7 @@ public static class GameLogic
                             member.PlusDamageMultiplier.RoundsLeft = 1;
                             member.Stunned.Value = true;
                             member.Stunned.RoundsLeft = 2;
+                            attackDM = true;
                             logQueue.Add($"[Peach]: Deals 3.5x DMG for this turn and is stunned for the next 2 turns");
                             break;
 
@@ -132,7 +133,8 @@ public static class GameLogic
                             member.PlusDamageMultiplier.RoundsLeft += 1;
                             member.PlusCritRate.Value -= 0.2f;
                             member.PlusCritRate.RoundsLeft += 2;
-                            logQueue.Add($"[Waluigi]: +2 DMG for next 1 turn, -20% CRIT RATE for next 2 turns");
+                            attackDM = true;
+                            logQueue.Add($"[Waluigi]: Deals 2x DMG this turn, -20% CRIT RATE for next 2 turns");
                             break;
 
                         case "Wario":
