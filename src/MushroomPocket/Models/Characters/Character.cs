@@ -204,17 +204,17 @@ public class Character
         switch (name)
         {
             case "Daisy":
-                return "Increases attack and critical rate of the whole team by 10%";
+                return "Increases attack by 10 and critical rate by 10% for the whole team for 1 turn";
             case "Luigi":
-                return "Increases critical rate of Luigi by 50%";
+                return "Increases critical rate of Luigi by 50% for 3 turns";
             case "Mario":
-                return "Increases critical damage of Mario by 10%";
+                return "Increases critical damage of Mario by 10% for 5 turns";
             case "Peach":
                 return "Deals 3.5x damage but Peach is stunned for 2 turns";
             case "Waluigi":
-                return "10% change to stun the Dungeon Master for 2 turns";
+                return "Deals 2x damage but decreases critical rate by 20% for 2 turns";
             case "Wario":
-                return "Increases attack of the whole team by 10%";
+                return "Increases attack of the whole team by 10 for 2 turns";
         }
 
         throw new ArgumentException($"{name} is an unknown character!");
