@@ -28,7 +28,11 @@ public class Effect<T>
 
     /// <summary>Decrements rounds left</summary>
     public void Decrement()
-        => RoundsLeft = Math.Max(RoundsLeft - 1, 0);
+    {
+        RoundsLeft = Math.Max(RoundsLeft - 1, 0);
+        if (RoundsLeft == 0)
+            Value = DefaultValue;
+    }
 
 
     /// <summary>
