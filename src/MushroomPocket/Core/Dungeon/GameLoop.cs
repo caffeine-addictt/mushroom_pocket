@@ -53,7 +53,28 @@ public static class GameLogic
             {
                 Console.WriteLine($"{character.Name} [{character.Id}]'s turn");
 
-                // TODO: Show moveset
+                // Show moveset
+                string action;
+                while (true)
+                {
+                    Console.Write(String.Join(
+                        "\n",
+                        $"(1). Attack for {character.Atk} damage [{Math.Round(character.CritRate * 100, 2)}% chance of dealing {character.CritMultiplier}x]",
+                        $"(2). Use character skill \"{character.Skill}\" [{character.GetSkillActionText()}]",
+                        $"What should {character.Name} do? Enter 1 or 2: "
+                    ));
+
+                    string enteredAction = (Console.ReadLine() ?? "").Trim();
+                    if (enteredAction != "1" && enteredAction != "2")
+                    {
+                        Console.WriteLine("\nInvalid input. Please enter 1 or 2.");
+                        continue;
+                    }
+
+                    action = enteredAction;
+                    break;
+                }
+
                 // TODO: Handle moveset
                 // TODO: Damage/Use skill
                 // TODO: Handle logic
