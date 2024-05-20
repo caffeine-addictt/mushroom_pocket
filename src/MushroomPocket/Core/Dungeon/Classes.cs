@@ -36,6 +36,19 @@ public class Effect<T>
     /// </summary>
     public bool ShouldApply() => ShouldApply(this);
     public static bool ShouldApply(Effect<T> e) => e.RoundsLeft > 0;
+
+
+    /// <summary>
+    /// Merge only if both effects should apply
+    /// </summary>
+    public static Effect<float> Merge(Effect<float> a, Effect<float> b, float defaultValue = 0)
+    {
+        bool shouldApply = a.ShouldApply() && b.ShouldApply();
+        return new Effect<float>(
+            shouldApply ? Math.Max(a.RoundsLeft, b.RoundsLeft) : 0,
+            shouldApply ? a.Value + b.Value : defaultValue
+        );
+    }
 }
 
 
@@ -69,22 +82,10 @@ public class IHasEffect
     public static IHasEffect MergeEffect(IHasEffect a, IHasEffect b)
         => new IHasEffect()
         {
-            PlusAtk = new Effect<float>(
-                (a.PlusAtk.ShouldApply() ? a.PlusAtk.RoundsLeft : 0) + (b.PlusAtk.ShouldApply() ? b.PlusAtk.RoundsLeft : 0),
-                (a.PlusAtk.ShouldApply() ? a.PlusAtk.Value : 0) + (b.PlusAtk.ShouldApply() ? b.PlusAtk.Value : 0)
-            ),
-            PlusCritRate = new Effect<float>(
-                (a.PlusCritRate.ShouldApply() ? a.PlusCritRate.RoundsLeft : 0) + (b.PlusCritRate.ShouldApply() ? b.PlusCritRate.RoundsLeft : 0),
-                (a.PlusCritRate.ShouldApply() ? a.PlusCritRate.Value : 0) + (b.PlusCritRate.ShouldApply() ? b.PlusCritRate.Value : 0)
-            ),
-            PlusCritMultiplier = new Effect<float>(
-                (a.PlusCritMultiplier.ShouldApply() ? a.PlusCritMultiplier.RoundsLeft : 0) + (b.PlusCritMultiplier.ShouldApply() ? b.PlusCritMultiplier.RoundsLeft : 0),
-                (a.PlusCritMultiplier.ShouldApply() ? a.PlusCritMultiplier.Value : 0) + (b.PlusCritMultiplier.ShouldApply() ? b.PlusCritMultiplier.Value : 0)
-            ),
-            PlusDamageMultiplier = new Effect<float>(
-                (a.PlusDamageMultiplier.ShouldApply() ? a.PlusDamageMultiplier.RoundsLeft : 0) + (b.PlusDamageMultiplier.ShouldApply() ? b.PlusDamageMultiplier.RoundsLeft : 0),
-                (a.PlusDamageMultiplier.ShouldApply() ? a.PlusDamageMultiplier.Value : 0) + (b.PlusDamageMultiplier.ShouldApply() ? b.PlusDamageMultiplier.Value : 0)
-            )
+            PlusAtk = Effect<float>.Merge(a.PlusAtk, b.PlusAtk),
+            PlusCritRate = Effect<float>.Merge(a.PlusCritRate, b.PlusCritRate),
+            PlusCritMultiplier = Effect<float>.Merge(a.PlusCritMultiplier, b.PlusCritMultiplier),
+            PlusDamageMultiplier = Effect<float>.Merge(a.PlusDamageMultiplier, b.PlusDamageMultiplier, 1)
         };
 
 
