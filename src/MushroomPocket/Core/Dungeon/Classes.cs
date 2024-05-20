@@ -103,18 +103,12 @@ public class IHasEffect
 
         // Handle Atk
         if (e.IsAtk)
-        {
             finalDamage += e.PlusAtk.Value;
-            e.PlusAtk.Decrement();
-        }
 
         // Handle Crit
         float newCriteRate = critRate * 10;
         if (e.IsCritRate)
-        {
             newCriteRate += e.PlusCritRate.Value;
-            e.PlusCritRate.Decrement();
-        }
 
         // Do crit?
         if (newCriteRate >= new Random().Next(11))
@@ -122,19 +116,13 @@ public class IHasEffect
             float newCriteMultiplier = critMultiplier;
             // Handle Crit Multiplier
             if (e.IsCritMultiplier)
-            {
                 critMultiplier += e.PlusCritMultiplier.Value;
-                e.PlusCritMultiplier.Decrement();
-            }
             finalDamage *= newCriteMultiplier;
         }
 
         // Handle Damage Multiplier
         if (e.IsDamageMultiplier)
-        {
             finalDamage *= e.PlusDamageMultiplier.Value;
-            e.PlusDamageMultiplier.Decrement();
-        }
 
         return finalDamage;
     }
