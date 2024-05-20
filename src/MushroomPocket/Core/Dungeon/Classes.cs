@@ -56,14 +56,43 @@ public class IHasEffect
     public bool IsCritMultiplier => PlusCritMultiplier.Value != 0;
     public bool IsDamageMultiplier => PlusDamageMultiplier.Value != 1;
 
+    public void Decrement() => IDecrement();
+    public void IDecrement()
+    {
+        PlusAtk.Decrement();
+        PlusCritRate.Decrement();
+        PlusCritMultiplier.Decrement();
+        PlusDamageMultiplier.Decrement();
+    }
+
+
+    public static IHasEffect MergeEffect(IHasEffect a, IHasEffect b)
+        => new IHasEffect()
+        {
+            PlusAtk = new Effect<float>(
+                (a.PlusAtk.ShouldApply() ? a.PlusAtk.RoundsLeft : 0) + (b.PlusAtk.ShouldApply() ? b.PlusAtk.RoundsLeft : 0),
+                (a.PlusAtk.ShouldApply() ? a.PlusAtk.Value : 0) + (b.PlusAtk.ShouldApply() ? b.PlusAtk.Value : 0)
+            ),
+            PlusCritRate = new Effect<float>(
+                (a.PlusCritRate.ShouldApply() ? a.PlusCritRate.RoundsLeft : 0) + (b.PlusCritRate.ShouldApply() ? b.PlusCritRate.RoundsLeft : 0),
+                (a.PlusCritRate.ShouldApply() ? a.PlusCritRate.Value : 0) + (b.PlusCritRate.ShouldApply() ? b.PlusCritRate.Value : 0)
+            ),
+            PlusCritMultiplier = new Effect<float>(
+                (a.PlusCritMultiplier.ShouldApply() ? a.PlusCritMultiplier.RoundsLeft : 0) + (b.PlusCritMultiplier.ShouldApply() ? b.PlusCritMultiplier.RoundsLeft : 0),
+                (a.PlusCritMultiplier.ShouldApply() ? a.PlusCritMultiplier.Value : 0) + (b.PlusCritMultiplier.ShouldApply() ? b.PlusCritMultiplier.Value : 0)
+            ),
+            PlusDamageMultiplier = new Effect<float>(
+                (a.PlusDamageMultiplier.ShouldApply() ? a.PlusDamageMultiplier.RoundsLeft : 0) + (b.PlusDamageMultiplier.ShouldApply() ? b.PlusDamageMultiplier.RoundsLeft : 0),
+                (a.PlusDamageMultiplier.ShouldApply() ? a.PlusDamageMultiplier.Value : 0) + (b.PlusDamageMultiplier.ShouldApply() ? b.PlusDamageMultiplier.Value : 0)
+            )
+        };
+
 
     /// <summary>
     /// Calculates damage to inflict
     ///
     /// <paramref name="p"/> is the member initiating the action
     /// </summary>
-    public float RollDamage(PartyMember p) => RollDamage(this, p.Character);
-    public float RollDamage(Character c) => RollDamage(this, c);
     public float RollDamage(DungeonMaster m) => RollDamage(this, m);
 
     public static float RollDamage(IHasEffect e, Character c) => RollDamage(e, c.Atk, c.CritRate, c.CritMultiplier);
@@ -150,7 +179,11 @@ public class PartyMember : IHasEffect
     }
 
 
-    public float RollDamage() => RollDamage(this);
+    public new void Decrement()
+    {
+        Stunned.Decrement();
+        IDecrement();
+    }
 
     public void TakeDamage(float damage) => TakeDamage((int)damage);
     public void TakeDamage(int damage)
@@ -174,8 +207,18 @@ public class ExplorationParty : IHasEffect
     }
 
 
+    public float RollDamage(PartyMember p) => RollDamage(MergeEffect(this, p), p.Character);
+
+    public new void Decrement()
+    {
+        IDecrement();
+        foreach (PartyMember pm in PartyMembers)
+            pm.Decrement();
+    }
+
     public List<Character> GetCharacters() => PartyMembers.Select(pm => pm.Character).ToList();
     public List<Character> GetAliveCharacters() => PartyMembers.Where(pm => pm.Character.Hp > 0).Select(pm => pm.Character).ToList();
+    public List<Character> GetDeadCharacters() => PartyMembers.Where(pm => pm.Character.Hp <= 0).Select(pm => pm.Character).ToList();
     public bool IsAllAlive() => PartyMembers.All(pm => pm.Character.Hp > 0);
     public PartyMember PickRandomMember() => PartyMembers[new Random().Next(PartyMembers.Count)];
 
