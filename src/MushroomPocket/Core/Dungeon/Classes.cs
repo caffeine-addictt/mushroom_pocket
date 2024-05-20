@@ -8,7 +8,7 @@
 
 using MushroomPocket.Models;
 
-namespace MushroomPocket.Core;
+namespace MushroomPocket.Core.DungeonGameLogic;
 
 
 public class Effect<T>

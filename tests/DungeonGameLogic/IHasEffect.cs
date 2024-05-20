@@ -6,7 +6,7 @@
  * Admin: 230725N
  */
 
-using MushroomPocket.Core;
+using MushroomPocket.Core.DungeonGameLogic;
 
 namespace tests;
 
