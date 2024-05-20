@@ -185,8 +185,6 @@ public static class GameLogic
         // Treat as defeated DM
         if (dm.Hp == 0)
         {
-            Console.Clear();
-
             // Generate rewards
             int coins = (int)(dm.MaxHp * 1.5f);
             int exp = (int)(dm.MaxHp * 2.5f);
@@ -219,7 +217,6 @@ public static class GameLogic
         db.SaveChanges();
 
         // Treat as all dead
-        Console.Clear();
         Console.WriteLine("[GAME]: All characters are dead. Game over.");
         Console.WriteLine("\nA mysterious force sighs before expelling you from the dungeon\n");
     }
