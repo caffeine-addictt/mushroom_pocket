@@ -26,7 +26,7 @@ public static class ManageCharacters
             $"Crit Rate: {c.CritRate}",
             $"Crit Multiplier: {c.CritMultiplier}",
             $"EXP: {c.Exp}",
-            $"Skill: {c.Skill}",
+            $"Skill: {c.Skill} [{c.GetSkillActionText()}]",
             @"-----------------------"
         ));
 

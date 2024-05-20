@@ -194,6 +194,34 @@ public class Character
 
 
     /// <summary>
+    /// Get character skill action text
+    ///
+    /// Like "Buffs the whole team"
+    /// </summary>
+    public string GetSkillActionText() => GetSkillActionText(Name);
+    public static string GetSkillActionText(string name)
+    {
+        switch (name)
+        {
+            case "Daisy":
+                return "Increases attack and critical rate of the whole team by 10%";
+            case "Luigi":
+                return "Increases critical rate of Luigi by 50%";
+            case "Mario":
+                return "Increases critical damage of Mario by 10%";
+            case "Peach":
+                return "Deals 3.5x damage but Peach is stunned for 2 turns";
+            case "Waluigi":
+                return "10% change to stun the Dungeon Master for 2 turns";
+            case "Wario":
+                return "Increases attack of the whole team by 10%";
+        }
+
+        throw new ArgumentException($"{name} is an unknown character!");
+    }
+
+
+    /// <summary>
     /// See number of times character can be evolved
     /// </summary>
     public static int TimesEvolvable(int charCount, int noToTransform) =>
