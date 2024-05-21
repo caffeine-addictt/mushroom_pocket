@@ -30,4 +30,4 @@ jobs:
       - name: Run tests
         run: |
           set -xe
-          dotnet test --verbosity diagnostic --nologo
+          dotnet test --verbosity normal --nologo
