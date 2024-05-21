@@ -53,7 +53,7 @@ public static class GameLogic
 
 
             // Characters' move
-            foreach (PartyMember member in party.PartyMembers)
+            foreach (PartyMember member in party.PartyMembers.Where(pm => pm.Character.Hp > 0))
             {
                 // Check for stunned
                 if (member.IsStunned)
