@@ -182,7 +182,7 @@ public class PartyMember : IHasEffect
 
 public class ExplorationParty : IHasEffect
 {
-    public float TotalDamageTaken { get; set; } = 0;
+    public float TotalDamageTaken { get; set; }
     public List<PartyMember> PartyMembers { get; set; }
 
 
@@ -209,7 +209,7 @@ public class ExplorationParty : IHasEffect
     public List<Character> GetAliveCharacters() => PartyMembers.Where(pm => pm.Character.Hp > 0).Select(pm => pm.Character).ToList();
     public List<Character> GetDeadCharacters() => PartyMembers.Where(pm => pm.Character.Hp <= 0).Select(pm => pm.Character).ToList();
     public bool IsAllAlive() => PartyMembers.All(pm => pm.Character.Hp > 0);
-    public PartyMember PickRandomMember() => PartyMembers[new Random().Next(PartyMembers.Count)];
+    public PartyMember PickRandomMember() => PartyMembers.Where(pm => pm.Character.Hp > 0).ToList()[new Random().Next(PartyMembers.Count)];
 
 
     public void TakeDamage(PartyMember p, float damage) => TakeDamage(p, (int)damage);
