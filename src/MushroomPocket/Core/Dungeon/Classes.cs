@@ -211,9 +211,12 @@ public class ExplorationParty : IHasEffect
     public bool IsAllAlive() => PartyMembers.All(pm => pm.Character.Hp > 0);
     public PartyMember PickRandomMember() => PartyMembers[new Random().Next(PartyMembers.Count)];
 
-    public void Damage(DungeonMaster dm, float damage)
+
+    public void TakeDamage(PartyMember p, float damage) => TakeDamage(p, (int)damage);
+    public void TakeDamage(PartyMember p, int damage)
     {
-        dm.Hp -= (int)damage;
-        TotalDamageTaken += damage;
+        float newHp = Math.Max(0, p.Character.Hp - damage);
+        p.Character.Hp = newHp;
+        TotalDamageTaken += p.Character.Hp - newHp;
     }
 }

@@ -37,7 +37,7 @@ public static class GameLogic
 
             PartyMember target = party.PickRandomMember();
             float damage = dm.RollDamage();
-            target.TakeDamage(damage);
+            party.TakeDamage(target, damage);
 
             // Redraw
             Frame.DrawFrame(party, dm);
