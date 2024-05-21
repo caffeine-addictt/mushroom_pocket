@@ -44,13 +44,18 @@ public class Character
 
     public int Exp { get; set; }
     public float Hp { get; set; }
+    public int Atk { get; set; }
+    public float CritRate { get; set; }
+    public float CritMultiplier { get; set; }
+    public float MaxHp { get; set; }
+
     public string Name { get; set; } = null!;
     public string Skill { get; set; } = null!;
     public bool EvolvedOnly { get; set; } = true;
 
-
     public virtual Profile Profile { get; set; } = null!;
     public virtual HashSet<Team> Teams { get; set; } = null!;
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Character"/> class.
@@ -59,19 +64,22 @@ public class Character
     {
         Hp = hp;
         Exp = exp;
+        Atk = new Random().Next(1, 5);
+        CritRate = new Random().Next(1, 5) / 10f; // Rate 0.1 - 0.5
+        CritMultiplier = 1 + new Random().Next(1, 5) / 10f; // Multiplier 1.1 - 1.5
         Id = GenerateId();
+
+        MaxHp = Hp;
     }
 
-    public Character(float hp, int exp, string name, string skill, bool evolvedOnly)
-        : this(hp, exp)
+    public Character(float hp, int exp, string name, string skill, bool evolvedOnly) : this(hp, exp)
     {
         Name = name;
         Skill = skill;
         EvolvedOnly = evolvedOnly;
     }
 
-    public Character(float hp, int exp, HashSet<Team> teams)
-        : this(hp, exp)
+    public Character(float hp, int exp, HashSet<Team> teams) : this(hp, exp)
     {
         Teams = teams;
     }
@@ -83,11 +91,11 @@ public class Character
         string skill,
         bool evolvedOnly,
         HashSet<Team> teams
-    )
-        : this(hp, exp, name, skill, evolvedOnly)
+    ) : this(hp, exp, name, skill, evolvedOnly)
     {
         Teams = teams;
     }
+
 
     /// <summary>
     /// Generate id
@@ -102,6 +110,7 @@ public class Character
         using (MushroomContext db = new MushroomContext())
             return GenerateId(db);
     }
+
 
     /// <summary>
     /// See if a string is a valid character name.
@@ -121,6 +130,7 @@ public class Character
         validName = null;
         return false;
     }
+
 
     /// <summary>
     /// Creates a new character from the given name, hp, and exp.
@@ -182,12 +192,41 @@ public class Character
         throw new ArgumentException($"{validName} is an unknown character!");
     }
 
+
+    /// <summary>
+    /// Get character skill action text
+    ///
+    /// Like "Buffs the whole team"
+    /// </summary>
+    public string GetSkillActionText() => GetSkillActionText(Name);
+    public static string GetSkillActionText(string name)
+    {
+        switch (name)
+        {
+            case "Daisy":
+                return "Increases attack by 10 and critical rate by 10% for the whole team for 1 turn";
+            case "Luigi":
+                return "Increases critical rate of Luigi by 50% for 3 turns";
+            case "Mario":
+                return "Increases critical damage of Mario by 10% for 5 turns";
+            case "Peach":
+                return "Deals 3.5x damage but Peach is stunned for 2 turns";
+            case "Waluigi":
+                return "Deals 2x damage but decreases critical rate by 20% for 2 turns";
+            case "Wario":
+                return "Increases attack of the whole team by 10 for 2 turns";
+        }
+
+        throw new ArgumentException($"{name} is an unknown character!");
+    }
+
+
     /// <summary>
     /// See number of times character can be evolved
-    ///
     /// </summary>
     public static int TimesEvolvable(int charCount, int noToTransform) =>
         noToTransform == 0 ? 0 : (int)Math.Floor((decimal)(charCount / noToTransform));
+
 
     /// <summary>
     /// See if character can be evolved
@@ -199,6 +238,7 @@ public class Character
         return evoCount != 0;
     }
 
+
     /// <summary>
     /// Check if character can evolve
     /// </summary>
@@ -207,7 +247,7 @@ public class Character
         List<MushroomMaster> canEvolve = new List<MushroomMaster>();
         using (MushroomContext db = new MushroomContext())
         {
-            Profile profile = db.GetProfile(false, true);
+            Profile profile = db.GetProfile(IncludeFlags.Characters);
             foreach (MushroomMaster evo in evoList)
             {
                 int charCount = profile.Characters.Where((Character c) => c.Name == evo.Name).Count();
@@ -222,6 +262,7 @@ public class Character
         return canEvolve;
     }
 
+
     /// <summary>
     /// Evolve Characters
     /// </summary>
@@ -230,7 +271,7 @@ public class Character
         List<MushroomMaster> evolved = new List<MushroomMaster>();
         using (MushroomContext db = new MushroomContext())
         {
-            Profile profile = db.GetProfile(true, true);
+            Profile profile = db.GetProfile(IncludeFlags.Characters);
             foreach (MushroomMaster m in evoList)
             {
                 List<Character> charList = profile

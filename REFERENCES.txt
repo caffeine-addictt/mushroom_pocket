@@ -1,0 +1,21 @@
+/**
+ * SPDX-FileCopyrightText: 2024 Ng Jun Xiang <contact@ngjx.org>
+ * SPDX-License-Identifier: GPL-3.0-only
+ *
+ * Name: Ng Jun Xiang
+ * Admin: 230725N
+ */
+
+
+CITATION 1:
+Prompted with "give me a small ascii character that is cute and detailed",
+
+File: https://github.com/caffeine-addictt/mushroom_pocket/tree/feat/boss-battle/src/MushroomPocket/Core/Dungeon/ASCIIArt.cs#L17-L23
+
+ChatGPT-4. (n.d.). Bunny holding a flower [ASCII art]. Retrieved from chatgpt.com.
+
+
+CITATION 2:
+File: https://github.com/caffeine-addictt/mushroom_pocket/tree/feat/boss-battle/src/MushroomPocket/Core/Dungeon/ASCIIArt.cs#L29-L31
+
+Unknown author. (n.d.). Title of the ASCII art [dragon]. Retrieved from https://ascii.co.uk/art/dragon.

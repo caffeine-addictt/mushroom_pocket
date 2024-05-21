@@ -194,7 +194,7 @@ static class ManageProfiles
     {
         using (MushroomContext db = new MushroomContext())
         {
-            Profile profile = db.GetProfile(true, true, true);
+            Profile profile = db.GetProfile(IncludeFlags.CharactersAndItems | IncludeFlags.Teams);
             EchoProfile(profile);
         }
     }
@@ -204,7 +204,7 @@ static class ManageProfiles
     {
         List<Profile> profiles;
         using (MushroomContext db = new MushroomContext())
-            profiles = db.GetProfiles(true, true, true).ToList();
+            profiles = db.GetProfiles(IncludeFlags.CharactersAndItems | IncludeFlags.Teams).ToList();
 
         if (profiles.Count == 0)
         {

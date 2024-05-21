@@ -96,7 +96,7 @@ public static class ManageTeams
 
         using (MushroomContext db = new MushroomContext())
         {
-            Profile profile = db.GetProfile(true);
+            Profile profile = db.GetProfile(IncludeFlags.Teams);
             if (profile.Teams.Where((Team t) => t.Name == teamName).Count() > 0)
             {
                 Console.WriteLine("\nTeam name already exists.");
@@ -115,7 +115,19 @@ public static class ManageTeams
         using (MushroomContext db = new MushroomContext())
         {
             List<Character> charList = db.GetCharacters().ToList();
-            List<Team> teamList = db.GetTeams(true).ToList();
+            List<Team> teamList = db.GetTeams(IncludeFlags.TeamCharacters).ToList();
+
+            // check for char and team
+            if (charList.Count == 0)
+            {
+                Console.WriteLine("\nNo character(s) to add.");
+                return;
+            }
+            if (teamList.Count == 0)
+            {
+                Console.WriteLine("\nNo team(s) to add.");
+                return;
+            }
 
             // Ask for pattern
             Console.Write("Enter Character ID or L to list all characters: ");
@@ -207,7 +219,7 @@ public static class ManageTeams
         List<Team> sorted;
         using (MushroomContext db = new MushroomContext())
         {
-            sorted = db.GetTeams(true).ToList();
+            sorted = db.GetTeams(IncludeFlags.Characters).ToList();
         }
         sorted.Sort((Team t1, Team t2) => t2.Characters.Count.CompareTo(t1.Characters.Count));
 
@@ -230,13 +242,13 @@ public static class ManageTeams
 
         using (MushroomContext db = new MushroomContext())
         {
-            List<Team> teamList = db.GetTeams(true).ToList();
+            List<Team> teamList = db.GetTeams(IncludeFlags.Characters).ToList();
 
             Similarity topSuggestion;
             if (
                 !StringUtils.SmartLookUp(
                     teamPattern,
-                    teamList.Select((Team t) => t.Name).ToList(),
+                    teamList.Select((Team t) => t.Name).Union(teamList.Select((Team t) => t.Id)),
                     out topSuggestion!
                 )
             )
@@ -258,7 +270,7 @@ public static class ManageTeams
 
             // Stdout characters
             List<Character> charList = teamList
-                .Where((Team t) => t.Name == topSuggestion.QualifiedText)
+                .Where((Team t) => t.Name == topSuggestion.QualifiedText || t.Id == topSuggestion.QualifiedText)
                 .First()!
                 .Characters.ToList();
             charList.Sort((Character c1, Character c2) => c2.Hp.CompareTo(c1.Hp));
@@ -421,7 +433,7 @@ public static class ManageTeams
 
         using (MushroomContext db = new MushroomContext())
         {
-            List<Team> teams = db.GetTeams(true)
+            List<Team> teams = db.GetTeams(IncludeFlags.Characters)
                 .Where(t =>
                     t.Id.ToLower().StartsWith(pattern)
                     || t.Name.ToLower().StartsWith(pattern)
