@@ -216,7 +216,7 @@ public class ExplorationParty : IHasEffect
     public void TakeDamage(PartyMember p, int damage)
     {
         float newHp = Math.Max(0, p.Character.Hp - damage);
-        p.Character.Hp = newHp;
         TotalDamageTaken += p.Character.Hp - newHp;
+        p.Character.Hp = newHp;
     }
 }
