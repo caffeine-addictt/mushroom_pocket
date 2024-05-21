@@ -155,6 +155,15 @@ public static class ManageTeams
                 if ((Console.ReadLine() ?? "").ToLower() != "y") return;
             }
 
+            Team affectedTeam = teamList.First(t => t.Id == topTeamID.QualifiedText);
+            charList = charList.Where(c => affectedTeam.Characters.All(tc => tc.Id != c.Id)).ToList();
+            if (charList.Count == 0)
+            {
+                Console.WriteLine("\nNo character(s) to add.");
+                return;
+            }
+
+
             // Ask for character pattern
             Console.Write("Enter Character ID or L to list all characters: ");
             string charID = (Console.ReadLine() ?? "").Trim();
@@ -183,7 +192,6 @@ public static class ManageTeams
 
 
             Character affectedCharacter = charList.First(c => c.Id == charTopID.QualifiedText);
-            Team affectedTeam = teamList.First(t => t.Id == topTeamID.QualifiedText);
 
             // Check team limits
             if (affectedTeam.Characters.Count == 5)
