@@ -185,46 +185,67 @@ public static class GameLogic
             (int)(party.TotalDamageTaken)
         );
 
+        // Rewards
+        int coins = 10 / dungeon.Difficulty;
+        int exp = 100;
+        int hpPotionCount = 0;
+        List<Item> items = new List<Item>();
+        List<string> stdOut = new List<string>();
 
         // Treat as defeated DM
         if (dm.Hp == 0)
         {
-            // Generate rewards
-            int coins = (int)(dm.MaxHp * 1.5f);
-            int exp = (int)(dm.MaxHp * 2.5f);
-
-            foreach (Character c in party.GetCharacters())
+            // Extra rewards
+            coins = (int)(dm.MaxHp * (1.5f + new Random().Next(11) / 10f));
+            exp = (int)(dm.MaxHp * (2.5f + new Random().Next(11) / 10f));
+            for (int i = 0; i < (20 / dungeon.Difficulty); i++)
             {
-                c.Exp += exp;
+                if (new Random().Next(100) < 10)
+                {
+                    items.Add(new HpPotion());
+                    hpPotionCount += 1;
+                }
+                else
+                    items.Add(new ExpPotion());
             }
 
-            profile.Wallet += coins;
-
-            string congratsText = $"Congratulations! You have successfully defeated {dungeon.GetDifficulty()} Rank Dungeon {dungeon.Name}!";
-            Console.WriteLine(Frame.CenterAlign(String.Join(
-                "\n",
-                "",
-                congratsText,
-                "",
-                $"Damage Taken: {party.TotalDamageTaken}  Damage Dealt: {dm.MaxHp}",
-                dead.Count > 0 ? $"Dead: {String.Join(", ", dead.Select(x => x.Name))}" : "",
-                "",
-                "==== Rewards ====",
-                $"Coins: ${coins}",
-                $"EXP: {exp}",
-                ""
-            ), congratsText.Length));
+            stdOut.Add($"Congratulations! You have defeated {dungeon.GetDifficulty()} Rank Dungeon {dungeon.Name}!");
         }
         else
         {
-            Console.WriteLine("[GAME]: All characters are dead. Game over.");
-            Console.WriteLine("\nA mysterious force sighs before expelling you from the dungeon\n");
+            stdOut.Add($"Game over. You have lost the battle.");
         }
 
+        // Add shared stuff
+        stdOut.Add($"Damage Taken: {party.TotalDamageTaken}  Damage Dealt: {dm.MaxHp}");
+        stdOut.Add($"Coins: ${coins}");
+        stdOut.Add($"EXP: {exp}");
+        stdOut.Add("");
+        stdOut.Add("==== Rewards ====");
+        stdOut.Add($"Coins: ${coins}");
+        stdOut.Add($"EXP: {exp}");
+        stdOut.Add($"HP Potions: {hpPotionCount}x");
+        stdOut.Add($"Exp Potions: {items.Count - hpPotionCount}x");
+        stdOut.Add("");
+        stdOut.Add("==== End ====");
+
+        // StdOut
+        Console.WriteLine(Frame.CenterAlign(String.Join(
+            "\n",
+            stdOut
+        ), stdOut.Max(s => s.Length)));
+
+        // Update DB
+        foreach (Character c in party.GetCharacters())
+            c.Exp += exp;
+        profile.Wallet += coins;
         profile.BattleLogs.Add(battleLog);
+        dungeon.Status = "Cleared";
         db.SaveChanges();
 
-        Frame.DrawCountDown(3000);
+        Console.Write("Press any key to continue...");
+        Console.ReadKey();
+
         LoadingHandler endingLoading = Loading.Start();
         Thread.Sleep(3000);
         endingLoading.Dispose();
