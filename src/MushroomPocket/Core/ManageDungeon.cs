@@ -99,7 +99,7 @@ public static class ManageDungeon
 
         using (MushroomContext db = new MushroomContext())
         {
-            Profile profile = db.GetProfile(IncludeFlags.Dungeons);
+            Profile profile = db.GetProfile(IncludeFlags.Dungeons | IncludeFlags.BattleLogs | IncludeFlags.Items);
             List<Dungeon> dungeonList = profile.Dungeons.Where(d => d.Status != "Cleared").OrderBy(d => d.Difficulty).ToList();
             if (dungeonList.Count == 0)
             {
@@ -206,7 +206,7 @@ public static class ManageDungeon
             Console.WriteLine(dungeon.UnlockSuccess(profile.Wallet));
             db.SaveChanges();
 
-            DungeonGameLogic.GameLogic.Start(db, team, dungeon);
+            DungeonGameLogic.GameLogic.Start(db, profile, team, dungeon);
         }
     }
 
