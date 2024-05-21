@@ -169,6 +169,9 @@ public static class GameLogic
                 if (!ContinueGame())
                     break;
             }
+
+            // Decrement
+            party.Decrement();
         }
 
         // End of dungeon
