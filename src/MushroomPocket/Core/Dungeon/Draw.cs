@@ -37,8 +37,10 @@ public static class Frame
     public static string CenterAlign(string s, int width)
     {
         List<string> formatted = new List<string>();
+        string[] split = s.Split("\n");
+        int targetWidth = Math.Max(split.Max(s => s.Length), width);
 
-        foreach (string line in s.Split("\n"))
+        foreach (string line in split)
         {
             if (line.Length == 0)
             {
@@ -46,13 +48,20 @@ public static class Frame
                 continue;
             }
 
-            int leading = (int)Math.Floor((decimal)(width - line.Length) / 2);
-            leading = Math.Clamp(leading, 0, s.Length);
+            if (line.Length >= targetWidth)
+            {
+                formatted.Add(line);
+                continue;
+            }
+
+            int totalPadding = targetWidth - line.Length;
+            int leading = totalPadding / 2;
+            int trailing = totalPadding - leading;
 
             formatted.Add(
-                String.Join("", Enumerable.Repeat(" ", leading))
+                new string(' ', leading)
                 + line
-                + String.Join("", Enumerable.Repeat(" ", leading))
+                + new string(' ', trailing)
             );
         }
 
@@ -115,6 +124,7 @@ public static class Frame
                 character.Name,
                 $"Atk: {character.Atk}"
             );
+
             teamMembers.Add(CenterAlign(ascii, teamASCIIDimension.X).Split("\n").ToList());
         }
 
