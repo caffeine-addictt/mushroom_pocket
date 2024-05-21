@@ -6,6 +6,10 @@
 # dotenv files
 .env
 
+# database
+mushroom.db*
+saves/
+
 # User-specific files
 *.rsuser
 *.suo

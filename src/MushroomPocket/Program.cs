@@ -1,8 +1,37 @@
-namespace MushroomPocket;
+/**
+ * SPDX-FileCopyrightText: 2024 Ng Jun Xiang <contact@ngjx.org>
+ * SPDX-License-Identifier: GPL-3.0-only
+ *
+ * Name: Ng Jun Xiang
+ * Admin: 230725N
+ */
 
+using MushroomPocket.Models;
+using MushroomPocket.Core;
+
+namespace MushroomPocket;
 
 class Program
 {
+    static readonly string InterfaceText = String.Join(
+        "\n",
+        [
+            @"********************************",
+            @"Welcome to Mushroom Pocket App",
+            @"********************************",
+            @"(1). Add Mushroom's character to my pocket",
+            @"(2). List character(s) in my pocket",
+            @"(3). Check if I can transform my characters",
+            @"(4). Transform my character(s)",
+            @"(5). Delete character(s) from my pocket",
+            @"(6). Manage my item(s)",
+            @"(7). Manage my team(s)",
+            @"(8). Manage my profile(s)",
+            @"(9). Visit the Dungeon",
+            @"Please only enter [1, 2, 3, 4, 5, 6, 7, 8, 9] or Q to quit: "
+        ]
+    );
+
     static void Main(string[] args)
     {
         if (args.Length > 0)
@@ -11,137 +40,113 @@ class Program
             Environment.Exit(1);
         }
 
+        // Ensure DB exists
+        using (MushroomContext db = new MushroomContext())
+        {
+            db.Database.EnsureCreated();
+        }
+
         // MushroomMaster criteria list for checking character transformation availability.
-        List<MushroomMaster> mushroomMasters = new List<MushroomMaster>(){
+        List<MushroomMaster> mushroomMasters = new List<MushroomMaster>()
+        {
             new MushroomMaster("Daisy", 2, "Peach"),
             new MushroomMaster("Wario", 3, "Mario"),
-            new MushroomMaster("Waluigi", 1, "Luigi")
+            new MushroomMaster("Waluigi", 1, "Luigi"),
         };
 
-        List<Character> pocket = new List<Character>();
+        // Validate MushroomMaster list
+        List<string> violations = new List<string>();
+        foreach (MushroomMaster m in mushroomMasters)
+        {
+            if (!Character.IsValidName(m.Name))
+                violations.Add(
+                    $"Attribute name {m.Name} in new MushroomMaster(\"{m.Name}\", \"{m.NoToTransform}\", \"{m.TransformTo}\") is invalid."
+                );
+            if (!Character.IsValidName(m.TransformTo))
+                violations.Add(
+                    $"Attribute transformTo {m.TransformTo} in new MushroomMaster(\"{m.Name}\", \"{m.NoToTransform}\", \"{m.TransformTo}\") is invalid."
+                );
+        }
+
+        if (violations.Count > 0)
+        {
+            Console.WriteLine(
+                String.Join(
+                    "\n",
+                    new List<string>()
+                    {
+                        "Validating mushroomMasters failed. Please fix the following errors:",
+                    }.Concat(violations)
+                )
+            );
+            Environment.Exit(1);
+        }
 
         // Main event loop.
         while (true)
         {
-            // Ask for action.
-            Console.Write(String.Join("\n", [
-                @"******************************",
-                @"Welcome to Mushroom Pocket App",
-                @"********************************",
-                @"(1). Add Mushroom's character to my pocket",
-                @"(2). List character(s) in my pocket",
-                @"(3). Check if I can transform my characters",
-                @"(4). Transform my character(s)",
-                @"Please only enter [1, 2, 3, 4] or Q to quit: "
-            ]));
-            string? action = Console.ReadLine();
+            // get/create a profile
+            ManageProfiles.FirstTimeOrAccess();
 
-            switch (action == null ? action : action.ToLower())
+            // Proceed on if there is a profile
+            if (Constants.CurrentProfileId == null) continue;
+
+            Console.Write(InterfaceText);
+            switch ((Console.ReadLine() ?? "").ToLower())
             {
                 case "1":
-                    // Name
-                    Console.Write("Enter Character's Name: ");
-                    string? charName = Console.ReadLine();
-
-                    if (!((string[])["Daisy", "Wario", "Waluigi"]).Contains(charName))
-                    {
-                        Console.WriteLine("\nInvalid character name. Please only enter ['Daisy', 'Wario', 'Waluigi'].");
-                        break;
-                    }
-
-                    // HP
-                    Console.Write("Enter Character's HP: ");
-                    float charHP;
-                    if (!float.TryParse(Console.ReadLine(), out charHP))
-                    {
-                        Console.WriteLine("\nInvalid HP. Please only enter a number.");
-                        break;
-                    }
-
-                    // Exp
-                    Console.Write("Enter Character's EXP: ");
-                    int charEXP;
-                    if (!int.TryParse(Console.ReadLine(), out charEXP))
-                    {
-                        Console.WriteLine("\nInvalid EXP. Please only enter an integer.");
-                        break;
-                    }
-
-                    // Add char
-                    // I'm too used to Golang lol
-                    // if newChar, err := Character.from(charName, charHP, charEXP); err != nil {
-                    //   // Error
-                    // }
-                    // :>
-                    string? errOut;
-                    Character? newChar = Character.from(charName!, charHP, charEXP, out errOut);
-                    if (errOut != null)
-                    {
-                        Console.WriteLine("\n" + errOut);
-                        break;
-                    }
-
-                    pocket.Add(newChar!);
-                    Console.WriteLine($"{charName} has been added.");
+                    ManageCharacters.AddCharacter();
                     break;
 
                 case "2":
-                    // Sort descending
-                    pocket.Sort((Character c1, Character c2) => c2.Hp.CompareTo(c1.Hp));
-                    foreach (Character c in pocket)
-                    {
-                        Console.WriteLine(String.Join("\n",
-                            @"-----------------------",
-                            $"Name: {c.Name}",
-                            $"HP: {c.Hp}",
-                            $"EXP: {c.Exp}",
-                            $"Skill: {c.Skill}",
-                            @"-----------------------"
-                        ));
-                    }
+                    ManageCharacters.ListCharacters();
                     break;
 
                 case "3":
-                    // Check transformation
-                    List<MushroomMaster> canEvoList = Character.canEvolve(pocket, mushroomMasters);
-                    foreach (MushroomMaster m in canEvoList)
-                    {
-                        Console.WriteLine($"{m.Name} -> {m.TransformTo}");
-                    }
+                    ManageCharacters.CheckTransformation(mushroomMasters);
                     break;
 
                 case "4":
-                    // Transform character
-                    List<MushroomMaster> evoList = Character.canEvolve(pocket, mushroomMasters);
-                    foreach (MushroomMaster m in evoList)
-                    {
-                        for (int i = 0; i < m.NoToTransform; i++)
-                        {
-                            pocket.RemoveAt(pocket.FindIndex(0, c => c.Name == m.Name));
-                        }
-
-                        string? errOut2;
-                        Character? newChar2 = Character.from(m.TransformTo, 100, 0, out errOut2);
-                        if (errOut2 != null)
-                        {
-                            Console.WriteLine("\n" + errOut2);
-                            break;
-                        }
-
-                        pocket.Add(newChar2!);
-                        Console.WriteLine($"{m.Name} has been transformed to {m.TransformTo}.");
-                    }
+                    ManageCharacters.TransformCharacters(mushroomMasters);
                     break;
 
-                case "q" or null:
+                case "5":
+                    ManageCharacters.DeleteCharacters();
+                    break;
+
+                case "6":
+                    ManageItems.MainEntry();
+                    break;
+
+                case "7":
+                    ManageTeams.MainEntry();
+                    break;
+
+                case "8":
+                    ManageProfiles.MainEntry();
+                    break;
+
+                case "9":
+                    ManageDungeon.MainEntry();
+                    break;
+
+                case "q":
                     Console.WriteLine("Thanks for playing. Good bye!");
                     Environment.Exit(0);
                     break;
 
                 default:
-                    Console.WriteLine("\nInvalid action. Please only enter [1, 2, 3, 4] or Q to quit.");
+                    Console.WriteLine(
+                        "\nInvalid action. Please only enter [1, 2, 3, 4, 5, 6, 7, 8] or Q to quit."
+                    );
                     break;
             }
+
+            // Handle passive
+            Economy.HandlePassiveEarning();
+
+            // Handle Dungeon
+            ManageDungeon.HandleDungeonSpawn();
 
             // Insert newline
             Console.WriteLine();
