@@ -177,10 +177,6 @@ public class PartyMember : IHasEffect
         Stunned.Decrement();
         IDecrement();
     }
-
-    public void TakeDamage(float damage) => TakeDamage((int)damage);
-    public void TakeDamage(int damage)
-        => Character.Hp = Math.Max(0, Character.Hp - damage);
 }
 
 
