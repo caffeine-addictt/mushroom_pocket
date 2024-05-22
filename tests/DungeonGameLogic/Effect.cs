@@ -16,8 +16,10 @@ public class TestEffect
     [Fact]
     public void TestDecrement()
     {
-        Effect<float> e = new Effect<float>(2, 2f);
+        Effect e = new Effect(0);
+        e.Add(2, 2f);
         e.Decrement();
+
         Assert.Equal(1, e.RoundsLeft);
         Assert.Equal(2f, e.Value);
     }
@@ -25,8 +27,8 @@ public class TestEffect
     [Fact]
     public void TestDefaultOnZero()
     {
-        Effect<float> e = new Effect<float>(2, 0f);
-        e.Value = 2f;
+        Effect e = new Effect(0);
+        e.Add(2, 0f);
         e.Decrement();
         e.Decrement();
 

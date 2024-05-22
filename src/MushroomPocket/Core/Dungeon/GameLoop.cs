@@ -141,46 +141,37 @@ public static class GameLogic
                     switch (character.Name)
                     {
                         case "Daisy":
-                            party.PlusAtk.Value += 10;
-                            party.PlusAtk.Value++;
-                            party.PlusCritRate.Value += 0.1f;
-                            party.PlusCritRate.RoundsLeft++;
+                            party.PlusAtk.Add(1, 10);
+                            party.PlusCritRate.Add(1, 0.1f);
                             logQueue.Add($"[Daisy]: Whole team +10 ATK, +10% CRIT RATE for this turn");
                             break;
 
                         case "Luigi":
-                            member.PlusCritRate.Value += 0.5f;
-                            member.PlusCritRate.RoundsLeft += 3;
+                            member.PlusCritRate.Add(3, 0.5f);
                             logQueue.Add($"[Luigi]: +50% CRIT RATE for next 3 turns");
                             break;
 
                         case "Mario":
-                            member.PlusCritMultiplier.Value += 0.1f;
-                            member.PlusCritMultiplier.RoundsLeft += 5;
+                            member.PlusCritMultiplier.Add(5, 0.1f);
                             logQueue.Add($"[Mario]: +10% CRIT DMG for next 5 turns");
                             break;
 
                         case "Peach":
-                            member.PlusDamageMultiplier.Value = 3.5f;
-                            member.PlusDamageMultiplier.RoundsLeft = 1;
-                            member.Stunned.Value = true;
-                            member.Stunned.RoundsLeft = 2;
+                            member.PlusDamageMultiplier.Add(1, 3.5f);
+                            member.Stunned.Add(2, 1);
                             attackDM = true;
                             logQueue.Add($"[Peach]: Deals 3.5x DMG for this turn and is stunned for the next 2 turns");
                             break;
 
                         case "Waluigi":
-                            member.PlusDamageMultiplier.Value += 2f;
-                            member.PlusDamageMultiplier.RoundsLeft += 1;
-                            member.PlusCritRate.Value -= 0.2f;
-                            member.PlusCritRate.RoundsLeft += 2;
+                            member.PlusDamageMultiplier.Add(1, 0.2f);
+                            member.PlusCritRate.Add(2, -0.2f);
                             attackDM = true;
                             logQueue.Add($"[Waluigi]: Deals 2x DMG this turn, -20% CRIT RATE for next 2 turns");
                             break;
 
                         case "Wario":
-                            party.PlusAtk.Value += 10;
-                            party.PlusAtk.RoundsLeft += 2;
+                            member.PlusAtk.Add(2, 10);
                             logQueue.Add($"[Wario]: Whole team +10 ATK, +2 turns");
                             break;
 
