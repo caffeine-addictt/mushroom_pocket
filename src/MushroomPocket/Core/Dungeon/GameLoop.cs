@@ -33,54 +33,7 @@ public static class GameLogic
         {
             // DM moves first
             Frame.DrawFrame(party, dm);
-
-            PartyMember target = party.PickRandomMember();
-            float damage = dm.RollDamage();
-            party.TakeDamage(target, damage);
-            List<string> dmLog = new List<string>() { "[GAME]: DM's turn" };
-
-            // Select action
-            switch (new Random().Next(0, 16))
-            {
-                // Damage target
-                case 0 or 1 or 2 or 3 or 4 or 5 or 6:
-                    float damage = dm.RollDamage();
-                    party.TakeDamage(target, damage);
-                    dmLog.Add($"[GAME]: DM hits {target.Character.Name} [{target.Character.Id}] with {damage} damage. [{target.Character.Name} has {target.Character.Hp} HP remaining.]");
-                    break;
-
-                // Stun target
-                case 7 or 8 or 9:
-                    target.Stunned.Add(1, 1);
-                    dmLog.Add($"[GAME]: DM stunned {target.Character.Name} [{target.Character.Id}] for this turn");
-                    break;
-
-                // Skill 1: Debuff
-                case 10 or 11:
-                    party.PlusDamageMultiplier.Add(1, -0.1f);
-                    dmLog.Add("[GAME]: DM uses its skill: Debuff");
-                    dmLog.Add("[GAME]: Party -10% DMG for this turn");
-                    break;
-
-                // Skill 2: Knock-out
-                case 12 or 13:
-                    target.Stunned.Add(2, 1);
-                    dmLog.Add("[GAME]: DM uses its skill: Knock-out");
-                    dmLog.Add($"[GAME]: {target.Character.Name} [{target.Character.Id}] is knocked out for 2 turns");
-                    break;
-
-                // Skill 3: Buff
-                case 14:
-                    dm.PlusCritRate.Add(2, 0.2f);
-                    dm.PlusCritMultiplier.Add(2, 0.5f);
-                    dmLog.Add("[GAME]: DM uses its skill: Buff");
-                    dmLog.Add("[GAME]: DM +20% CRIT RATE and +50% CRIT DMG for the next 2 turns");
-                    break;
-
-                default:
-                    dmLog.Add("[GAME]: DM missed");
-                    break;
-            }
+            List<string> dmLog = DMAction.DoAction(party, dm).Prepend("[GAME]: DM's turn").ToList();
 
             // Redraw
             Frame.DrawFrame(party, dm);
