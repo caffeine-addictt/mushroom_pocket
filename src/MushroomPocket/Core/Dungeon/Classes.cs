@@ -11,27 +11,50 @@ using MushroomPocket.Models;
 namespace MushroomPocket.Core.DungeonGameLogic;
 
 
-public class Effect<T>
+public class IEffect
 {
     public int RoundsLeft { get; set; }
-    public T Value { get; set; }
-    public T DefaultValue { get; private set; }
+    public float Value { get; set; }
 
-
-    public Effect(int rounds, T defaultValue)
+    public IEffect(int rounds, float value)
     {
         RoundsLeft = rounds;
-        Value = defaultValue;
+        Value = value;
+    }
+}
+
+
+public class Effect
+{
+    public float DefaultValue { get; private set; }
+    public List<IEffect> Modifiers { get; set; } = new List<IEffect>();
+
+    public float Value { get => Modifiers.Count > 0 ? Modifiers.Sum(e => e.Value) + DefaultValue : DefaultValue; }
+    public int RoundsLeft { get => Modifiers.Count > 0 ? Modifiers.Max(e => e.RoundsLeft) : 0; }
+
+
+    public Effect(float defaultValue)
+    {
         DefaultValue = defaultValue;
     }
+
+
+    /// <summary>Add modifier</summary>
+    public void Add(int rounds, float value) => Add(new IEffect(rounds, value));
+    public void Add(IEffect e) => Modifiers.Add(e);
 
 
     /// <summary>Decrements rounds left</summary>
     public void Decrement()
     {
-        RoundsLeft = Math.Max(RoundsLeft - 1, 0);
-        if (RoundsLeft == 0)
-            Value = DefaultValue;
+        for (int i = 0; i < Modifiers.Count; i++)
+        {
+            IEffect e = Modifiers[i];
+
+            e.RoundsLeft = Math.Max(e.RoundsLeft - 1, 0);
+            if (e.RoundsLeft == 0)
+                Modifiers.RemoveAt(i--);
+        }
     }
 
 
@@ -39,19 +62,23 @@ public class Effect<T>
     /// Syntatic sugar for whether to apply an effect
     /// </summary>
     public bool ShouldApply() => ShouldApply(this);
-    public static bool ShouldApply(Effect<T> e) => e.RoundsLeft > 0;
+    public static bool ShouldApply(Effect e) => e.RoundsLeft > 0;
 
 
     /// <summary>
     /// Merge only if both effects should apply
     /// </summary>
-    public static Effect<float> Merge(Effect<float> a, Effect<float> b, float defaultValue = 0)
+    public static Effect Merge(Effect a, Effect b, float defaultValue = 0)
     {
-        bool shouldApply = a.ShouldApply() && b.ShouldApply();
-        return new Effect<float>(
-            shouldApply ? Math.Max(a.RoundsLeft, b.RoundsLeft) : 0,
-            shouldApply ? a.Value + b.Value : defaultValue
-        );
+        Effect newEffect = new Effect(defaultValue);
+
+        foreach (IEffect e in a.Modifiers)
+            newEffect.Modifiers.Add(new IEffect(e.RoundsLeft, e.Value));
+
+        foreach (IEffect e in b.Modifiers)
+            newEffect.Modifiers.Add(new IEffect(e.RoundsLeft, e.Value));
+
+        return newEffect;
     }
 }
 
@@ -59,13 +86,13 @@ public class Effect<T>
 public class IHasEffect
 {
     /// <summary>Value representing how much to add to atk</summary>
-    public Effect<float> PlusAtk { get; set; } = new Effect<float>(0, 0);
+    public Effect PlusAtk { get; set; } = new Effect(0);
     /// <summary>Value representing how much to add to base crit rate %</summary>
-    public Effect<float> PlusCritRate { get; set; } = new Effect<float>(0, 0);
+    public Effect PlusCritRate { get; set; } = new Effect(0);
     /// <summary>Value representing how much to add to base crit multiplier %</summary>
-    public Effect<float> PlusCritMultiplier { get; set; } = new Effect<float>(0, 0);
+    public Effect PlusCritMultiplier { get; set; } = new Effect(0);
     /// <summary>Value representing how much to total damage multiplier %</summary>
-    public Effect<float> PlusDamageMultiplier { get; set; } = new Effect<float>(0, 1);
+    public Effect PlusDamageMultiplier { get; set; } = new Effect(1);
 
 
     public bool IsAtk => PlusAtk.Value != 0;
@@ -86,10 +113,10 @@ public class IHasEffect
     public static IHasEffect MergeEffect(IHasEffect a, IHasEffect b)
         => new IHasEffect()
         {
-            PlusAtk = Effect<float>.Merge(a.PlusAtk, b.PlusAtk),
-            PlusCritRate = Effect<float>.Merge(a.PlusCritRate, b.PlusCritRate),
-            PlusCritMultiplier = Effect<float>.Merge(a.PlusCritMultiplier, b.PlusCritMultiplier),
-            PlusDamageMultiplier = Effect<float>.Merge(a.PlusDamageMultiplier, b.PlusDamageMultiplier, 1)
+            PlusAtk = Effect.Merge(a.PlusAtk, b.PlusAtk),
+            PlusCritRate = Effect.Merge(a.PlusCritRate, b.PlusCritRate),
+            PlusCritMultiplier = Effect.Merge(a.PlusCritMultiplier, b.PlusCritMultiplier),
+            PlusDamageMultiplier = Effect.Merge(a.PlusDamageMultiplier, b.PlusDamageMultiplier, 1)
         };
 
 
@@ -98,10 +125,8 @@ public class IHasEffect
     ///
     /// <paramref name="p"/> is the member initiating the action
     /// </summary>
-    public float RollDamage(DungeonMaster m) => RollDamage(this, m);
-
     public static float RollDamage(IHasEffect e, Character c) => RollDamage(e, c.Atk, c.CritRate, c.CritMultiplier);
-    public static float RollDamage(IHasEffect e, DungeonMaster m) => RollDamage(e, m.Atk, 0.5f, 1.5f);
+    public static float RollDamage(DungeonMaster m) => RollDamage(m, m.Atk, 0.5f, 1.5f);
     public static float RollDamage(IHasEffect e, int atk, float critRate, float critMultiplier)
     {
         float finalDamage = atk;
@@ -160,8 +185,8 @@ public class DungeonMaster : IHasEffect
 public class PartyMember : IHasEffect
 {
     /// <summary>Value representing if is stunned</summary>
-    public Effect<bool> Stunned { get; set; } = new Effect<bool>(0, false);
-    public bool IsStunned => Stunned.Value;
+    public Effect Stunned { get; set; } = new Effect(0);
+    public bool IsStunned => Stunned.Value > 0;
 
     public Character Character { get; set; }
 

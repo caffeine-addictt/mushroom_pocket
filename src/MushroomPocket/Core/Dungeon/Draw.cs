@@ -53,11 +53,7 @@ public static class Frame
     }
 
 
-    public static void DrawFrame(Team team, DungeonMaster dm)
-        => DrawFrame(team.Characters, dm);
-    public static void DrawFrame(ExplorationParty explorationParty, DungeonMaster dm)
-        => DrawFrame(explorationParty.GetCharacters(), dm);
-    public static void DrawFrame(IEnumerable<Character> characters, DungeonMaster dm)
+    public static void DrawFrame(ExplorationParty party, DungeonMaster dm)
     {
         Console.Clear();
         Dimension canvas = ResolveDimension();
@@ -70,7 +66,10 @@ public static class Frame
             ASCIIArt.DungeonMaster,
             GenerateHpIndicator(ASCIIArt.DungeonMasterDimensions, dm.Hp, dm.MaxHp),
             dm.Name,
-            $"Atk: {dm.Atk}",
+            $"Atk: {Math.Floor((decimal)dm.Atk)}{(dm.IsAtk ? $" + {Math.Floor((decimal)dm.PlusAtk.Value)}" : "")}",
+            $"Crit Rate: 50%{(dm.IsCritRate ? $" + {(int)Math.Round(dm.PlusCritRate.Value * 10, 2)}%" : "")}",
+            $"Crit Dmg: 1.5x{(dm.IsDamageMultiplier ? $" + {(int)Math.Floor(dm.PlusCritMultiplier.Value)}x" : "")}",
+            $"Dmg Multiplier: 1x{(dm.IsDamageMultiplier ? $" + {dm.PlusDamageMultiplier.Value}x" : "")}",
             "",
             ""
         ), canvas.X, "\n");
@@ -80,17 +79,21 @@ public static class Frame
         List<List<string>> teamMembers = new List<List<string>>();
         Dimension teamASCIIDimension = new Dimension(ASCIIArt.CharacterDimensions.X * 3, ASCIIArt.CharacterDimensions.Y);
 
-        foreach (Character character in characters)
+        foreach (PartyMember member in party.PartyMembers)
         {
-            string ascii = String.Join(
-                "\n",
+            Character character = member.Character;
+            List<string> ascii = new List<string>() {
                 ASCIIArt.Character,
                 GenerateHpIndicator(teamASCIIDimension, character.Hp, character.MaxHp),
                 character.Name,
-                $"Atk: {character.Atk}"
-            );
+                $"Atk: {Math.Floor((decimal)character.Atk)}{(member.IsAtk ? $" + {Math.Floor(member.PlusAtk.Value)}" : "")}",
+                $"Crit Rate: {Math.Round((decimal)character.CritRate * 10, 2)}%{(member.IsCritRate ? $" + {(int)Math.Round(member.PlusCritRate.Value * 10, 2)}%" : "")}",
+                $"Crit Dmg: {Math.Floor(character.CritMultiplier + member.PlusCritMultiplier.Value)}x{(member.IsDamageMultiplier ? $" + {member.PlusDamageMultiplier.Value}x" : "")}",
+                $"Dmg Multiplier: 1x{(member.IsDamageMultiplier ? $" + {member.PlusDamageMultiplier.Value}x" : "")}",
+                member.IsStunned ? "Stunned" : ""
+            };
 
-            teamMembers.Add(PaddingUtils.CenterAlign(ascii, teamASCIIDimension.X, "\n").Split("\n").ToList());
+            teamMembers.Add(PaddingUtils.CenterAlign(String.Join("\n", ascii), teamASCIIDimension.X, "\n").Split("\n").ToList());
         }
 
         // Join
@@ -102,6 +105,14 @@ public static class Frame
         }
 
         frame += String.Join("\n", formattedLines);
+
+        // Display party-wide
+        List<string> partyBuffs = new List<string>();
+        if (party.IsAtk) partyBuffs.Add($"+{party.PlusAtk.Value} ATK");
+        if (party.IsCritRate) partyBuffs.Add($"x{party.PlusCritRate.Value} CRIT");
+        if (party.IsCritMultiplier) partyBuffs.Add($"x{party.PlusCritMultiplier.Value} CRIT DMG");
+        if (party.IsDamageMultiplier) partyBuffs.Add($"x{party.PlusDamageMultiplier.Value} DMG");
+        if (partyBuffs.Count > 0) frame += "\n\n" + String.Join("\n", partyBuffs);
 
         // Pad Y-Axis
         Console.WriteLine($"\n\n{frame}\n\n");
