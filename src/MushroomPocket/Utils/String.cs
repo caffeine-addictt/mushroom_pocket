@@ -55,6 +55,7 @@ public static class StringUtils
             ? input.ToString().Trim().ToLower()
             : input.ToString().Trim();
 
+
     /// <summary>
     /// Generate a tiny ID with hit detection
     /// Is not thread safe
@@ -77,6 +78,7 @@ public static class StringUtils
 
         return id;
     }
+
 
     /// <summary>
     /// Tries to find the closes match from an input string and a list of possible matches.
