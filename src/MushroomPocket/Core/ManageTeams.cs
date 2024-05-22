@@ -129,32 +129,6 @@ public static class ManageTeams
                 return;
             }
 
-            // Ask for pattern
-            Console.Write("Enter Character ID or L to list all characters: ");
-            string charID = (Console.ReadLine() ?? "").Trim();
-            if (charID.ToLower() == "l")
-            {
-                foreach (Character c in charList)
-                    ManageCharacters.EchoCharacter(c);
-
-                // Confirmation
-                Console.Write("Enter Character ID: ");
-                charID = (Console.ReadLine() ?? "").Trim();
-            }
-
-            Similarity charTopID;
-            if (!StringUtils.SmartLookUp(charID, charList.Select(c => c.Id), out charTopID!))
-            {
-                Console.WriteLine("\nCharacter ID does not exist.");
-                return;
-            }
-
-            if (charTopID.QualifiedText.ToLower() != charTopID.OriginalText.ToLower())
-            {
-                Console.Write($"\nDid you mean '{charTopID.QualifiedText}'? ({charTopID.ScoreToString()}%) [Y/N]: ");
-                if ((Console.ReadLine() ?? "").ToLower() != "y") return;
-            }
-
             // Ask for team pattern
             Console.Write("Enter Team Name or ID or L to list all teams: ");
             string teamNameID = Console.ReadLine() ?? "";
@@ -181,9 +155,43 @@ public static class ManageTeams
                 if ((Console.ReadLine() ?? "").ToLower() != "y") return;
             }
 
+            Team affectedTeam = teamList.First(t => t.Id == topTeamID.QualifiedText);
+            charList = charList.Where(c => affectedTeam.Characters.All(tc => tc.Id != c.Id)).ToList();
+            if (charList.Count == 0)
+            {
+                Console.WriteLine("\nNo character(s) to add.");
+                return;
+            }
+
+
+            // Ask for character pattern
+            Console.Write("Enter Character ID or L to list all characters: ");
+            string charID = (Console.ReadLine() ?? "").Trim();
+            if (charID.ToLower() == "l")
+            {
+                foreach (Character c in charList)
+                    ManageCharacters.EchoCharacter(c);
+
+                // Confirmation
+                Console.Write("Enter Character ID: ");
+                charID = (Console.ReadLine() ?? "").Trim();
+            }
+
+            Similarity charTopID;
+            if (!StringUtils.SmartLookUp(charID, charList.Select(c => c.Id), out charTopID!))
+            {
+                Console.WriteLine("\nCharacter ID does not exist.");
+                return;
+            }
+
+            if (charTopID.QualifiedText.ToLower() != charTopID.OriginalText.ToLower())
+            {
+                Console.Write($"\nDid you mean '{charTopID.QualifiedText}'? ({charTopID.ScoreToString()}%) [Y/N]: ");
+                if ((Console.ReadLine() ?? "").ToLower() != "y") return;
+            }
+
 
             Character affectedCharacter = charList.First(c => c.Id == charTopID.QualifiedText);
-            Team affectedTeam = teamList.First(t => t.Id == topTeamID.QualifiedText);
 
             // Check team limits
             if (affectedTeam.Characters.Count == 5)
