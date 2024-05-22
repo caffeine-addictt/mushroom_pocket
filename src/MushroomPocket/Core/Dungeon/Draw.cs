@@ -53,11 +53,7 @@ public static class Frame
     }
 
 
-    public static void DrawFrame(Team team, DungeonMaster dm)
-        => DrawFrame(team.Characters, dm);
-    public static void DrawFrame(ExplorationParty explorationParty, DungeonMaster dm)
-        => DrawFrame(explorationParty.GetCharacters(), dm);
-    public static void DrawFrame(IEnumerable<Character> characters, DungeonMaster dm)
+    public static void DrawFrame(ExplorationParty party, DungeonMaster dm)
     {
         Console.Clear();
         Dimension canvas = ResolveDimension();
@@ -80,7 +76,7 @@ public static class Frame
         List<List<string>> teamMembers = new List<List<string>>();
         Dimension teamASCIIDimension = new Dimension(ASCIIArt.CharacterDimensions.X * 3, ASCIIArt.CharacterDimensions.Y);
 
-        foreach (Character character in characters)
+        foreach (PartyMember member in party.PartyMembers)
         {
             string ascii = String.Join(
                 "\n",
