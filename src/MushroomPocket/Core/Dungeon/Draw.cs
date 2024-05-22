@@ -8,7 +8,7 @@
 
 /* using System.Threading; */
 using MushroomPocket.Models;
-/* using MushroomPocket.Utils; */
+using MushroomPocket.Utils;
 
 namespace MushroomPocket.Core.DungeonGameLogic;
 
@@ -28,44 +28,9 @@ public static class Frame
 
         return String.Join(
             "\n",
-            CenterAlign(hpText, barWidth),
+            PaddingUtils.CenterAlign(hpText, barWidth, "\n"),
             $"| {String.Join("", Enumerable.Repeat("#", tagCount))}{String.Join("", Enumerable.Repeat(" ", spaceCount))} |"
         );
-    }
-
-
-    public static string CenterAlign(string s, int width)
-    {
-        List<string> formatted = new List<string>();
-        string[] split = s.Split("\n");
-        int targetWidth = Math.Max(split.Max(s => s.Length), width);
-
-        foreach (string line in split)
-        {
-            if (line.Length == 0)
-            {
-                formatted.Add(line);
-                continue;
-            }
-
-            if (line.Length >= targetWidth)
-            {
-                formatted.Add(line);
-                continue;
-            }
-
-            int totalPadding = targetWidth - line.Length;
-            int leading = totalPadding / 2;
-            int trailing = totalPadding - leading;
-
-            formatted.Add(
-                new string(' ', leading)
-                + line
-                + new string(' ', trailing)
-            );
-        }
-
-        return String.Join("\n", formatted);
     }
 
 
@@ -100,7 +65,7 @@ public static class Frame
         string frame = "";
 
         // Build dungeon DungeonMaster
-        frame += CenterAlign(String.Join(
+        frame += PaddingUtils.CenterAlign(String.Join(
             "\n",
             ASCIIArt.DungeonMaster,
             GenerateHpIndicator(ASCIIArt.DungeonMasterDimensions, dm.Hp, dm.MaxHp),
@@ -108,7 +73,7 @@ public static class Frame
             $"Atk: {dm.Atk}",
             "",
             ""
-        ), canvas.X);
+        ), canvas.X, "\n");
 
         // Build team
         int teamSpacing = 4;
@@ -125,7 +90,7 @@ public static class Frame
                 $"Atk: {character.Atk}"
             );
 
-            teamMembers.Add(CenterAlign(ascii, teamASCIIDimension.X).Split("\n").ToList());
+            teamMembers.Add(PaddingUtils.CenterAlign(ascii, teamASCIIDimension.X, "\n").Split("\n").ToList());
         }
 
         // Join

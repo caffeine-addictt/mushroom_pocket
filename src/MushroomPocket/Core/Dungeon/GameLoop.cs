@@ -6,9 +6,8 @@
  * Admin: 230725N
  */
 
-/* using System.Threading; */
 using MushroomPocket.Models;
-/* using MushroomPocket.Utils; */
+using MushroomPocket.Utils;
 
 namespace MushroomPocket.Core.DungeonGameLogic;
 
@@ -230,10 +229,10 @@ public static class GameLogic
         stdOut.Add("==== End ====");
 
         // StdOut
-        Console.WriteLine(Frame.CenterAlign(String.Join(
+        Console.WriteLine(PaddingUtils.CenterAlign(String.Join(
             "\n",
             stdOut
-        ), stdOut.Max(s => s.Length)));
+        ), stdOut.Max(s => s.Length), "\n"));
 
         // Update DB
         foreach (Character c in party.GetCharacters())
