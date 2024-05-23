@@ -6,9 +6,8 @@
  * Admin: 230725N
  */
 
-/* using System.Threading; */
 using MushroomPocket.Models;
-/* using MushroomPocket.Utils; */
+using MushroomPocket.Utils;
 
 namespace MushroomPocket.Core.DungeonGameLogic;
 
@@ -34,16 +33,11 @@ public static class GameLogic
         {
             // DM moves first
             Frame.DrawFrame(party, dm);
-
-            PartyMember target = party.PickRandomMember();
-            float damage = dm.RollDamage();
-            party.TakeDamage(target, damage);
+            List<string> dmLog = DMAction.DoAction(party, dm).Prepend("[GAME]: DM's turn").ToList();
 
             // Redraw
             Frame.DrawFrame(party, dm);
-            Console.WriteLine("[GAME]: DM's turn");
-            Console.WriteLine($"[GAME]: DM hits {target.Character.Name} [{target.Character.Id}] with {damage} damage. [{target.Character.Name} has {target.Character.Hp} HP remaining.]");
-
+            Console.WriteLine(String.Join("\n", dmLog));
             Frame.DrawCountDown(3000);
 
 
@@ -53,7 +47,7 @@ public static class GameLogic
 
 
             // Characters' move
-            foreach (PartyMember member in party.PartyMembers)
+            foreach (PartyMember member in party.PartyMembers.Where(pm => pm.Character.Hp > 0))
             {
                 // Check for stunned
                 if (member.IsStunned)
@@ -100,46 +94,37 @@ public static class GameLogic
                     switch (character.Name)
                     {
                         case "Daisy":
-                            party.PlusAtk.Value += 10;
-                            party.PlusAtk.Value++;
-                            party.PlusCritRate.Value += 0.1f;
-                            party.PlusCritRate.RoundsLeft++;
+                            party.PlusAtk.Add(1, 10);
+                            party.PlusCritRate.Add(1, 0.1f);
                             logQueue.Add($"[Daisy]: Whole team +10 ATK, +10% CRIT RATE for this turn");
                             break;
 
                         case "Luigi":
-                            member.PlusCritRate.Value += 0.5f;
-                            member.PlusCritRate.RoundsLeft += 3;
+                            member.PlusCritRate.Add(3, 0.5f);
                             logQueue.Add($"[Luigi]: +50% CRIT RATE for next 3 turns");
                             break;
 
                         case "Mario":
-                            member.PlusCritMultiplier.Value += 0.1f;
-                            member.PlusCritMultiplier.RoundsLeft += 5;
+                            member.PlusCritMultiplier.Add(5, 0.1f);
                             logQueue.Add($"[Mario]: +10% CRIT DMG for next 5 turns");
                             break;
 
                         case "Peach":
-                            member.PlusDamageMultiplier.Value = 3.5f;
-                            member.PlusDamageMultiplier.RoundsLeft = 1;
-                            member.Stunned.Value = true;
-                            member.Stunned.RoundsLeft = 2;
+                            member.PlusDamageMultiplier.Add(1, 3.5f);
+                            member.Stunned.Add(2, 1);
                             attackDM = true;
                             logQueue.Add($"[Peach]: Deals 3.5x DMG for this turn and is stunned for the next 2 turns");
                             break;
 
                         case "Waluigi":
-                            member.PlusDamageMultiplier.Value += 2f;
-                            member.PlusDamageMultiplier.RoundsLeft += 1;
-                            member.PlusCritRate.Value -= 0.2f;
-                            member.PlusCritRate.RoundsLeft += 2;
+                            member.PlusDamageMultiplier.Add(1, 0.2f);
+                            member.PlusCritRate.Add(2, -0.2f);
                             attackDM = true;
                             logQueue.Add($"[Waluigi]: Deals 2x DMG this turn, -20% CRIT RATE for next 2 turns");
                             break;
 
                         case "Wario":
-                            party.PlusAtk.Value += 10;
-                            party.PlusAtk.RoundsLeft += 2;
+                            member.PlusAtk.Add(2, 10);
                             logQueue.Add($"[Wario]: Whole team +10 ATK, +2 turns");
                             break;
 
@@ -195,6 +180,8 @@ public static class GameLogic
         // Treat as defeated DM
         if (dm.Hp == 0)
         {
+            dungeon.Status = "Cleared";
+
             // Extra rewards
             coins = (int)(dm.MaxHp * (1.5f + new Random().Next(11) / 10f));
             exp = (int)(dm.MaxHp * (2.5f + new Random().Next(11) / 10f));
@@ -230,17 +217,16 @@ public static class GameLogic
         stdOut.Add("==== End ====");
 
         // StdOut
-        Console.WriteLine(Frame.CenterAlign(String.Join(
+        Console.WriteLine(PaddingUtils.CenterAlign(String.Join(
             "\n",
             stdOut
-        ), stdOut.Max(s => s.Length)));
+        ), stdOut.Max(s => s.Length), "\n"));
 
         // Update DB
         foreach (Character c in party.GetCharacters())
             c.Exp += exp;
         profile.Wallet += coins;
         profile.BattleLogs.Add(battleLog);
-        dungeon.Status = "Cleared";
         db.SaveChanges();
 
         Console.Write("Press any key to continue...");

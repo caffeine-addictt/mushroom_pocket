@@ -46,30 +46,45 @@ public class TestIHasEffect
     [Fact]
     public void TestMergingAtk()
     {
-        IHasEffect e1 = new IHasEffect() { PlusAtk = new Effect<float>(1, 1f) };
-        IHasEffect e2 = new IHasEffect() { PlusAtk = new Effect<float>(2, 2f) };
+        IHasEffect e1 = new IHasEffect();
+        IHasEffect e2 = new IHasEffect();
+        e1.PlusAtk.Add(1, 1f);
+        e2.PlusAtk.Add(2, 2f);
 
         IHasEffect e3 = IHasEffect.MergeEffect(e1, e2);
-        Assert.True(CheckEqual(new IHasEffect() { PlusAtk = new Effect<float>(2, 3f) }, e3));
+        IHasEffect expected = new IHasEffect();
+        expected.PlusAtk.Add(2, 3f);
+
+        Assert.True(CheckEqual(expected, e3));
     }
 
     [Fact]
-    public void TestMergingCritRate()
+    public void TestingMergingCritRate()
     {
-        IHasEffect e1 = new IHasEffect() { PlusCritRate = new Effect<float>(1, 1f) };
-        IHasEffect e2 = new IHasEffect() { PlusCritRate = new Effect<float>(2, 2f) };
+        IHasEffect e1 = new IHasEffect();
+        IHasEffect e2 = new IHasEffect();
+        e1.PlusCritRate.Add(1, 1f);
+        e2.PlusCritRate.Add(2, 2f);
 
         IHasEffect e3 = IHasEffect.MergeEffect(e1, e2);
-        Assert.True(CheckEqual(new IHasEffect() { PlusCritRate = new Effect<float>(2, 3f) }, e3));
+        IHasEffect expected = new IHasEffect();
+        expected.PlusCritRate.Add(2, 3f);
+
+        Assert.True(CheckEqual(expected, e3));
     }
 
     [Fact]
     public void TestMergingCritMultiplier()
     {
-        IHasEffect e1 = new IHasEffect() { PlusCritMultiplier = new Effect<float>(1, 1f) };
-        IHasEffect e2 = new IHasEffect() { PlusCritMultiplier = new Effect<float>(2, 2f) };
+        IHasEffect e1 = new IHasEffect();
+        IHasEffect e2 = new IHasEffect();
+        e1.PlusCritMultiplier.Add(1, 1f);
+        e2.PlusCritMultiplier.Add(2, 2f);
 
         IHasEffect e3 = IHasEffect.MergeEffect(e1, e2);
-        Assert.True(CheckEqual(new IHasEffect() { PlusCritMultiplier = new Effect<float>(2, 3f) }, e3));
+        IHasEffect expected = new IHasEffect();
+        expected.PlusCritMultiplier.Add(2, 3f);
+
+        Assert.True(CheckEqual(expected, e3));
     }
 }

@@ -6,7 +6,7 @@
  * Admin: 230725N
  */
 
-using System.Runtime.InteropServices;
+using MushroomPocket.Utils;
 
 namespace MushroomPocket.Core.DungeonGameLogic;
 
@@ -28,102 +28,87 @@ public static class Loading
 {
     /// <summary>0 - stop, 1 - loading</summary>
     public static byte State = 0;
-    private static readonly List<string> CharSet = new List<string>() {
-        "0",
-        "c",
-        "C",
-        "(",
-        ")",
-        "o",
-        "O",
-        "x",
-        "X",
-        "1",
-        "i",
+
+    /// <summary>
+    /// Loading state
+    ///
+    /// 0 = -
+    /// 1 = \
+    /// 2 = |
+    /// 3 = /
+    /// </summary>
+    public static int LoadingState = 0;
+    public static DateTime LastLoadingStateUpdate = DateTime.UtcNow;
+
+    public static DateTime LastTipUpdate = DateTime.UtcNow;
+    private static string[] TipsPool = new string[6] {
+        "Check your stats:\nHeal before entering a dungeon",
+        "Experiment with skills:\nBuffs can be stacked",
+        "Spend your money wisely:\nNever know when you need to heal",
+        "Plan your attacks:\nDamage multipliers apply to the final damage calculation",
+        "Be prepared:\nYou cannot use items in the dungeon",
+        "Manage your team:\nCharacters work best with others",
     };
 
 
-    private static void DrawLoading(IEnumerable<int> yHeight)
+    private static string GetThrobber()
     {
-        Console.Clear();
-
-        List<List<string>> screen = new List<List<string>>();
-        foreach (int y in yHeight)
-            screen.Add((new Random()).GetItems<string>(CollectionsMarshal.AsSpan<string>(CharSet), y).ToList());
-
-        int maxY = yHeight.Max();
-        int currY = 0;
-
-        while (currY < maxY)
+        if (DateTime.UtcNow - LastLoadingStateUpdate > TimeSpan.FromSeconds(1))
         {
-            foreach (List<string> col in screen)
-                Console.Write(currY < col.Count ? col[currY] : " ");
-            Console.WriteLine();
-            currY++;
+            LoadingState = LoadingState == 3 ? 0 : LoadingState + 1;
+            LastLoadingStateUpdate = DateTime.UtcNow;
         }
+        return new string[] { "|", "/", "-", "\\" }[LoadingState];
     }
 
-    private static void LoadingAnimation()
+    private static string GetTip()
+    {
+        if (DateTime.UtcNow - LastTipUpdate > TimeSpan.FromSeconds(30))
+        {
+            LastTipUpdate = DateTime.UtcNow;
+            new Random().Shuffle(TipsPool);
+        }
+        return TipsPool[0];
+    }
+
+
+    private static void DrawLoading()
+    {
+        Console.Clear();
+        string loadingText = PaddingUtils.CenterAlign(String.Join(
+            "\n",
+            $"{GetThrobber()}",
+            "",
+            $"Loading{new string('.', LoadingState)}",
+            "",
+            "",
+            "",
+            GetTip()
+        ), Constants.TerminalSize.X, "\n");
+
+        // Pad Y-Axis
+        Padded padded = PaddingUtils.Pad(loadingText.Split("\n").Count(), Constants.TerminalSize.Y);
+        Console.WriteLine(new string('\n', padded.Leading) + $"\n{loadingText}\n" + new string('\n', padded.Trailing));
+    }
+
+    private static void LoadingAnimation(int minMs = 10000)
     {
         State = 1;
+        DateTime end = DateTime.UtcNow.AddMilliseconds(minMs);
+
         Console.Clear();
-        int[] yHeight = new int[Constants.TerminalSize.X];
-
-        // Prefill 0
-        for (int i = 0; i < Constants.TerminalSize.X; i++)
+        while (State == 1 || ((end - DateTime.UtcNow) > TimeSpan.Zero))
         {
-            yHeight[i] = 0;
+            Thread.Sleep(250);
+            DrawLoading();
         }
 
-        // Animate top-down
-        while (yHeight.Any(i => i != Constants.TerminalSize.Y))
-        {
-            for (int i = 0; i < Constants.TerminalSize.X; i++)
-            {
-                // Use 10% of TerminalSize.Y as the minimum clamped to 3-5
-                int incrementMin = Math.Clamp(Constants.TerminalSize.Y / 10, 3, 5);
-
-                // Increment Y by minY-minY+3
-                yHeight[i] = Math.Clamp(yHeight[i] + new Random().Next(incrementMin, incrementMin + 4), 0, Constants.TerminalSize.Y);
-            }
-
-            // Delay (ms)
-            Thread.Sleep(500);
-
-            // Draw
-            DrawLoading(yHeight);
-        }
-
-        // Animate waiting
-        while (State == 1)
-        {
-            Thread.Sleep(500);
-            DrawLoading(yHeight);
-        }
-
-        // Animate away
-        while (yHeight.Any(i => i != 0))
-        {
-            for (int i = 0; i < Constants.TerminalSize.X; i++)
-            {
-                // Use 10% of TerminalSize.Y as the minimum clamped to 3-5
-                int incrementMin = Math.Clamp(Constants.TerminalSize.Y / 10, 3, 5);
-
-                // Increment Y by minY-minY+3
-                yHeight[i] = Math.Clamp(yHeight[i] - new Random().Next(incrementMin, incrementMin + 4), 0, Constants.TerminalSize.Y);
-            }
-
-            // Delay (ms)
-            Thread.Sleep(500);
-
-            // Draw
-            DrawLoading(yHeight);
-        }
+        Console.Clear();
     }
 
     public static LoadingHandler Start()
     {
-        Thread loadingThread = new Thread(new ThreadStart(LoadingAnimation));
+        Thread loadingThread = new Thread(new ThreadStart(() => LoadingAnimation()));
         loadingThread.Start();
 
         return new LoadingHandler() { HandlerThread = loadingThread };
